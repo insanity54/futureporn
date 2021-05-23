@@ -80,7 +80,6 @@ cron.schedule('0 0 * * * *', async () => {
 
 app.get('/', async (req, res) => {
 	const listOfVids = await getListOfVids(true);
-	console.log(listOfVids)
     res.render('index', { videos: listOfVids });
 });
 

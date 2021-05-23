@@ -1,9 +1,19 @@
 <ul>
 	<h1>I Missed Mel's Last Stream</h1>
-	<p>ProjektMelody Chaturbate VODs from the past two weeks</p>
+	<p><a target="_blank" rel="noopener noreferrer" href="https://twitter.com/projektmelody">ProjektMelody's</a> Chaturbate VODs from the past two weeks</p>
 	<p><% JSON.stringify(videos) %></p>
-	<% videos.forEach((video) => { %>
-		<%- include('./video', { video: video }); %>
-	<% }) %>
-	<p>Website by <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/cj_crispy">CJ Clippy 🥗</a></p>
+	<% if (videos.length === 0) { %>
+		<aside>
+			<p>There are no videos</p>
+		</aside>
+	<% } else { %>
+		<div class="pure-menu custom-restricted-width">
+			<ul class="pure-menu-list">
+				<% videos.forEach((video) => { %>
+					<%- include('./video', { video: video }); %>
+				<% }) %>
+			</ul>
+		</div>
+	<% } %>
+	<p>Website by <a target="_blank" rel="noopener noreferrer" href="https://twitter.com/cj_crispy">CJ Clippy  🥗</a></p>
 </ul>
