@@ -7,12 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently --success all --kill-others npm:serve npm:capture",
     "serve": "node futureporn",
-    "capture": "voddo/voddo.sh https://chaturbate.com/projektmelody",
-    "deploy": "caprover deploy --caproverName captain-01 --branch master --appName i-missed-mels-last-stream"
+    "capture": "cd public && ../node_modules/voddo/voddo.sh https://chaturbate.com/projektmelody",
+    "deploy": "caprover deploy --caproverName captain-01 --branch master --appName immls"
   },
   "author": "Chris Grimmett",
   "license": "Unlicense",
   "dependencies": {
+    "voddo": "https://github.com/insanity54/voddo",
     "concurrently": "^6.1.0",
     "date-fns": "^2.21.3",
     "ejs": "^3.1.6",
