@@ -25,6 +25,9 @@ RUN /futureporn/venv/bin/python3 -m pip install --no-cache --upgrade pip setupto
 # install youtube-dl
 RUN /futureporn/venv/bin/python3 -m pip install youtube-dl
 
+# add venv to path
+ENV PATH "$PATH:/futureporn/venv/bin/"
+
 WORKDIR /futureporn
 COPY . .
 RUN yarn install
