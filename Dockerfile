@@ -17,13 +17,13 @@ COPY --from=0 / /
 # install python & pip
 ENV PYTHONUNBUFFERED=1
 RUN apk --no-cache add curl python3 && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
-RUN pip3 install --no-cache --upgrade pip setuptools
+RUN python3 -m venv /futureporn/venv
+RUN /futureporn/venv/bin/python3 -m ensurepip
+RUN /futureporn/venv/bin/python3 -m pip install --no-cache --upgrade pip setuptools
 
 
 # install youtube-dl
-RUN python3 -m venv /futureporn/venv
-RUN /futureporn/venv/python3 -m pip install --user youtube-dl
+RUN /futureporn/venv/bin/python3 -m pip install --user youtube-dl
 
 WORKDIR /futureporn
 COPY . .
