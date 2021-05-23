@@ -20,19 +20,20 @@ app.use(express.static(publicPath))
 
 
 
-app.get('/', async (req, res) => {
-	const listOfVids = await getListOfVids();
-    res.render('index', { videos: listOfVids });
-});
 
-
-const getListOfVids = async () => {
+const getListOfVids = async (web) => {
 	const vids = await globby(path.join(publicPath), {
 		expandDirectories: {
 			extensions: ['mp4']
 		}
 	})
-	return vids;
+	let formattedList
+	if (web) {
+		formattedList = vids.map((v) => { return v.replace(publicPath, '') })
+	} else {
+		formattedList = vids;
+	}
+	return formattedList;
 }
 
 const getVidBirthTime = async (videoPath) => {
@@ -74,6 +75,14 @@ cron.schedule('0 0 * * * *', async () => {
 })
 
 
+
+
+
+app.get('/', async (req, res) => {
+	const listOfVids = await getListOfVids(true);
+	console.log(listOfVids)
+    res.render('index', { videos: listOfVids });
+});
 
 app.listen(port, () => {
 	console.log(`Futureporn version ${require('./package.json').version}`)
