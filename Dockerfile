@@ -23,7 +23,7 @@ RUN /futureporn/venv/bin/python3 -m pip install --no-cache --upgrade pip setupto
 
 
 # install youtube-dl
-RUN /futureporn/venv/bin/python3 -m pip install --user youtube-dl
+RUN /futureporn/venv/bin/python3 -m pip install youtube-dl
 
 WORKDIR /futureporn
 COPY . .
