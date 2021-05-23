@@ -5,7 +5,7 @@
   "main": "futureporn.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently --success all npm:serve npm:capture",
+    "start": "concurrently --success all --kill-others npm:serve npm:capture",
     "serve": "node futureporn",
     "capture": "voddo/voddo.sh https://chaturbate.com/projektmelody",
     "deploy": "caprover deploy --caproverName captain-01 --branch master --appName i-missed-mels-last-stream"

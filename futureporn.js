@@ -76,7 +76,7 @@ cron.schedule('0 0 * * * *', async () => {
 
 
 app.listen(port, () => {
-	console.log(`Futureporn version ${require('package.json').version}`)
+	console.log(`Futureporn version ${require('./package.json').version}`)
 	console.log(`listening on port ${port}`)
 });
 
