@@ -1,0 +1,3 @@
+[submodule "voddo"]
+	path = voddo
+	url = https://github.com/insanity54/voddo

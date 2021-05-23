@@ -1,0 +1,24 @@
+{
+  "name": "futureporn",
+  "version": "1.0.0",
+  "description": "A website which solves the problem of missing Projekt Melody's Chaturbate streams.",
+  "main": "futureporn.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently --success all npm:serve npm:capture",
+    "serve": "node futureporn",
+    "capture": "voddo/voddo.sh https://chaturbate.com/projektmelody"
+  },
+  "author": "Chris Grimmett",
+  "license": "Unlicense",
+  "dependencies": {
+    "concurrently": "^6.1.0",
+    "date-fns": "^2.21.3",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "globby": "^11.0.3",
+    "luxon": "^1.27.0",
+    "node-cron": "^3.0.0",
+    "serve-favicon": "^2.5.0"
+  }
+}
