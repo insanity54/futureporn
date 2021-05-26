@@ -24,7 +24,7 @@ app.use(express.static(publicPath))
 const getListOfVids = async (web) => {
 	const vids = await globby(path.join(publicPath), {
 		expandDirectories: {
-			extensions: ['mp4']
+			extensions: ['mp4', 'part']
 		}
 	})
 	let formattedList
