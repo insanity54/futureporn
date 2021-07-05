@@ -13,7 +13,7 @@
   "author": "Chris Grimmett",
   "license": "Unlicense",
   "dependencies": {
-    "voddo": "https://github.com/insanity54/voddo",
+    "backblaze-b2": "^1.7.0",
     "concurrently": "^6.1.0",
     "date-fns": "^2.21.3",
     "ejs": "^3.1.6",
@@ -21,6 +21,7 @@
     "globby": "^11.0.3",
     "luxon": "^1.27.0",
     "node-cron": "^3.0.0",
-    "serve-favicon": "^2.5.0"
+    "serve-favicon": "^2.5.0",
+    "voddo": "https://github.com/insanity54/voddo"
   }
 }
