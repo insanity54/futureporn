@@ -73,7 +73,6 @@ const deleteOldVids = async () => {
 
 const copyVidsToBackblaze = async () => {
 
-	async function GetBucket() {
 	  try {
 		const vids = getListOfVids(false)
 	    await b2.authorize(); // must authorize first (authorization lasts 24 hrs)
@@ -107,7 +106,7 @@ const copyVidsToBackblaze = async () => {
 	    console.error('Error while trying to cpy vids to backblaze');
 	    console.error(err);
 	  }
-	}
+	
 }
 
 const copySiteToNeocities = async () => {
