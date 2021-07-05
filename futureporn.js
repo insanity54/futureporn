@@ -6,6 +6,8 @@ const globby = require('globby')
 const fsp = require('fs').promises
 const { parseISO, isBefore, differenceInMilliseconds } = require('date-fns')
 const B2 = require('backblaze-b2');
+const fs = require('fs')
+const axios = require('axios')
 
 const retainDurationMs = 1000 * 60 * 60 * 24 * 14 // 14 days
 const app = express()
@@ -71,7 +73,17 @@ const deleteOldVids = async () => {
 	}
 }
 
+const seedTestVideo = async () => {
+	const testVideoUrl = 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/av1/360/Big_Buck_Bunny_360_10s_1MB.mp4'
+	await axios.get(testVideoUrl)
+	  .then(function (response) {
+	    response.data.pipe(fs.createWriteStream(path.join(__dirname, 'public', 'test-video.mp4')))
+	  });
+}
+
 const copyVidsToBackblaze = async () => {
+
+
 
 	  try {
 		const vids = getListOfVids(false)
@@ -79,27 +91,29 @@ const copyVidsToBackblaze = async () => {
 	    let response = await b2.getBucket({ bucketName: process.env.B2_BUCKET_NAME });
 	    console.log(response.data);
 
-	    for (vid of vids) {
-	    	// get upload url
-			const uploadUrlResponse = await b2.getUploadUrl({
-			    bucketId: process.env.B2_BUCKET_ID
-			});
+	    if (vids.length > 0) {
+		    for (vid of vids) {
+		    	// get upload url
+				const uploadUrlResponse = await b2.getUploadUrl({
+				    bucketId: process.env.B2_BUCKET_ID
+				});
 
-			let response = await b2.getUploadPartUrl({ fileId });
+				let response = await b2.getUploadPartUrl({ fileId });
 
-			let uploadUrl = uploadUrlResponse.data.uploadUrl;
-			let authToken = uploadUrlResponse.data.authorizationToken;
+				let uploadUrl = uploadUrlResponse.data.uploadUrl;
+				let authToken = uploadUrlResponse.data.authorizationToken;
 
 
-			// upload file
-			const uploadRes = await b2.uploadFile({
-			    uploadUrl: uploadUrl,
-			    uploadAuthToken: authToken,
-			    fileName: vid,
-			    contentLength: 0, // optional data length, will default to data.byteLength or data.length if not provided 
-			});
+				// upload file
+				const uploadRes = await b2.uploadFile({
+				    uploadUrl: uploadUrl,
+				    uploadAuthToken: authToken,
+				    fileName: vid,
+				    contentLength: 0, // optional data length, will default to data.byteLength or data.length if not provided 
+				});
 
-			console.log(uploadRes)
+				console.log(uploadRes)
+			}
 		}
 
 	  } catch (err) {
@@ -146,6 +160,7 @@ app.get('/', async (req, res) => {
 app.listen(port, () => {
 	console.log(`Futureporn version ${require('./package.json').version}`)
 	console.log(`listening on port ${port}`)
+	seedTestVideo();
 	copyVidsToBackblaze();
 });
 

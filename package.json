@@ -13,6 +13,7 @@
   "author": "Chris Grimmett",
   "license": "Unlicense",
   "dependencies": {
+    "axios": "^0.21.1",
     "backblaze-b2": "^1.7.0",
     "concurrently": "^6.1.0",
     "date-fns": "^2.21.3",
