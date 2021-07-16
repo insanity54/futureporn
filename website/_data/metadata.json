@@ -1,0 +1,20 @@
+{
+  "title": "🔞💦 Future Porn",
+  "url": "https://futureporn.neocities.org/",
+  "description": "ProjektMelody fan site with the goal of making ProjektMelody the first porn on Mars",
+  "feed": {
+    "subtitle": "ProjektMelody fan site.",
+    "filename": "feed.xml",
+    "path": "/feed/feed.xml",
+    "id": "https://futureporn.neocities.org/"
+  },
+  "jsonfeed": {
+    "path": "/feed/feed.json",
+    "url": "https://futureporn.neocities.org/"
+  },
+  "author": {
+    "name": "Chris Grimmett",
+    "email": "chris@grimtech.net",
+    "url": "https://grimtech.net/about"
+  }
+}

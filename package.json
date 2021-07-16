@@ -1,0 +1,72 @@
+{
+  "name": "futureporn-leet",
+  "version": "0.0.1",
+  "description": "https://futureporn.neocities.org",
+  "engines": {
+    "node": ">=v15.0.0"
+  },
+  "engineStrict": "true",
+  "scripts": {
+    "build": "npm-run-all clean build:assets build:site",
+    "build:assets": "NODE_ENV=production webpack --mode=production",
+    "build:site": "NODE_ENV=production eleventy",
+    "clean": "rm -rf ./_site",
+    "deploy": "npm run build:assets && npm run build:site && node publish",
+    "dev": "npm-run-all clean webpack:assets --parallel dev:*",
+    "dev:assets": "yarn run webpack:assets --watch",
+    "dev:site": "NODE_ENV=development eleventy --serve",
+    "webpack:assets": "NODE_ENV=development webpack --mode=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/insanity54/futureporn-leet.git"
+  },
+  "author": "Chris Grimmett <chris@grimtech.net>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/insanity54/futureporn-leet/issues"
+  },
+  "homepage": "https://github.com/insanity54/futureporn-leet#readme",
+  "dependencies": {
+    "@11ty/eleventy": "^0.12.1",
+    "@11ty/eleventy-navigation": "^0.1.6",
+    "@11ty/eleventy-plugin-rss": "^1.0.9",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^3.0.4",
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "babel-loader": "^8.2.2",
+    "bulma": "^0.9.3",
+    "clean-css": "^4.2.3",
+    "concurrently": "^5.3.0",
+    "css-loader": "^6.0.0",
+    "date-fns": "^2.22.1",
+    "debug": "^4.3.1",
+    "decode-uri-component": "^0.2.0",
+    "dotenv": "^10.0.0",
+    "execa": "^5.1.1",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "globby": "^11.0.4",
+    "gray-matter": "^4.0.3",
+    "markdown-it-anchor": "^8.1.0",
+    "mini-css-extract-plugin": "^2.1.0",
+    "neocities-extended": "git://github.com/thatcomputerguy0101/neocities-node-extended",
+    "node-fetch": "^2.6.1",
+    "node-sass": "^6.0.1",
+    "node-schedule": "^2.0.0",
+    "npm-run-all": "^4.1.5",
+    "plyr": "^3.6.3",
+    "postcss-loader": "^6.1.1",
+    "sass-loader": "^12.1.0",
+    "sass-resources-loader": "^2.2.3",
+    "style-loader": "^3.1.0",
+    "supervisor": "^0.12.0",
+    "webpack": "^5.44.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-manifest-plugin": "^3.1.1",
+    "yargs": "^16.2.0"
+  },
+  "private": "true"
+}

@@ -1,0 +1,65 @@
+---
+layout: layouts/base.njk
+templateClass: tmpl-Vod
+---
+<h1>
+  {%- if announceTitle %}
+  {{ announceTitle }}
+  {% else %}
+  {{ title }}
+  {% endif %}
+</h1>
+
+
+<div class="video-wrapper">
+  <video id="player" style="--plyr-color-main:#353fff;" controls data-poster="{% buildIpfsUrl thiccHash if thiccHash else '' %}">
+    {# we originally called it videoHash, but then we switched to videoSrcHash #}
+    {%- if videoSrcHash %}
+      <source src="{% buildIpfsUrl videoSrcHash %}" size="1080" type="video/mp4">
+    {% else %}
+      <source src="{% buildIpfsUrl videoHash %}" size="1080" type="video/mp4">
+    {% endif %}
+
+    {%- if video720Hash %}
+      <source src="{% buildIpfsUrl video720Hash %}" size="720" type="video/mp4">
+    {% endif %}
+
+    {%- if video480Hash %}
+      <source src="{% buildIpfsUrl video480Hash %}" size="480" type="video/mp4">
+    {% endif %}
+
+    {%- if video360Hash %}
+      <source src="{% buildIpfsUrl video360Hash %}" size="360" type="video/mp4">
+    {% endif %}
+  </video>
+</div>
+
+<h2>IPFS Hashes</h2>
+
+<ul>
+{%- if videoSrcHash %}
+<li><span>Source: <a href="{% buildIpfsUrl videoSrcHash %}">{% buildIpfsUrl videoSrcHash %}</a></span></li>
+{% else %}
+<li><span>Source: <a href="{% buildIpfsUrl videoHash %}">{% buildIpfsUrl videoHash %}</a></span></li>
+{% endif %}
+
+{%- if video720Hash %}
+<li><span>720p: <a href="{% buildIpfsUrl video720Hash %}">{% buildIpfsUrl video720Hash %}</a></span></li>
+{% endif %}
+{%- if video480Hash %}
+<li><span>480p: <a href="{% buildIpfsUrl video480Hash %}">{% buildIpfsUrl video480Hash %}</a></span></li>
+{% endif %}
+{%- if video360Hash %}
+<li><span>360p: <a href="{% buildIpfsUrl video360Hash %}">{% buildIpfsUrl video360Hash %}</a></span></li>
+{% endif %}
+</ul>
+
+{{ content | safe }}
+
+<hr>
+<ul>
+  {%- set nextVod = collections.vods | getNextCollectionItem(page) %}
+  {%- if nextVod %}<li>Next VOD: <a href="{{ nextVod.url | url }}">{{ nextVod.data.title }}</a></li>{% endif %}
+  {%- set previousVod = collections.vods | getPreviousCollectionItem(page) %}
+  {%- if previousVod %}<li>Previous VOD: <a href="{{ previousVod.url | url }}">{{ previousVod.data.title }}</a></li>{% endif %}
+</ul>

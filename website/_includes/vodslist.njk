@@ -1,0 +1,88 @@
+
+    <table class="table">
+      <thead>
+          <tr>
+            <th>Date</th>
+            <th>Video (B2)</th>
+            <th>Video (IPFS)</th>
+            <th>Thumbnail</th>
+            <th>Title</th>
+            <th>Annouce URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vod in vodslist | reverse %}
+          <tr>
+            <td>{{ vod.data.date | htmlDateString }}</td>
+            
+            <td>
+              {% if vod.data.videoSrc %}
+                  <a target="_blank" href="{{ vod.data.videoSrc }}">
+                      <span>
+                        b2
+                      </span>
+                      <span class="icon">
+                        <i class="fas fa-external-link-alt"></i>
+                      </span>
+                  </a>
+              {% endif %}
+            </td>
+
+
+            <td>
+              {% if vod.data.videoSrcHash %}
+                <a target="_blank" href="{% buildIpfsUrl vod.data.videoSrcHash %}">
+                    <span>
+                      ipfs
+                    </span>
+                    <span class="icon">
+                      <i class="fas fa-external-link-alt"></i>
+                    </span>
+                </a>
+              {% endif %}
+            </td>
+
+
+
+
+            <td>
+              {% if vod.data.thiccHash %}
+                <a target="_blank" href="{% buildIpfsUrl vod.data.thiccHash %}">
+                  <span class="icon">
+                    <i class="fas fa-image"></i>
+                  </span>
+                  <span class="icon">
+                    <i class="fas fa-external-link-alt"></i>
+                  </span>
+                </a>
+              {% endif %}
+            </td>
+
+
+
+            <td>
+              {% if vod.data.announceTitle %}
+                {{ vod.data.announceTitle }}
+              {% elseif vod.data.title %}
+                {{ vod.data.title }}
+              {% endif %}
+            </td>
+
+            <td>
+              {% if vod.data.announceUrl %}
+                <a target="_blank" href="{{ vod.data.announceUrl }}">
+                  <span class="icon">
+                    <i class="fab fa-twitter"></i>
+                  </span>
+                  <span class="icon">
+                    <i class="fas fa-external-link-alt"></i>
+                  </span>
+                </a>
+              {% endif %}
+            </td>
+
+          </tr>
+          {% endfor %}
+        </tbody>
+
+    </table>

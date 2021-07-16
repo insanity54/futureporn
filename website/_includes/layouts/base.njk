@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or metadata.title }}</title>
+    <meta name="description" content="{{ description or metadata.description }}">
+    <link rel="stylesheet" href="{% webpackAsset 'main.css' %}">
+
+  </head>
+  <body data-controller="fp">
+    <div class="container">
+
+    <article class="mt-5 message is-danger">
+      <div class="message-body">
+        Unofficial <a target="_blank" href="https://twitter.com/ProjektMelody">ProjektMelody <span class="icon"><i class="fas fa-external-link-alt"></i></span></a> Chaturbate VOD Archive. For Adults Only.
+      </div>
+    </article>
+
+
+
+    {{ content | safe }}
+
+
+
+
+    <footer class="footer">
+        <div class="level">
+          <div class="level-left is-invisible">
+            <div data-controller="fap" class="taskbar">
+              <button data-fap-target="button" data-action="fap#fap" class="button is-large">
+                <span class="icon">
+                  💦
+                </span>
+                <span data-fap-target="count">69</span>
+                <span>&nbsp;Faps</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="level-right">
+            <p class="mt-4">
+              Website by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+            </p>
+          </div>
+        </div>
+    </footer>
+
+  </div>
+    <script src="{% webpackAsset 'main.js' %}"></script>
+  </body>
+</html>
