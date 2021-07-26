@@ -54,7 +54,7 @@ const downloadFromIPFS = async (hash, localFilePath) => {
 
 const addBB2toMarkdown = async (bb2lessVods, videoSrcHash, bb2Url) => {
 
-	const matchingDocument = bb2lessVods.findOne((vod) => vod.videoSrcHash === videoSrcHash);
+	const matchingDocument = bb2lessVods.find((vod) => vod.videoSrcHash === videoSrcHash);
 	console.log(`matching doc is as follows`)
 	console.log(matchingDocument);
 
