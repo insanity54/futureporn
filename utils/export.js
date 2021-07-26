@@ -55,9 +55,12 @@ const downloadFromIPFS = async (hash, localFilePath) => {
 const addBB2toMarkdown = async (vod, bb2Url) => {
 
 
-	const string = matter.stringify(vod.content, vod.data, { language: 'md' });
+	const string = matter.stringify(vod.content, vod.data);
 	console.log(`string is as follows`)
 	console.log(string);
+
+
+
 
 }
 
@@ -79,7 +82,11 @@ const addBB2toMarkdown = async (vod, bb2Url) => {
 
 		try {
 			await downloadFromIPFS(videoSrcHash, pathOnDisk);
+
+			console.log(`Uploading ${pathOnDisk} to B2`);
 			const bb2Url = await uploadToBB2('futureporn', pathOnDisk, fileName);
+			console.log(`B2 upload complete: ${bb2Url}`)
+
 			await addBB2toMarkdown(vod, bb2Url);
 			await execa('rm', [pathOnDisk], { stdio: 'inherit' });
 		} catch (e) {
