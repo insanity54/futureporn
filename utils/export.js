@@ -52,17 +52,10 @@ const downloadFromIPFS = async (hash, localFilePath) => {
 	return execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
 }
 
-const addBB2toMarkdown = async (bb2lessVods, videoSrcHash, bb2Url) => {
+const addBB2toMarkdown = async (vod, bb2Url) => {
 
-	const matchingDocument = bb2lessVods.find((vod) => vod.videoSrcHash === videoSrcHash);
-	console.log(`matching doc is as follows`)
-	console.log(matchingDocument);
 
-	const data = await matter(matchingDocument)
-	console.log(`parsed data is as follows`)
-	console.log(data);
-
-	const string = data.stringify();
+	const string = matter.stringify(vod.content, vod.data, { language: 'md' });
 	console.log(`string is as follows`)
 	console.log(string);
 
@@ -87,7 +80,7 @@ const addBB2toMarkdown = async (bb2lessVods, videoSrcHash, bb2Url) => {
 		try {
 			await downloadFromIPFS(videoSrcHash, pathOnDisk);
 			const bb2Url = await uploadToBB2('futureporn', pathOnDisk, fileName);
-			await addBB2toMarkdown(bb2lessVods, videoSrcHash, bb2Url);
+			await addBB2toMarkdown(vod, bb2Url);
 			await execa('rm', [pathOnDisk], { stdio: 'inherit' });
 		} catch (e) {
 			console.error('problem while downloading from IPFS or uploading to BB2. Error is as follows.');
