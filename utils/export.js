@@ -54,14 +54,13 @@ const downloadFromIPFS = async (hash, localFilePath) => {
 
 const addBB2toMarkdown = async (vod, bb2Url, formattedDate) => {
 
-	const patchedData = Object.assign({}, vod.data).videoSrc = bb2Url;
-
+	const patchedData = Object.assign({}, vod.data, { videoSrc: bb2Url });
 
 	const string = matter.stringify(vod.content, patchedData);
 	console.log(`string is as follows`)
 	console.log(string);
 
-	const vodsMdPathOnDisk = path.join(__dirname, 'website', 'vods', `${formattedDate}`, '.md')
+	const vodsMdPathOnDisk = path.join(__dirname, '..', 'website', 'vods', `${formattedDate}`, '.md')
 	return fsp.writeFile(vodsMdPathOnDisk, string, { encoding: 'utf-8' })
 
 
@@ -97,6 +96,7 @@ const addBB2toMarkdown = async (vod, bb2Url, formattedDate) => {
 			console.log('deleting local video file')
 			await execa('rm', [pathOnDisk], { stdio: 'inherit' });
 			console.log(`${videoSrcHash} (${formattedDate}) complete.`)
+
 		} catch (e) {
 			console.error('problem while downloading from IPFS or uploading to BB2. Error is as follows.');
 			console.error(e);
