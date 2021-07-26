@@ -60,7 +60,7 @@ const addBB2toMarkdown = async (vod, bb2Url, formattedDate) => {
 	console.log(`string is as follows`)
 	console.log(string);
 
-	const vodsMdPathOnDisk = path.join(__dirname, '..', 'website', 'vods', `${formattedDate}`, '.md')
+	const vodsMdPathOnDisk = path.join(__dirname, '..', 'website', 'vods', `${formattedDate}.md`);
 	return fsp.writeFile(vodsMdPathOnDisk, string, { encoding: 'utf-8' })
 
 
