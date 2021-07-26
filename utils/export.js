@@ -52,14 +52,17 @@ const downloadFromIPFS = async (hash, localFilePath) => {
 	return execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
 }
 
-const addBB2toMarkdown = async (vod, bb2Url) => {
+const addBB2toMarkdown = async (vod, bb2Url, formattedDate) => {
+
+	const patchedData = Object.assign({}, vod.data).videoSrc = bb2Url;
 
 
-	const string = matter.stringify(vod.content, vod.data);
+	const string = matter.stringify(vod.content, patchedData);
 	console.log(`string is as follows`)
 	console.log(string);
 
-
+	const vodsMdPathOnDisk = path.join(__dirname, 'website', 'vods', `${formattedDate}`, '.md')
+	return fsp.writeFile(vodsMdPathOnDisk, string, { encoding: 'utf-8' })
 
 
 }
@@ -87,8 +90,13 @@ const addBB2toMarkdown = async (vod, bb2Url) => {
 			const bb2Url = await uploadToBB2('futureporn', pathOnDisk, fileName);
 			console.log(`B2 upload complete: ${bb2Url}`)
 
-			await addBB2toMarkdown(vod, bb2Url);
+			console.log('saving markdown...')
+			await addBB2toMarkdown(vod, bb2Url, formattedDate);
+			console.log('save complete.')
+
+			console.log('deleting local video file')
 			await execa('rm', [pathOnDisk], { stdio: 'inherit' });
+			console.log(`${videoSrcHash} (${formattedDate}) complete.`)
 		} catch (e) {
 			console.error('problem while downloading from IPFS or uploading to BB2. Error is as follows.');
 			console.error(e);
