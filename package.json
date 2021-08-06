@@ -5,6 +5,7 @@
   "engines": {
     "node": ">=v15.0.0"
   },
+  "type": "module",
   "engineStrict": "true",
   "scripts": {
     "build": "npm-run-all clean build:assets build:site",
@@ -52,6 +53,7 @@
     "gray-matter": "^4.0.3",
     "markdown-it-anchor": "^8.1.0",
     "mini-css-extract-plugin": "^2.1.0",
+    "minimist": "^1.2.5",
     "neocities-extended": "git://github.com/thatcomputerguy0101/neocities-node-extended",
     "node-fetch": "^2.6.1",
     "node-sass": "^6.0.1",
@@ -59,10 +61,12 @@
     "npm-run-all": "^4.1.5",
     "plyr": "^3.6.3",
     "postcss-loader": "^6.1.1",
+    "process": "^0.11.10",
     "sass-loader": "^12.1.0",
     "sass-resources-loader": "^2.2.3",
     "style-loader": "^3.1.0",
     "supervisor": "^0.12.0",
+    "web3.storage": "^3.1.0",
     "webpack": "^5.44.0",
     "webpack-cli": "^4.7.2",
     "webpack-manifest-plugin": "^3.1.1",
