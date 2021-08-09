@@ -38,12 +38,6 @@ function getAccessToken() {
 }
 
 
-async function getFiles(path) {
-  const files = await getFilesFromPath(path)
-  console.log(`read ${files.length} file(s) from ${path}`)
-  return files
-}
-
 function makeStorageClient() {
   return new Web3Storage({ token: getAccessToken() })
 }
