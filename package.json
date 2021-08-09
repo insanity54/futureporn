@@ -5,7 +5,6 @@
   "engines": {
     "node": ">=v15.0.0"
   },
-  "type": "module",
   "engineStrict": "true",
   "scripts": {
     "build": "npm-run-all clean build:assets build:site",
