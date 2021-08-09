@@ -6,6 +6,13 @@ import { Web3Storage, getFilesFromPath } from 'web3.storage'
 
 dotenv.config();
 
+
+async function getFiles(path) {
+  const files = await getFilesFromPath(path)
+  console.log(`read ${files.length} file(s) from ${path}`)
+  return files
+}
+
 async function upload (opts) {
   const { token, file } = opts;
   if (typeof token === 'undefined') {
