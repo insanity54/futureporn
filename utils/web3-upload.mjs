@@ -1,4 +1,3 @@
-// import process from 'process'
 import dotenv from 'dotenv'
 import minimist from 'minimist'
 import { Web3Storage, getFilesFromPath } from 'web3.storage'
