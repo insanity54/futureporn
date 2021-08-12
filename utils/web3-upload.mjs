@@ -33,17 +33,21 @@ function getAccessToken() {
   if (typeof token === 'undefined') {
     return console.error('A token is needed. (WEB3_TOKEN in env must be defined). You can create one on https://web3.storage. ')
   }
+  console.log(`token is ${token}`)
   return token
 }
 
 
 function makeStorageClient() {
-  return new Web3Storage({ token: getAccessToken() })
+  const client = new Web3Storage({ token: getAccessToken() })
+  console.log(client)
+  return client
 }
 
 async function storeWithProgress(files) {  
 
-  console.log(`uploading files ${files}`)
+  console.log(`uploading files`)
+  console.log(files)
 
   // show the root cid as soon as it's ready
   const onRootCidReady = cid => {
@@ -75,7 +79,11 @@ function getCliArgs () {
   if (args._.length < 1) {
     return console.error('Please supply the path to a file or directory')
   }
-  return args._;
+
+  const filePath = args._
+
+  console.log(filePath)
+  return filePath;
 }
 
 
