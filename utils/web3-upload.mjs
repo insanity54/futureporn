@@ -58,7 +58,7 @@ async function storeWithProgress(files) {
   const totalSize = files.map(f => f.size).reduce((a, b) => a + b, 0)
   let uploaded = 0
 
-  const onChunkStored = size => {
+  const onStoredChunk = size => {
     uploaded += size
     const pct = totalSize / uploaded
     console.log(`Uploading... ${pct.toFixed(2)}% complete`)
@@ -69,7 +69,7 @@ async function storeWithProgress(files) {
 
   // client.put will invoke our callbacks during the upload
   // and return the root cid when the upload completes
-  return client.put(files, { onRootCidReady, onChunkStored })
+  return client.put(files, { onRootCidReady, onStoredChunk })
 }
 
  
