@@ -1,11 +1,11 @@
 {
-  "name": "futureporn-leet",
-  "version": "0.0.1",
+  "name": "futureporn",
+  "version": "0.0.2",
   "description": "https://futureporn.neocities.org",
   "engines": {
     "node": ">=v15.0.0"
   },
-  "engineStrict": "true",
+  "engineStrict": "false",
   "scripts": {
     "build": "npm-run-all clean build:assets build:site",
     "build:assets": "NODE_ENV=production webpack --mode=production",
