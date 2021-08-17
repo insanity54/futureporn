@@ -1,6 +1,6 @@
 {
   "name": "futureporn",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "https://futureporn.neocities.org",
   "engines": {
     "node": ">=v15.0.0"
