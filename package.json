@@ -1,6 +1,6 @@
 {
   "name": "futureporn",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "description": "https://futureporn.neocities.org",
   "engines": {
     "node": ">=v15.0.0"
@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/insanity54/futureporn-leet.git"
+    "url": "git+https://github.com/insanity54/futureporn.git"
   },
   "author": "Chris Grimmett <chris@grimtech.net>",
   "license": "Unlicense",
   "bugs": {
-    "url": "https://github.com/insanity54/futureporn-leet/issues"
+    "url": "https://github.com/insanity54/futureporn/issues"
   },
-  "homepage": "https://github.com/insanity54/futureporn-leet#readme",
+  "homepage": "https://github.com/insanity54/futureporn#readme",
   "dependencies": {
     "@11ty/eleventy": "^0.12.1",
     "@11ty/eleventy-navigation": "^0.1.6",
