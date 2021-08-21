@@ -2,4 +2,7 @@
 layout: layouts/base.njk
 templateClass: tmpl-home
 ---
+
+<h1>{{ title or metadata.title }}</h1>
+
 {{ content | safe }}
