@@ -24,3 +24,29 @@
     src: /root/dotfiles/.screenrc
     dest: /root/.screenrc
     remote_src: yes
+
+- name: Install & update youtube-dl
+  pip:
+    name: youtube-dl
+    state: latest
+
+- name: Install & update voddo
+  git:
+    repo: 'https://github.com/insanity54/voddo'
+    dest: /root/voddo
+
+- name: Install voddo system service
+  template:
+    src: voddo.service.j2
+    dest: /etc/systemd/system/voddo.service
+    owner: root
+    group: root
+    mode: '0755'
+    notify: systemctl-daemon-reload
+
+- name: Enable voddo system service
+  systemd:
+    name: voddo
+    state: started
+    daemon_reload: yes
+    enabled: yes
