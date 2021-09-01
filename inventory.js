@@ -40,10 +40,9 @@ async function getMachines (tag) {
 
     const getMachineData = (machine) => {
         return {
-            inventory_hostname: getMachineIp(machine),
+            ansible_host: getMachineIp(machine),
         }
     }
-
 
     const hostData = R.map(getMachineData, matchingMachines);
     const machinesNames = R.compose(
