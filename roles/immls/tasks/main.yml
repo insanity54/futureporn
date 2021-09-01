@@ -1,0 +1,26 @@
+---
+
+- name: Install dependencies
+  apt:
+    pkg: 
+      - python3
+      - python3-pip
+      - python-is-python3 
+      - mosh 
+      - mg 
+      - screen 
+      - git
+      - magic-wormhole
+    state: present
+    update_cache: yes
+
+- name: Download screen configuration
+  git:
+    repo: 'https://github.com/insanity54/dotfiles'
+    dest: /root/dotfiles
+
+- name: Configure screen
+  copy:
+    src: /root/dotfiles/.screenrc
+    dest: /root/.screenrc
+    remote_src: yes

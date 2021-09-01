@@ -55,12 +55,12 @@ async function getMachines (tag) {
         '_meta': {
             'hostvars': hostData
         },
+        'immls': machinesNames,
         'all': {
             'children': [
-                'ungrouped'
+                'immls'
             ]
-        },
-        'ungrouped': machinesNames
+        }
     }
 
     // https://docs.ansible.com/ansible/latest/dev_guide/developing_inventory.html#developing-inventory-scripts
