@@ -1,0 +1,11 @@
+---
+
+- name: restart systemd-journald
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+
+- name: restart voddo
+  ansible.builtin.systemd:
+    name: voddo
+    state: restarted
