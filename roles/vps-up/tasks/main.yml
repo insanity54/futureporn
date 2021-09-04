@@ -12,7 +12,7 @@
     state: present
 
 - name: Spin up a VPS in Los Angeles
-  when: instances > 1
+  when: instances | int > 1
   ngine_io.vultr.vultr_server:
     name: "immls_2"
     os: Ubuntu 20.04 x64
@@ -24,7 +24,7 @@
     state: present
 
 - name: Spin up a VPS in Seattle
-  when: instances > 2
+  when: instances | int > 2
   ngine_io.vultr.vultr_server:
     name: "immls_3"
     os: Ubuntu 20.04 x64
