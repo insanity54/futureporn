@@ -41,6 +41,7 @@ async function getMachines (tag) {
     const getMachineData = (machine) => {
         return {
             ansible_host: getMachineIp(machine),
+            ansible_user: 'root'
         }
     }
 

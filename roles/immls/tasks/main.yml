@@ -10,6 +10,7 @@
       - screen 
       - git
       - magic-wormhole
+      - ffmpeg
     state: present
     update_cache: yes
 
@@ -41,6 +42,8 @@
     owner: root
     group: root
     mode: '0755'
+  notify: 
+    - restart voddo
 
 - name: Enable voddo system service
   systemd:
@@ -48,3 +51,11 @@
     state: started
     daemon_reload: yes
     enabled: yes
+
+- name: Enable journalctl persistent logging
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    search_string: '^Storage='
+    line: 'Search=persistent'
+  notify: 
+    - restart systemd-journald
