@@ -1,0 +1,34 @@
+---
+
+- name: Spin up a VPS in Amsterdam
+  ngine_io.vultr.vultr_server:
+    name: "immls_1"
+    os: Ubuntu 20.04 x64
+    region: Amsterdam
+    plan: 2048 MB RAM,55 GB SSD,2.00 TB BW
+    ssh_keys:
+      - 612fa1f7d1e42
+    tag: immls
+    state: present
+
+- name: Spin up a VPS in Los Angeles
+  ngine_io.vultr.vultr_server:
+    name: "immls_2"
+    os: Ubuntu 20.04 x64
+    region: Los Angeles
+    plan: 2048 MB RAM,55 GB SSD,2.00 TB BW
+    ssh_keys:
+      - 612fa1f7d1e42
+    tag: immls
+    state: present
+
+- name: Spin up a VPS in Seattle
+  ngine_io.vultr.vultr_server:
+    name: "immls_3"
+    os: Ubuntu 20.04 x64
+    region: Seattle
+    plan: 2048 MB RAM,55 GB SSD,2.00 TB BW
+    ssh_keys:
+      - 612fa1f7d1e42
+    tag: immls
+    state: present

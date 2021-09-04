@@ -3,4 +3,5 @@
 roles:
   - geerlingguy.nodejs
 
-  
+collections:
+  - ngine_io.vultr

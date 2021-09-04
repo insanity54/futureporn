@@ -1,5 +1,11 @@
 ---
 
-- hosts: immls
+- hosts: localhost
+  roles:
+    - role: vps-up
+
+- hosts: immls_*
+  vars:
+    - ansible_user: root
   roles:
     - role: immls

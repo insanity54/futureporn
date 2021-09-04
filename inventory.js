@@ -6,10 +6,10 @@ const fetch = require('node-fetch');
 const R = require('ramda');
 const RA = require('ramda-adjunct');
 
-const vultrApiKey = process.env.VULTR_API_KEY;
+const vultrApiKey = process.env.VULTR_API_ACCOUNT;
 const vultrApiEndpoint = 'https://api.vultr.com';
 const vultrApiFunction = '/v1/server/list';
-if (typeof vultrApiKey === 'undefined') throw new Error('VULTR_API_KEY must be defined in env, but it was undefined');
+if (typeof vultrApiKey === 'undefined') throw new Error('VULTR_API_ACCOUNT must be defined in env, but it was undefined');
 
 const { list, host } = argv;
 

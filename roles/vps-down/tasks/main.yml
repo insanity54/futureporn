@@ -1,0 +1,16 @@
+---
+
+- name: Spin down VPS in Amsterdam
+  ngine_io.vultr.vultr_server:
+    name: "immls_1"
+    state: absent
+
+- name: Spin down VPS in Los Angeles
+  ngine_io.vultr.vultr_server:
+    name: "immls_2"
+    state: absent
+
+- name: Spin down VPS in Seattle
+  ngine_io.vultr.vultr_server:
+    name: "immls_3"
+    state: absent
