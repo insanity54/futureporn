@@ -1,10 +1,5 @@
 ---
 
-<<<<<<< HEAD
-- name: reload systemctl
-  systemd:
-    daemon_reload: yes
-=======
 - name: restart systemd-journald
   ansible.builtin.systemd:
     name: systemd-journald
@@ -14,4 +9,3 @@
   ansible.builtin.systemd:
     name: voddo
     state: restarted
->>>>>>> 4002750c3c9fa94dbf5856b6d50c6b5b0e3a1288
