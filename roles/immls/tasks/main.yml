@@ -1,5 +1,8 @@
 ---
 
+- name: Wait 300 seconds for SSH to be up
+  wait_for_connection:
+    timeout: 300
 
 - name: Install dependencies
   apt:
