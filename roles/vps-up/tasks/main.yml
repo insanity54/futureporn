@@ -34,3 +34,6 @@
       - 612fa1f7d1e42
     tag: immls
     state: present
+
+- name: Refresh Inventory
+  meta: refresh_inventory
