@@ -5,6 +5,7 @@
     - role: vps-up
 
 - hosts: immls_*
+  gather_facts: no
   vars:
     - ansible_user: root
   roles:
