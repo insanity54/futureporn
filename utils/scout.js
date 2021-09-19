@@ -74,13 +74,17 @@ async function listenForever(streamFactory, dataConsumer) {
     }
     // The stream has been closed by Twitter. It is usually safe to reconnect.
     console.log('Stream disconnected healthily. Reconnecting.');
-    listenForever(streamFactory, dataConsumer);
+    setTimeout(() => {
+    	listenForever(streamFactory, dataConsumer);
+    }, 3000);
   } catch (error) {
     // An error occurred so we reconnect to the stream. Note that we should
     // probably have retry logic here to prevent reconnection after a number of
     // closely timed failures (may indicate a problem that is not downstream).
     console.warn('Stream disconnected with error. Retrying.', error);
-    listenForever(streamFactory, dataConsumer);
+    setTimeout(() => {
+    	listenForever(streamFactory, dataConsumer);
+    }, 3000);
   }
 }
 
@@ -88,8 +92,10 @@ async function listenForever(streamFactory, dataConsumer) {
 (async function main () {
 	await setup()
 
-	listenForever(
-	  () => client.stream('tweets/search/stream', parameters),
-	  (data) => console.log(data)
-	);
+	const stream = await client.stream('tweets/search/stream', parameters)
+	console.log(stream)
+	// listenForever(
+	//   () => client.stream('tweets/search/stream', parameters),
+	//   (data) => console.log(data)
+	// );
 })()
