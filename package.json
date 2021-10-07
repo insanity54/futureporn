@@ -44,6 +44,7 @@
     "debug": "^4.3.1",
     "decode-uri-component": "^0.2.0",
     "dotenv": "^10.0.0",
+    "eleventy-favicon": "https://github.com/insanity54/eleventy-favicon.git",
     "execa": "^5.1.1",
     "extract-text-webpack-plugin": "^3.0.2",
     "globby": "^11.0.4",
