@@ -5,8 +5,8 @@
     timeout: 300
 
 - name: Install dependencies
-  become: yes
   apt:
+    become: yes
     pkg: 
       - python3
       - python3-pip

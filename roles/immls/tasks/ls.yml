@@ -1,0 +1,14 @@
+---
+
+- name: Find recorded mp4s
+  find:
+    paths: "{{ workdir }}"
+    file_type: file
+    use_regex: yes
+    patterns:
+      - '*.mp4$'
+  register: found
+
+- name: debug
+  debug:
+    var: found

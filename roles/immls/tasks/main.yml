@@ -11,3 +11,6 @@
 - include: ./upload.yml
   when: task == "upload"
 
+- include: ./ls.yml
+  when: task == "ls"
+

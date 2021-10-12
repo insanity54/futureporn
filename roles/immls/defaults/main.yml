@@ -1,4 +1,4 @@
 ---
 
 task: provision
-workdir: /
+workdir: /root/
