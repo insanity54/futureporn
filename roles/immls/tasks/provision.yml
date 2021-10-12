@@ -4,6 +4,10 @@
   wait_for_connection:
     timeout: 300
 
+- name: set hostname
+  ansible.builtin.hostname:
+    name: "{{ ansible_facts['nodename'] }}"
+
 - name: Install dependencies
   become: yes
   apt:
@@ -16,32 +20,17 @@
       - git
       - magic-wormhole
       - ffmpeg
+      - rclone
     state: present
     update_cache: yes
 
-- name: Download b2-linux
-  ansible.builtin.get_url:
-    url: https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux
-    dest: /usr/local/bin/b2-linux
-
-- name: Mark b2-linux as executable
-  ansible.builtin.file:
-    path: /usr/local/bin/b2-linux
+- name: Configure rclone
+  ansible.builtin.template:
+    src: templates/rclone.conf.j2
+    dest: /root/.config/rclone/rclone.conf
     owner: root
     group: root
-    mode: '0755'
-
-- name: Add b2 key ID
-  ansible.builtin.lineinfile:
-    path: /root/.bashrc
-    line: "export B2_APPLICATION_KEY={{ lookup('env', 'B2_APPLICATION_KEY') }}"
-    state: present
-
-- name: Add b2 application key
-  ansible.builtin.lineinfile:
-    path: /root/.bashrc
-    line: "export B2_APPLICATION_KEY_ID={{ lookup('env', 'B2_APPLICATION_KEY_ID') }}"
-    state: present
+    mode: '0600'
 
 - name: Download screen configuration
   git:

@@ -7,11 +7,13 @@ const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const decodeUriComponent = require('decode-uri-component');
 const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
+const faviconPlugin = require("eleventy-favicon");
 const manifest = JSON.parse(
   fs.readFileSync(manifestPath, { encoding: "utf8" })
 );
 
 module.exports = function(eleventyConfig) {
+  eleventyConfig.addPlugin(faviconPlugin);
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginNavigation);
 
