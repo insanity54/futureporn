@@ -13,7 +13,9 @@
     "dev:assets": "yarn run webpack:assets --watch",
     "dev:site": "NODE_ENV=development eleventy --serve",
     "webpack:assets": "NODE_ENV=development webpack --mode=development",
-    "test": "jest"
+    "test": "jest",
+    "down": "ansible-playbook -i ./vultr.yml destroy.yml",
+    "up": "ansible-playbook -i vultr.yml -e \"instances=1\" site.yml"
   },
   "repository": {
     "type": "git",
