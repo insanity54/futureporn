@@ -4,9 +4,20 @@
   wait_for_connection:
     timeout: 300
 
+- name: gather facts
+  ansible.builtin.setup:
+
+- name: determine a valid hostname
+  set_fact:
+    hostonamu: "{{ inventory_hostname | regex_replace('_', '-') }}"
+
+- name: deboogey
+  debug:
+    var: hostonamu
+
 - name: set hostname
   ansible.builtin.hostname:
-    name: "{{ ansible_facts['nodename'] }}"
+    name: "{{ hostonamu }}"
 
 - name: Install dependencies
   become: yes
@@ -23,6 +34,12 @@
       - rclone
     state: present
     update_cache: yes
+
+- name: Create rclone conf directory
+  ansible.builtin.file:
+    state: directory
+    path: /root/.config/rclone
+    mode: '0755'
 
 - name: Configure rclone
   ansible.builtin.template:
