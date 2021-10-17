@@ -19,6 +19,12 @@
   ansible.builtin.hostname:
     name: "{{ hostonamu }}"
 
+- name: Set FUTUREPORN_WORKDIR env var
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export FUTUREPORN_WORKDIR=/root/"
+    state: present
+
 - name: Install dependencies
   become: yes
   apt:
@@ -64,6 +70,11 @@
   pip:
     name: youtube-dl
     state: latest
+
+- name: Install futureporn
+  git:
+    repo: https://github.com/insanity54/futureporn
+    dest: /root/futureporn
 
 - name: Install & update voddo
   git:

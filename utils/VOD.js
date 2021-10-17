@@ -4,19 +4,28 @@
  */
 
 import * as R from 'ramda';
-import * as execa from 'execa';
+import execa from 'execa';
 import * as os from 'os';
-import * as fs from 'fs/promises';
+import * as fsp from 'fs/promises';
 import * as path from 'path';
+import { format, parseISO } from 'date-fns';
+
+class DateMissingError extends Error {
+	constructor (message) {
+		super(R.defaultTo('date is missing from VOD which is UNSUPPORTED')(message));
+		this.name = 'DateMissingError';
+	}
+}
 
 class VOD {
 	
 	constructor (data) {
 		if (typeof data === 'undefined') throw new Error('VOD() constructor must receive a data object')
 		const defaultToEmptyString = R.defaultTo('');
-		this.date = defaultToEmptyString(data.date);
+		this.date = parseISO(defaultToEmptyString(data.date));
 		this.title = defaultToEmptyString(data.title);
 		this.videoSrc = defaultToEmptyString(data.videoSrc);
+		this.videoSrcTmp = defaultToEmptyString(data.videoSrcTmp);
 		this.videoSrcHash = defaultToEmptyString(data.videoSrcHash);
 		this.video720Hash = defaultToEmptyString(data.video720Hash);
 		this.video480Hash = defaultToEmptyString(data.video480Hash);
@@ -25,13 +34,16 @@ class VOD {
 		this.thiccHash = defaultToEmptyString(data.thiccHash);
 		this.announceTitle = defaultToEmptyString(data.announceTitle);
 		this.announceUrl = defaultToEmptyString(data.announceUrl);
-		this.date = defaultToEmptyString(data.date);
+		this.note = defaultToEmptyString(data.note);
 		this.layout = defaultToEmptyString(data.layout);
+		this.tmpFilePath = defaultToEmptyString(data.tmpFilePath);
 	}
 	
 
 	static B2BucketName = 'futureporn';
-
+	static rcloneDestination = 'b2';
+	static dataDir = path.join(__dirname, '..', 'website', 'vods');
+	static eleventyLayout = 'layouts/vod.njk';
 
 	static getTmpDownloadPath (filename) {
 		const tmpDir = os.tmpdir();
@@ -150,27 +162,97 @@ class VOD {
 	}
 
 
-	async uploadToBB2 (bucketName, localFilePath, b2FileName) {
-		return execa('b2-linux', ['upload-file', bucketName, localFilePath, b2FileName])
-			.then(() => {
-				return execa('b2-linux', ['make-friendly-url', bucketName, b2FileName])
-			})
-			.then((res) => {
-				if (!res.stdout.startsWith('https://')) throw new Error(`the output of b2-linux make-friendly-url was not a URL. it was ${res.stdout} which is unexpected!`);
-				return res.stdout
-			})
+	async uploadToB2 () {
+		let unsuccessful = true;
+		let attempts = 0;
+		while (unsuccessful) {
+			attempts += 1
+			const { exitCode, killed } = await execa('rclone', ['copy', this.tmpFilePath, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
+
+			if (exitCode === 0 && killed === false) {
+				unsuccessful = false;
+			}
+
+			if (attempts === 3) {
+				break;
+			}
+
+		}
+
+		this.videoSrc = await this.getB2UrlFromB2();
+
+
+		return this;
 	}
 
 
+	async getB2UrlFromB2 () {
+		let unsuccessful = true;
+		let attempts = 0;
+		let output = '';
+		let filename = this.getFilename();
+		while (unsuccessful) {
+			attempts += 1;
+			const { exitCode, killed, stdout } = await execa('rclone', [
+				'link', 
+				`${VOD.rcloneDestination}:${VOD.B2BucketName}/${filename}`
+			])
+
+			if (exitCode === 0 && killed === false) {
+				unsuccessful = false;
+				output = stdout;
+			}
+
+			if (attempts === 3) {
+				break;
+			}
+		}
+		return output;
+	}
+
+
+	getVideoFilename () {
+		if (R.isEmpty(this.date)) throw new DateMissingError();
+		return `projektmelody-chaturbate-${this.date}.mp4`;
+	}
+
+	getMarkdownFilename () {
+		if (R.isEmpty(this.date)) throw new DateMissingError();
+		const markdownFilePath = path.join(VOD.dataDir, `${this.date}.md`);
+		return markdownFilePath;
+	}
+
+	async saveMarkdown () {
+		const data = '---\n'+
+			`title: ${this.title}\n`+
+			`videoSrc: ${this.videoSrc}\n`+
+			`videoSrcHash: ${this.videoSrcHash}\n`+
+			`video720Hash: ${this.video720Hash}\n`+
+			`video480Hash: ${this.video480Hash}\n`+
+			`video360Hash: ${this.video360Hash}\n`+
+			`thinHash: ${this.thinHash}\n`+
+			`thiccHash: ${this.thiccHash}\n`+
+			`announceTitle: ${this.announceTitle}\n`+
+			`announceUrl: ${this.announceUrl}\n`+
+			`date: ${format(this.date, 'yyyy-MM-dd')}\n`+
+			`note: ${this.note}\n`+
+			`layout: ${VOD.eleventyLayout}\n`+
+			'---\n';
+
+		await fsp.writeFile(this.getMarkdownFilename(), data, { encoding: 'utf-8' });
+		return this;
+	}
 
 	async downloadFromIpfs () {
-
 		const hash = this.videoSrcHash;
 		const localFilePath = VOD.getTmpDownloadPath(hash);
-
 		console.log(`downloading hash:${hash} from ipfs to localFilePath:${localFilePath}`)
 		const url = `https://ipfs.io/ipfs/${hash}`;
-		return execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
+		const res = {};
+		res.execa = await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
+		res.filename = localFilePath;
+		this.tmpFilePath = localFilePath;
+		return res;
 	}
 
 

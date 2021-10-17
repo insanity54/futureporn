@@ -1,19 +1,89 @@
 
 
 import VOD from './VOD.js'
+import path from 'path';
+import matter from 'gray-matter';
+import * as fsp from 'fs/promises';
+import { parseISO, isEqual } from 'date-fns';
 
+const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
 const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-2021-10-11.mp4';
-const ipfsHashFixture = 'bafybeihbhfz3f6otgivbttvpbnuh5zqumtgmqam55tawr3ku5recviitgq';
+const ipfsHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 
 describe('VOD', () => {
+
+	describe('saveMarkdown', () => {
+		it('should accept a {String} URL and save it in the markdown', async () => {
+			const note = 'This is not an actual VOD. This is only a test.';
+			const date = '3021-10-16';
+			const v = new VOD({
+				date: date,
+				videoSrcHash: b2VODFixture,
+				note: note
+			})
+			const res = await v.saveMarkdown();
+			expect(res).toBeInstanceOf(VOD);
+			const md = await fsp.readFile(
+				path.join(
+					__dirname, 
+					'..', 
+					'website', 
+					'vods', 
+					`${date}.md`
+				),
+				{ encoding: 'utf-8' }
+			)
+			console.log(md)
+			const m = matter(md);
+			expect(m.data).toHaveProperty('videoSrcHash', b2VODFixture);
+			expect(m.data).toHaveProperty('note', note);
+			expect(m.data).toHaveProperty('date');
+			expect(m.data.date).toBeInstanceOf(Date);
+			console.log(`comparing\n${m.data.date} to\n${parseISO(date)}`)
+			expect(isEqual(m.data.date, parseISO(date))).toBeTruthy();
+		})
+	})
 
 	describe('downloadFromIPFS', () => {
 		it('should download a file to /tmp', async () => {
 			const v = new VOD({
 				videoSrcHash: ipfsHashFixture
 			})
-			const { filename } = await v.downloadFromIpfs(ipfsHashFixture);
-			expect(filename).toStrictEqual(`/tmp/${ipfsHashFixture}`);
+			const res = await v.downloadFromIpfs(ipfsHashFixture);
+			expect(res).toHaveProperty('filename');
+			expect(res).toHaveProperty('execa');
+			expect(res.execa).toHaveProperty('killed', false);
+			expect(res.execa).toHaveProperty('exitCode', 0);
+			expect(res.filename).toStrictEqual(`/tmp/${ipfsHashFixture}`);
+		})
+	}, 30*1000)
+
+	describe('getFilename', () => {
+		it('should generate a unique filename using the date', () => {
+			const v = new VOD({
+				date: '2021-10-16'
+			})
+			const filename = v.getFilename();
+			expect(filename).toEqual('projektmelody-chaturbate-2021-10-16.mp4');
+		})
+		it('should throw if there is no date', () => {
+			const v = new VOD({
+				date: ''
+			})
+			expect(() => { v.getFilename() }).toThrow('date');
+		})
+	})
+
+	describe('uploadToB2', () => {
+		it('should upload a file to Backblaze', async () => {
+			const v = new VOD({
+				date: '2021-10-16',
+				tmpFilePath: pngFixture
+			})
+			const res = await v.uploadToB2();
+			expect(res).toBeInstanceOf(VOD);
+			expect(res).toHaveProperty('videoSrc');
+			expect(res.videoSrc).toMatch(/backblaze2.com\/file\/futureporn\//);
 		})
 	})
 
