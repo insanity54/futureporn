@@ -17,6 +17,7 @@
     "down": "ansible-playbook -i ./vultr.yml destroy.yml",
     "up": "ansible-playbook -i vultr.yml -e \"instances=1\" site.yml"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/insanity54/futureporn.git"
