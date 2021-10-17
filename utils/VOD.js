@@ -7,7 +7,7 @@ import * as R from 'ramda';
 import execa from 'execa';
 import * as os from 'os';
 import * as fsp from 'fs/promises';
-import * as path from 'path';
+import path from 'path';
 import { format, parseISO } from 'date-fns';
 
 class DateMissingError extends Error {
@@ -42,7 +42,7 @@ class VOD {
 
 	static B2BucketName = 'futureporn';
 	static rcloneDestination = 'b2';
-	static dataDir = path.join(__dirname, '..', 'website', 'vods');
+	static dataDir = path.join(path.resolve(path.dirname('')), '..', 'website', 'vods');
 	static eleventyLayout = 'layouts/vod.njk';
 
 	static getTmpDownloadPath (filename) {
