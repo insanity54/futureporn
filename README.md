@@ -10,6 +10,10 @@ https://futureporn.neocities.org/
 * [Index of VOD metadata](https://github.com/insanity54/futureporn/tree/main/website/vods)
 * [Static website generation](https://github.com/insanity54/futureporn/tree/main/website) 
 
+## Notes
+
+All dates in VOD data are in GMT+0 timezone
+
 ## Author
 
 Chris Grimmett <chris@grimtech.net> https://grimtech.net/contact
