@@ -3,12 +3,18 @@
  * VOD.js
  */
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 import * as R from 'ramda';
 import execa from 'execa';
 import * as os from 'os';
 import * as fsp from 'fs/promises';
 import path from 'path';
-import { format, parseISO } from 'date-fns';
+// import { formatISO, parseISO } from 'date-fns';
+import { format, zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
+import fetch from 'node-fetch';
+import Twitter from 'twitter-v2';
 
 class DateMissingError extends Error {
 	constructor (message) {
@@ -17,37 +23,55 @@ class DateMissingError extends Error {
 	}
 }
 
+class AnnouceUrlMissingError extends Error {
+	constructor (message) {
+		super(R.defaultTo('announceUrl is missing from VOD which is UNSUPPORTED')(message));
+		this.name = 'AnnouceUrlMissingError';
+	}	
+}
+
 class VOD {
 	
 	constructor (data) {
 		if (typeof data === 'undefined') throw new Error('VOD() constructor must receive a data object')
-		const defaultToEmptyString = R.defaultTo('');
-		this.date = parseISO(defaultToEmptyString(data.date));
-		this.title = defaultToEmptyString(data.title);
-		this.videoSrc = defaultToEmptyString(data.videoSrc);
-		this.videoSrcTmp = defaultToEmptyString(data.videoSrcTmp);
-		this.videoSrcHash = defaultToEmptyString(data.videoSrcHash);
-		this.video720Hash = defaultToEmptyString(data.video720Hash);
-		this.video480Hash = defaultToEmptyString(data.video480Hash);
-		this.video360Hash = defaultToEmptyString(data.video360Hash);
-		this.thinHash = defaultToEmptyString(data.thinHash);
-		this.thiccHash = defaultToEmptyString(data.thiccHash);
-		this.announceTitle = defaultToEmptyString(data.announceTitle);
-		this.announceUrl = defaultToEmptyString(data.announceUrl);
-		this.note = defaultToEmptyString(data.note);
-		this.layout = defaultToEmptyString(data.layout);
-		this.tmpFilePath = defaultToEmptyString(data.tmpFilePath);
+		this.date = VOD.parseDate(data.date);
+		this.title = VOD.default(data.title);
+		this.videoSrc = VOD.default(data.videoSrc);
+		this.videoSrcTmp = VOD.default(data.videoSrcTmp);
+		this.videoSrcHash = VOD.default(data.videoSrcHash);
+		this.video720Hash = VOD.default(data.video720Hash);
+		this.video480Hash = VOD.default(data.video480Hash);
+		this.video360Hash = VOD.default(data.video360Hash);
+		this.thinHash = VOD.default(data.thinHash);
+		this.thiccHash = VOD.default(data.thiccHash);
+		this.announceTitle = VOD.default(data.announceTitle);
+		this.announceUrl = VOD.default(data.announceUrl);
+		this.note = VOD.default(data.note);
+		this.layout = VOD.default(data.layout);
+		this.tmpFilePath = VOD.default(data.tmpFilePath);
 	}
-	
 
 	static B2BucketName = 'futureporn';
 	static rcloneDestination = 'b2';
-	static dataDir = path.join(path.resolve(path.dirname('')), '..', 'website', 'vods');
+	static dataDir = path.join(__dirname, '..', 'website', 'vods');
 	static eleventyLayout = 'layouts/vod.njk';
+	static default = R.defaultTo('');
+	static twitter = new Twitter({
+		consumer_key:         process.env.TWITTER_API_KEY,
+		consumer_secret:      process.env.TWITTER_API_KEY_SECRET
+	})
+
 
 	static getTmpDownloadPath (filename) {
 		const tmpDir = os.tmpdir();
 		return path.join(tmpDir, filename);
+	}
+
+	static parseDate (date) {
+		if (R.isEmpty(date)) return '';
+		if (R.isNil(date)) return '';
+		if (R.is(Date, date)) return date;
+		if (R.is(String, date)) return zonedTimeToUtc(date, 'Zulu');
 	}
 
 
@@ -61,30 +85,51 @@ class VOD {
 		await this.uploadToIpfs();
 	}
 
+	async generateThumbnail () {
+		setTimeout(() => {
+			// @TODO no-op for now. Later on I want to actually generate a thumbnail.
+			return '';
+		}, 250);
+	}
+
 
 	ensureB2OrIpfs () {
 		const fault = R.and(this.isMissingB2(), this.isMissingIpfs());
-		if (fault) throw new Error('neither b2 nor ipfs link exists on this VOD, which is UNSUPPORTED');
+		if (fault) console.warn('neither b2 nor ipfs link exists on this VOD, which is unsupported.');
+	}
+
+	getMethodToEnsureDate () {
+		const isActionRequired = this.isMissingZuluDate();
+		return isActionRequired ? this.getDateFromTwitter : null;
 	}
 
 	getMethodToEnsureB2 () {
 		this.ensureB2OrIpfs();
-		const act = R.and(this.isMissingB2(), this.hasIpfs());
-		return act ? this.copyIpfsToB2 : null;
+		const isActionRequired = R.and(this.isMissingB2(), this.hasIpfs());
+		return isActionRequired ? this.copyIpfsToB2 : null;
 	}
 
 
 	getMethodToEnsureIpfs () {
 		this.ensureB2OrIpfs();
-		const act = R.and(this.isMissingIpfs(), this.hasB2());
-		return act ? this.copyB2ToIpfs : null;
+		const isActionRequired = R.and(this.isMissingIpfs(), this.hasB2());
+		return isActionRequired ? this.copyB2ToIpfs : null;
 	}
 
 	getMethodToEnsureThumbnail () {
-		const act = R.and(this.isMissingThumbnail(), this.hasIpfs());
-		return act ? this.generateThumbnail : null;
+		return this.isMissingThumbnail() ? this.generateThumbnail : null;
 	}
 
+
+	isMissingZuluDate () {
+		return R.compose(
+			R.or(
+				R.isEmpty,
+				R.not(R.match(/Z$/))
+			),
+			R.prop('date')
+		)(this)
+	}
 
 	isMissingB2 () {
 		return R.compose(
@@ -102,7 +147,7 @@ class VOD {
 		return R.compose(
 			R.isEmpty,
 			R.prop('thiccHash')
-		)
+		)(this)
 	}
 	hasB2 () {
 		return R.not(this.isMissingB2());
@@ -112,7 +157,7 @@ class VOD {
 			R.not,
 			R.isEmpty,
 			R.prop('videoSrcHash')
-		)
+		)(this)
 	}
 	hasThumbnail () {
 		return R.not(this.isMissingThumbnail());
@@ -122,26 +167,19 @@ class VOD {
 	/**
 	 * determineNecessaryActionsToEnsureComplete
 	 */
-	async determineNecessaryActionsToEnsureComplete () {
+	determineNecessaryActionsToEnsureComplete () {
+
+		// if (this.isMissingB2() && this.isMissingIpfs()) {
+		// 	console.warn(`WARNING: VOD ${this.date} is missing both B2 and IPFS!`)
+		// }
 
 
-
-		R.when(
-			R.and(this.isMissingB2(), this.isMissingIpfs()),
-			R.always(() => { throw new Error(`VOD ${this.date} is missing both B2 and IPFS`) })
-		)(this)
-
-
-
-		const actions = R.mapAccum(removeNulls, [], [
-			this.getMethodToEnsureThumbnail,
-			this.getMethodToEnsureIpfs,
-			this.getMethodToEnsureB2
+		const actions = R.filter(R.is(Function), [
+			this.getMethodToEnsureThumbnail(), // @TODO
+			this.getMethodToEnsureIpfs(),
+			this.getMethodToEnsureB2(),
+			this.getMethodToEnsureDate(),
 		])
-
-		
-		console.log('actions')
-		console.log(actions)
 
 
 		return actions
@@ -155,9 +193,10 @@ class VOD {
 	 * - ensure B2 file exists
 	 * - ensure IPFS file exists
 	 * - ensure thumbnail exists
+	 * - ensure datestamp is in Zulu time
 	 */
 	async ensureComplete () {
-		const actions = this.determineNecessaryActionsToEnsureComplete();
+		const actions = await this.determineNecessaryActionsToEnsureComplete();
 		await actions();
 	}
 
@@ -186,11 +225,30 @@ class VOD {
 	}
 
 
+	/**
+	 * getDatestamp
+	 * 
+	 * normal behavior for date-fns is to process dates as local tz.
+	 * we don't want that because all dates in futureporn are saved as GMT+0 time
+	 */
+	getDatestamp () {
+		console.log(this.date)
+		const date = utcToZonedTime(this.date, 'GMT');
+		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'GMT' });
+		return formattedDate;
+	}
+
+	getVideoBasename () {
+		if (R.isEmpty(this.date)) throw new DateMissingError();
+		const d = this.getDatestamp();
+		return `projektmelody-chaturbate-${d}.mp4`;
+	}
+
 	async getB2UrlFromB2 () {
 		let unsuccessful = true;
 		let attempts = 0;
 		let output = '';
-		let filename = this.getFilename();
+		let filename = this.getVideoBasename();
 		while (unsuccessful) {
 			attempts += 1;
 			const { exitCode, killed, stdout } = await execa('rclone', [
@@ -213,13 +271,14 @@ class VOD {
 
 	getVideoFilename () {
 		if (R.isEmpty(this.date)) throw new DateMissingError();
-		return `projektmelody-chaturbate-${this.date}.mp4`;
+		return this.getVideoBasename();
 	}
 
 	getMarkdownFilename () {
 		if (R.isEmpty(this.date)) throw new DateMissingError();
-		const markdownFilePath = path.join(VOD.dataDir, `${this.date}.md`);
-		return markdownFilePath;
+		const date = utcToZonedTime(this.date, 'GMT');
+		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'GMT' });
+		return path.join(VOD.dataDir, `${formattedDate}.md`);
 	}
 
 	async saveMarkdown () {
@@ -234,19 +293,34 @@ class VOD {
 			`thiccHash: ${this.thiccHash}\n`+
 			`announceTitle: ${this.announceTitle}\n`+
 			`announceUrl: ${this.announceUrl}\n`+
-			`date: ${format(this.date, 'yyyy-MM-dd')}\n`+
+			`date: ${this.getDatestamp()}\n`+
 			`note: ${this.note}\n`+
 			`layout: ${VOD.eleventyLayout}\n`+
 			'---\n';
 
-		await fsp.writeFile(this.getMarkdownFilename(), data, { encoding: 'utf-8' });
+		const filename = this.getMarkdownFilename();
+		await fsp.writeFile(filename, data, { encoding: 'utf-8' });
 		return this;
+	}
+
+	async getDateFromTwitter () {
+		const tweetId = this.getTweetIdFromAnnounceUrl();
+		const { data } = await VOD.twitter.get('tweets', { 
+			ids: tweetId,
+			'tweet.fields': 'created_at'
+		});
+		this.date = new Date(data[0].created_at);
+		return this;
+	}
+
+	getTweetIdFromAnnounceUrl () {
+		if (R.isEmpty(this.announceUrl)) throw new AnnouceUrlMissingError();
+		return this.announceUrl.substring(this.announceUrl.lastIndexOf('/')+1);
 	}
 
 	async downloadFromIpfs () {
 		const hash = this.videoSrcHash;
 		const localFilePath = VOD.getTmpDownloadPath(hash);
-		console.log(`downloading hash:${hash} from ipfs to localFilePath:${localFilePath}`)
 		const url = `https://ipfs.io/ipfs/${hash}`;
 		const res = {};
 		res.execa = await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })

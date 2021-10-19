@@ -7,11 +7,17 @@ import path from 'path';
 import * as fsp from 'fs/promises';
 import marked from 'gray-matter';
 
-const workDir = path.resolve(path.dirname(''));
+const workDir = __dirname // esm style which I'm avoiding for now: path.dirname(import.meta.url);
 const workDirPattern = path.join(workDir, '*.mp4');
 const vodDir = path.join(workDir, 'website', 'vods');
 const vodDirPattern = path.join(vodDir, `*.md`);
 
+console.log(`
+	workDir: ${workDir}
+	workDirPattern: ${workDirPattern}
+	vodDir: ${vodDir}
+	vodDirPattern: ${vodDirPattern}
+`);
 
 (async function main() {
 	let vods = [];
@@ -24,7 +30,7 @@ const vodDirPattern = path.join(vodDir, `*.md`);
 		const mdRaw = await fsp.readFile(markdownFile);
 		const { data } = await marked(mdRaw);
 		const v = new VOD(data);
-		console.log(`VOD found with date:${v.date}`);
+		// console.log(`VOD found with date:${v.date}`);
 		vods.push(v);
 	}
 
@@ -35,7 +41,10 @@ const vodDirPattern = path.join(vodDir, `*.md`);
 		vods.push(v);
 	}
 
-	console.log(vods);
-	console.log(vods.length);
+	console.log(`There are ${vods.length} known VODs`);
+
+	for (const vod of vods) {
+		await vod.ensureComplete()
+	}
 
 })()

@@ -4,18 +4,90 @@ import VOD from './VOD.js'
 import path from 'path';
 import matter from 'gray-matter';
 import * as fsp from 'fs/promises';
-import { parseISO, isEqual } from 'date-fns';
+import { parseISO, isEqual, isValid } from 'date-fns';
 
 const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
 const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-2021-10-11.mp4';
 const ipfsHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
+const annouceUrlFixture = 'https://twitter.com/ProjektMelody/status/1272965936685953024'
+const thiccHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 
 describe('VOD', () => {
 
+	describe('getTweetIdFromAnnounceUrl', () => {
+		it('should find the tweet ID', () => {
+			const v = new VOD({
+				announceUrl: annouceUrlFixture
+			})
+			expect(v.getTweetIdFromAnnounceUrl()).toStrictEqual('1272965936685953024');
+		})
+	})
+
+	describe('getDateFromTwitter', () => {
+		it('should reach out to twitter and return the ISO date', async () => {
+			const v = new VOD({
+				announceUrl: annouceUrlFixture
+			})
+			await v.getDateFromTwitter();
+			expect(v.date).toEqual(new Date('2020-06-16T18:55:04.000Z'));
+		})
+	})
+
+
+	describe('default', () => {
+		it("should accept '' and return ''", () => {
+			expect(VOD.default('')).toStrictEqual('');
+		})
+		it("should accept 'yolo' and return 'yolo'", () => {
+			expect(VOD.default('yolo')).toStrictEqual('yolo');
+		})
+		it("should accept {Date} and return {Date}", () => {
+			const d = new Date();
+			expect(VOD.default(d)).toStrictEqual(d);
+		})
+		it("should accept undefined and return ''", () => {
+			expect(VOD.default(undefined)).toStrictEqual('');
+		})
+	})
+
+	describe('parseDate', () => {
+		it('should accept {String} 2021-10-16 and return a Date', () => {
+			const d = VOD.parseDate('2021-10-16');
+			expect(d).toBeInstanceOf(Date);
+			expect(isValid(d)).toBeTruthy();
+		})
+		it('should accept 2021-10-16T00:00:00.000Z and return a Date', () => {
+			const d = VOD.parseDate('2021-10-16T00:00:00.000Z');
+			expect(d).toBeInstanceOf(Date);
+			expect(isValid(d)).toBeTruthy();
+		})
+		it("should accept '' and return ''", () => {
+			const d = VOD.parseDate('');
+			expect(d).toStrictEqual('');
+		})
+		it("should accept undefined and return ''", () => {
+			const d = VOD.parseDate(undefined);
+			expect(d).toStrictEqual('');
+		})
+	})
+
+	describe('getMarkdownFilename', () => {
+		it('should return an absolute path with no spaces', () => {
+			const v = new VOD({
+				date: '3031-10-16T00:00:00.000Z'
+			})
+			const res = v.getMarkdownFilename();
+			expect(typeof res).toEqual('string');
+			expect(res).not.toMatch(' ');
+			expect(res).toMatch('/futureporn/website/vods/3031-10-16T00:00:00.000Z.md');
+			expect(path.isAbsolute(res)).toBeTruthy();
+		})
+	})
+
 	describe('saveMarkdown', () => {
-		it('should accept a {String} URL and save it in the markdown', async () => {
+		it('should save the vod data to disk as markdown', async () => {
 			const note = 'This is not an actual VOD. This is only a test.';
-			const date = '3021-10-16';
+			const date = '3021-10-16T00:30:00.000Z';
 			const v = new VOD({
 				date: date,
 				videoSrcHash: b2VODFixture,
@@ -23,28 +95,27 @@ describe('VOD', () => {
 			})
 			const res = await v.saveMarkdown();
 			expect(res).toBeInstanceOf(VOD);
+			const filePath = path.join(
+				__dirname, 
+				'..', 
+				'website', 
+				'vods', 
+				`${date}.md`
+			);
 			const md = await fsp.readFile(
-				path.join(
-					__dirname, 
-					'..', 
-					'website', 
-					'vods', 
-					`${date}.md`
-				),
+				filePath,
 				{ encoding: 'utf-8' }
-			)
-			console.log(md)
+			);
 			const m = matter(md);
 			expect(m.data).toHaveProperty('videoSrcHash', b2VODFixture);
 			expect(m.data).toHaveProperty('note', note);
 			expect(m.data).toHaveProperty('date');
 			expect(m.data.date).toBeInstanceOf(Date);
-			console.log(`comparing\n${m.data.date} to\n${parseISO(date)}`)
 			expect(isEqual(m.data.date, parseISO(date))).toBeTruthy();
 		})
 	})
 
-	describe('downloadFromIPFS', () => {
+	xdescribe('downloadFromIPFS', () => {
 		it('should download a file to /tmp', async () => {
 			const v = new VOD({
 				videoSrcHash: ipfsHashFixture
@@ -58,23 +129,24 @@ describe('VOD', () => {
 		})
 	}, 30*1000)
 
-	describe('getFilename', () => {
-		it('should generate a unique filename using the date', () => {
-			const v = new VOD({
-				date: '2021-10-16'
-			})
-			const filename = v.getFilename();
-			expect(filename).toEqual('projektmelody-chaturbate-2021-10-16.mp4');
-		})
-		it('should throw if there is no date', () => {
-			const v = new VOD({
-				date: ''
-			})
-			expect(() => { v.getFilename() }).toThrow('date');
+	describe('getDatestamp', () => {
+		it('should return a date in Zulu tz', () => {
+			const v = new VOD({ date: '3021-10-16' });
+			expect(v.getDatestamp()).toStrictEqual('3021-10-16T00:00:00.000Z');
 		})
 	})
 
-	describe('uploadToB2', () => {
+	describe('getVideoBasename', () => {
+		it('should generate a unique filename using the date', () => {
+			const v = new VOD({
+				date: '3021-10-16T00:00:00.000Z'
+			})
+			const filename = v.getVideoBasename();
+			expect(filename).toEqual('projektmelody-chaturbate-3021-10-16T00:00:00.000Z.mp4');
+		})
+	})
+
+	xdescribe('uploadToB2', () => {
 		it('should upload a file to Backblaze', async () => {
 			const v = new VOD({
 				date: '2021-10-16',
@@ -91,6 +163,30 @@ describe('VOD', () => {
 		it('should return something like /tmp/<filename>.<extension>', () => {
 			const dlPath = VOD.getTmpDownloadPath('myfile.txt');
 			expect(dlPath).toStrictEqual('/tmp/myfile.txt');
+		})
+	})
+
+	describe('getMethodToEnsureDate', () => {
+		it('should return {function} this.getDateFromTwitter if date is missing', () => {
+			const v = new VOD({
+				videoSrcHash: ipfsHashFixture
+			})
+			const method = v.getMethodToEnsureDate();
+			expect(method).toBeInstanceOf(Function);
+		})
+		it('should return null if date is present', () => {
+			const v = new VOD({
+				date: '3021-10-16'
+			})
+			const method = v.getMethodToEnsureDate();
+			expect(method).toBeNull();
+		})
+		it('should return null if zulu date exists', () => {
+			const v = new VOD({
+				date: '3021-10-16T00:00:00.000Z'
+			})
+			const method = v.getMethodToEnsureDate();
+			expect(method).toBeNull();
 		})
 	})
 
@@ -111,11 +207,9 @@ describe('VOD', () => {
 			const method = v.getMethodToEnsureB2();
 			expect(method).toBeNull();	
 		})
-		it('should return an error if neither videoSrc nor videoSrcHash exists', () => {
+		it('should return null if neither videoSrc nor videoSrcHash exists', () => {
 			const v = new VOD({});
-			expect(() => {
-				v.getMethodToEnsureB2()
-			}).toThrow('neither');
+			expect(v.getMethodToEnsureB2()).toBeNull();
 		})
 	})
 
@@ -135,30 +229,43 @@ describe('VOD', () => {
 			const method = v.getMethodToEnsureIpfs();
 			expect(method).toBeNull();	
 		})
-		it('should return an error if neither videoSrc nor videoSrcHash exists', () => {
+		it('should return null if neither videoSrc nor videoSrcHash exists', () => {
 			const v = new VOD({});
-			expect(() => {
-				v.getMethodToEnsureIpfs()
-			}).toThrow('neither');
+			expect(v.getMethodToEnsureIpfs()).toBeNull();
 		})
 	})
 
+	xdescribe('generateThumbnail', () => {});
 
-	xdescribe('getMethodToEnsureThumbnail', () => {
+	describe('getMethodToEnsureThumbnail', () => {
 		it('should return {function} this.generateThumbnail if thumbnail is missing', () => {
 			const v = new VOD({
-				videoSrc: ''
+				thiccHash: ''
 			})
 			const method = v.getMethodToEnsureThumbnail();
 			expect(method).toBeInstanceOf(Function);
-			expect(method);
 		})
 		it('should return null if Thumbnail exists', () => {
 			const v = new VOD({
-				videoSrc: b2VODFixture
+				thiccHash: thiccHashFixture
 			})
 			const method = v.getMethodToEnsureThumbnail();
 			expect(method).toBeNull();	
+		})
+	})
+
+	describe('hasIpfs', () => {
+		it('should return true if vod.videoSrcHash exists', () => {
+			const v = new VOD({
+				videoSrcHash: ipfsHashFixture
+			})
+			expect(v.hasIpfs()).toBeTruthy()
+		})
+		it('should return false if vod.videoSrcHash is empty', () => {
+			const v = new VOD({
+				videoSrcHash: ''
+			})
+			expect(v.hasIpfs()).toBeFalsy()
 		})
 	})
 
@@ -176,6 +283,20 @@ describe('VOD', () => {
 			expect(v.hasB2()).toBeFalsy()
 		})
 	})
+
+	describe('isMissingZuluDate', () => {
+		it('should return false if date is present', () => {
+			const v = new VOD({
+				date: '3021-10-16T00:00:00.000Z'
+			})
+			expect(v.isMissingZuluDate()).toBeFalsy();
+		});
+		it('should return true if date is missing', () => {
+			const v = new VOD({});
+			expect(v.isMissingZuluDate()).toBeTruthy();
+		});
+	})
+
 
 	describe('isMissingB2', () => {
 		it('should exist as a class method', () => {
@@ -199,6 +320,23 @@ describe('VOD', () => {
 		})
 	})
 
+	describe('isMissingThumbnail', () => {
+		it('should return false if vod.thiccHash exists', () => {
+			const v = new VOD({
+				thiccHash: thiccHashFixture
+			});
+			const res = v.isMissingThumbnail();
+			expect(res).toBeFalsy();
+		})
+		it('should return true if vod.thiccHash does not exist', () => {
+			const v = new VOD({
+				thiccHash: ''
+			});
+			const res = v.isMissingThumbnail();
+			expect(res).toBeTruthy();
+		})
+	})
+
 	describe('isMissingIpfs', () => {
 		it('should return false if VOD.videoSrcHash exists', () => {
 			const v = new VOD({
@@ -216,9 +354,30 @@ describe('VOD', () => {
 		})
 	})
 
-	xdescribe('determineNecessaryActionsToEnsureComplete', () => {
-		it('should copy an IPFS video to ', () => {
-
+	describe('determineNecessaryActionsToEnsureComplete', () => {
+		test('Existence of B2 and date, absense of IPFS and thumbnail', () => {
+			const v = new VOD({
+				videoSrc: b2VODFixture,
+				date: new Date()
+			})
+			const actions = v.determineNecessaryActionsToEnsureComplete();
+			console.log(actions)
+			expect(actions).toHaveLength(2) // thumbnail and ipfs functions
+		})
+		test('existence of ipfs and date, absence of b2 and thumbnail', () => {
+			const v = new VOD({
+				videoSrcHash: ipfsHashFixture,
+				date: new Date()
+			})
+			const actions = v.determineNecessaryActionsToEnsureComplete()
+			expect(actions).toHaveLength(2) // thumbnail and ipfs functions
+		})
+		test('existence of ipfs, absence of b2 and date and thumnail', () => {
+			const v = new VOD({
+				videoSrcHash: ipfsHashFixture,
+			})
+			const actions = v.determineNecessaryActionsToEnsureComplete()
+			expect(actions).toHaveLength(3) // thumbnail and ipfs and date functions
 		})
 	})
 })
