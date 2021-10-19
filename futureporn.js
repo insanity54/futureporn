@@ -44,7 +44,15 @@ console.log(`
 	console.log(`There are ${vods.length} known VODs`);
 
 	for (const vod of vods) {
-		await vod.ensureComplete()
+		console.log(vod)
+
+		try {
+			// await vod.getDateFromTwitter()
+			await vod.ensureComplete()
+			await vod.saveMarkdown()
+		} catch (e) {
+			console.warn(e)
+		}
 	}
 
 })()
