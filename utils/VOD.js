@@ -30,6 +30,13 @@ class AnnouceUrlMissingError extends Error {
 	}	
 }
 
+class VideoSrcHashMissingError extends Error {
+	constructor (message) {
+		super(R.defaultTo('videoSrcHash is missing from VOD which is UNSUPPORTED')(message));
+		this.name = 'VideoSrcHashMissingError';
+	}	
+}
+
 class VOD {
 	
 	constructor (data) {
@@ -60,7 +67,9 @@ class VOD {
 		consumer_key:         process.env.TWITTER_API_KEY,
 		consumer_secret:      process.env.TWITTER_API_KEY_SECRET
 	})
-
+	static getSafeText (text) {
+		return text.replace(/"/g, '\\"')
+	}
 
 	static getTmpDownloadPath (filename) {
 		const tmpDir = os.tmpdir();
@@ -81,6 +90,7 @@ class VOD {
 	}
 
 	async copyB2ToIpfs () {
+		console.log(this)
 		await this.downloadFromB2();
 		await this.uploadToIpfs();
 	}
@@ -197,11 +207,14 @@ class VOD {
 	 */
 	async ensureComplete () {
 		const actions = await this.determineNecessaryActionsToEnsureComplete();
-		await actions();
+		for (const action of actions) {
+			await action.apply(this);
+		}
 	}
 
 
 	async uploadToB2 () {
+		console.log(`uploading ${this.tmpFilePath} to B2`);
 		let unsuccessful = true;
 		let attempts = 0;
 		while (unsuccessful) {
@@ -232,7 +245,6 @@ class VOD {
 	 * we don't want that because all dates in futureporn are saved as GMT+0 time
 	 */
 	getDatestamp () {
-		console.log(this.date)
 		const date = utcToZonedTime(this.date, 'GMT');
 		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'GMT' });
 		return formattedDate;
@@ -281,9 +293,11 @@ class VOD {
 		return path.join(VOD.dataDir, `${formattedDate}.md`);
 	}
 
+
+
 	async saveMarkdown () {
 		const data = '---\n'+
-			`title: ${this.title}\n`+
+			`title: "${VOD.getSafeText(this.title)}"\n`+
 			`videoSrc: ${this.videoSrc}\n`+
 			`videoSrcHash: ${this.videoSrcHash}\n`+
 			`video720Hash: ${this.video720Hash}\n`+
@@ -291,7 +305,7 @@ class VOD {
 			`video360Hash: ${this.video360Hash}\n`+
 			`thinHash: ${this.thinHash}\n`+
 			`thiccHash: ${this.thiccHash}\n`+
-			`announceTitle: ${this.announceTitle}\n`+
+			`announceTitle: "${VOD.getSafeText(this.announceTitle)}"\n`+
 			`announceUrl: ${this.announceUrl}\n`+
 			`date: ${this.getDatestamp()}\n`+
 			`note: ${this.note}\n`+
@@ -318,15 +332,29 @@ class VOD {
 		return this.announceUrl.substring(this.announceUrl.lastIndexOf('/')+1);
 	}
 
+	async downloadFromB2 () {
+		if (path.extname(this.videoSrc) === '.mkv') throw new Error('mkv containers are not supported') // @TODO support mkv by converting to mp4
+		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
+		const remoteVideoBasename = path.basename(this.videoSrc);
+		console.log(`downloading ${remoteVideoBasename} from B2 => ${localFilePath}`);
+		const { killed, exitCode } = await execa('rclone', ['copy', `${VOD.rcloneDestination}:${VOD.B2BucketName}/${remoteVideoBasename}`, localFilePath ]);
+		return this;
+	}
+
+	getIpfsUrl () {
+		if (R.isEmpty(this.videoSrcHash)) throw new VideoSrcHashMissingError();
+		if (R.isEmpty(this.date)) throw new DateMissingError();
+		return `https://ipfs.io/ipfs/${this.videoSrcHash}?filename=${this.getVideoBasename()}`
+	}
+
 	async downloadFromIpfs () {
-		const hash = this.videoSrcHash;
 		const localFilePath = VOD.getTmpDownloadPath(hash);
-		const url = `https://ipfs.io/ipfs/${hash}`;
-		const res = {};
-		res.execa = await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
-		res.filename = localFilePath;
+		const url = this.getIpfsUrl();
+		const remoteVideoBasename = path.basename(url);
+		console.log(`downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
+		await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
 		this.tmpFilePath = localFilePath;
-		return res;
+		return this;
 	}
 
 

@@ -146,6 +146,12 @@ describe('VOD', () => {
 		})
 	})
 
+	xdescribe('uploadToIpfs', () => {
+		it('', async () => {
+
+		})
+	})
+
 	xdescribe('uploadToB2', () => {
 		it('should upload a file to Backblaze', async () => {
 			const v = new VOD({
@@ -156,6 +162,12 @@ describe('VOD', () => {
 			expect(res).toBeInstanceOf(VOD);
 			expect(res).toHaveProperty('videoSrc');
 			expect(res.videoSrc).toMatch(/backblaze2.com\/file\/futureporn\//);
+		})
+	})
+
+	describe('getSafeText', () => {
+		it('should escape double quotes', () => {
+			expect(VOD.getSafeText('Hello "world"')).toMatch(/\\"world\\"/);
 		})
 	})
 
@@ -210,6 +222,14 @@ describe('VOD', () => {
 		it('should return null if neither videoSrc nor videoSrcHash exists', () => {
 			const v = new VOD({});
 			expect(v.getMethodToEnsureB2()).toBeNull();
+		})
+	})
+
+	describe('getIpfsUrl', () => {
+		it('should return ipfs.io url', () => {
+			const date = '3021-10-16T00:00:00.000Z';
+			const v = new VOD({ videoSrcHash: ipfsHashFixture, date: date });
+			expect(v.getIpfsUrl()).toStrictEqual(`https://ipfs.io/ipfs/${ipfsHashFixture}?filename=projektmelody-chaturbate-${date}.mp4`)
 		})
 	})
 
