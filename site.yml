@@ -10,3 +10,4 @@
     - ansible_user: root
   roles:
     - role: immls
+    - role: geerlingguy.nodejs

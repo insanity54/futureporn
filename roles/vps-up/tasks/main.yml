@@ -35,5 +35,18 @@
     tag: immls
     state: present
 
+- name: Spin up a STRONK VPS to handle ul/dl file tasks
+  when: manager | bool
+  ngine_io.vultr.vultr_server:
+    name: "immls_4"
+    os: Ubuntu 20.04 x64
+    region: Seattle
+    plan: 16384 MB RAM,320 GB SSD,5.00 TB BW
+    ssh_keys:
+      - 612fa1f7d1e42
+    tag: immls
+    state: present
+
+
 - name: Refresh Inventory
   meta: refresh_inventory
