@@ -43,13 +43,15 @@
     line: export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}
     state: present
 
+# - name: Add Eternal Terminal ppa @todo
+
+
 - name: Install dependencies
   become: yes
   apt:
     pkg: 
       - python3
       - python3-pip
-      - mosh 
       - mg 
       - screen 
       - git

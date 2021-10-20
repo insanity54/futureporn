@@ -82,7 +82,6 @@
   },
   "private": "true",
   "devDependencies": {
-    "babel-jest": "^27.3.1",
     "babel-polyfill": "^6.26.0",
     "regenerator-runtime": "^0.13.9"
   }

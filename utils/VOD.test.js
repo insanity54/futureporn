@@ -146,18 +146,18 @@ describe('VOD', () => {
 		})
 	})
 
-	xdescribe('uploadToIpfs', () => {
-		// this test is fucked due to some web3.storage issue that I can't get around
-		// it's only a problem when invoked via jest
-		//     Cannot find module 'ipfs-car/pack' from 'node_modules/web3.storage/dist/src/lib.cjs'
-		it('should upload a file and save the cid to vod.videoSrcHash', async () => {
-			const v = new VOD({
-				tmpFilePath: path.join(__dirname, 'cj_clippy_avatar.png')
-			})
-			await v.uploadToIpfs();
-			expect(v.videoSrcHash).toStrictEqual(thiccHashFixture);
-		})
-	})
+	// xdescribe('uploadToIpfs', () => {
+	// 	// this test is fucked due to some web3.storage issue that I can't get around
+	// 	// it's only a problem when invoked via jest
+	// 	//     Cannot find module 'ipfs-car/pack' from 'node_modules/web3.storage/dist/src/lib.cjs'
+	// 	it('should upload a file and save the cid to vod.videoSrcHash', async () => {
+	// 		const v = new VOD({
+	// 			tmpFilePath: path.join(__dirname, 'cj_clippy_avatar.png')
+	// 		})
+	// 		await v.uploadToIpfs();
+	// 		expect(v.videoSrcHash).toStrictEqual(thiccHashFixture);
+	// 	})
+	// })
 
 	xdescribe('uploadToB2', () => {
 		it('should upload a file to Backblaze', async () => {
