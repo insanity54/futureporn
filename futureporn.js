@@ -22,7 +22,6 @@ console.log(`
 (async function main() {
 	let vods = [];
 
-
 	// create VOD object for each VOD markdown file
 	const markdownFiles = await fg([ vodDirPattern ]);
 	console.log(markdownFiles)

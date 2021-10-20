@@ -22,11 +22,8 @@ async function upload (opts) {
   if (typeof file === 'undefined') {
     throw new Error('file was undefined.')
   }
-
-
   const filesObject = await getFiles(file)
   console.log(filesObject)
-
   await storeWithProgress(filesObject);
 }
 
@@ -74,7 +71,7 @@ async function storeWithProgress(files) {
   return client.put(files, { onRootCidReady, onStoredChunk })
 }
 
- 
+
 function getCliArgs () {
   const args = minimist(process.argv.slice(2))
 
