@@ -37,6 +37,15 @@ class VideoSrcHashMissingError extends Error {
 	}	
 }
 
+class TmpFilePathMissingError extends Error {
+	constructor (message) {
+		super(R.defaultTo('tmpFilePath is missing from VOD which is UNSUPPORTED')(message));
+		this.name = 'TmpFilePathMissingError';
+	}	
+}
+
+
+
 class VOD {
 	
 	constructor (data) {
@@ -186,10 +195,10 @@ class VOD {
 
 
 		const actions = R.filter(R.is(Function), [
-			this.getMethodToEnsureThumbnail(), // @TODO
-			this.getMethodToEnsureIpfs(),
-			this.getMethodToEnsureB2(),
 			this.getMethodToEnsureDate(),
+			this.getMethodToEnsureB2(),
+			this.getMethodToEnsureIpfs(),
+			this.getMethodToEnsureThumbnail(), // @TODO
 		])
 
 
@@ -214,15 +223,15 @@ class VOD {
 	}
 
 	async uploadToIpfs () {
+		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
 		console.log(`uploading ${this.tmpFilePath} to IPFS`);
 		if (typeof VOD.web3Token === 'undefined') {
 			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
 		}
-		// const fileBuffer = await fsp.readFile(this.tmpFilePath, { encoding: 'utf-8' });
-		// const web3File = new File([fileBuffer], this.getVideoBasename());
 		const files = await getFilesFromPath(this.tmpFilePath);
 		const cid = await VOD.web3Client.put(files);
 		this.videoSrcHash = cid;
+		console.log(this.videoSrcHash);
 	}
 
 	async uploadToB2 () {
