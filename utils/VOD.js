@@ -3,18 +3,18 @@
  * VOD.js
  */
 
-import dotenv from 'dotenv';
-dotenv.config();
+require('dotenv').config();
 
-import * as R from 'ramda';
-import execa from 'execa';
-import * as os from 'os';
-import * as fsp from 'fs/promises';
-import path from 'path';
-// import { formatISO, parseISO } from 'date-fns';
-import { format, zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
-import fetch from 'node-fetch';
-import Twitter from 'twitter-v2';
+const R = require('ramda');
+const execa = require('execa');
+const os = require('os');
+const fsp = require('fs/promises');
+const path = require('path');
+const { format, zonedTimeToUtc, utcToZonedTime } = require('date-fns-tz');
+const fetch = require('node-fetch');
+const Twitter = require('twitter-v2');
+const { Web3Storage, getFilesFromPath } = require('web3.storage');
+
 
 class DateMissingError extends Error {
 	constructor (message) {
@@ -63,10 +63,12 @@ class VOD {
 	static dataDir = path.join(__dirname, '..', 'website', 'vods');
 	static eleventyLayout = 'layouts/vod.njk';
 	static default = R.defaultTo('');
+	static web3Token = process.env.WEB3_TOKEN;
 	static twitter = new Twitter({
 		consumer_key:         process.env.TWITTER_API_KEY,
 		consumer_secret:      process.env.TWITTER_API_KEY_SECRET
 	})
+	static web3Client = new Web3Storage({ token: VOD.web3Token });
 	static getSafeText (text) {
 		return text.replace(/"/g, '\\"')
 	}
@@ -90,7 +92,6 @@ class VOD {
 	}
 
 	async copyB2ToIpfs () {
-		console.log(this)
 		await this.downloadFromB2();
 		await this.uploadToIpfs();
 	}
@@ -212,6 +213,17 @@ class VOD {
 		}
 	}
 
+	async uploadToIpfs () {
+		console.log(`uploading ${this.tmpFilePath} to IPFS`);
+		if (typeof VOD.web3Token === 'undefined') {
+			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
+		}
+		// const fileBuffer = await fsp.readFile(this.tmpFilePath, { encoding: 'utf-8' });
+		// const web3File = new File([fileBuffer], this.getVideoBasename());
+		const files = await getFilesFromPath(this.tmpFilePath);
+		const cid = await VOD.web3Client.put(files);
+		this.videoSrcHash = cid;
+	}
 
 	async uploadToB2 () {
 		console.log(`uploading ${this.tmpFilePath} to B2`);
@@ -220,20 +232,14 @@ class VOD {
 		while (unsuccessful) {
 			attempts += 1
 			const { exitCode, killed } = await execa('rclone', ['copy', this.tmpFilePath, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
-
 			if (exitCode === 0 && killed === false) {
 				unsuccessful = false;
 			}
-
 			if (attempts === 3) {
 				break;
 			}
-
 		}
-
 		this.videoSrc = await this.getB2UrlFromB2();
-
-
 		return this;
 	}
 
@@ -363,4 +369,4 @@ class VOD {
 
 
 
-export default VOD
+module.exports = VOD;

@@ -1,10 +1,10 @@
 
 
-import VOD from './VOD.js'
-import path from 'path';
-import matter from 'gray-matter';
-import * as fsp from 'fs/promises';
-import { parseISO, isEqual, isValid } from 'date-fns';
+const VOD = require('./VOD.js');
+const path = require('path');
+const matter = require('gray-matter');
+const fsp = require('fs/promises');
+const { parseISO, isEqual, isValid } = require('date-fns');
 
 const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
 const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-2021-10-11.mp4';
@@ -147,8 +147,15 @@ describe('VOD', () => {
 	})
 
 	xdescribe('uploadToIpfs', () => {
-		it('', async () => {
-
+		// this test is fucked due to some web3.storage issue that I can't get around
+		// it's only a problem when invoked via jest
+		//     Cannot find module 'ipfs-car/pack' from 'node_modules/web3.storage/dist/src/lib.cjs'
+		it('should upload a file and save the cid to vod.videoSrcHash', async () => {
+			const v = new VOD({
+				tmpFilePath: path.join(__dirname, 'cj_clippy_avatar.png')
+			})
+			await v.uploadToIpfs();
+			expect(v.videoSrcHash).toStrictEqual(thiccHashFixture);
 		})
 	})
 
