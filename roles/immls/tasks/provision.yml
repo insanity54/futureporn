@@ -25,6 +25,24 @@
     line: "export FUTUREPORN_WORKDIR=/root/"
     state: present
 
+- name: Set Twitter api key in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export TWITTER_API_KEY={{ lookup('env', 'TWITTER_API_KEY') }}"
+    state: present
+
+- name: Set Twitter secret in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: export TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}
+    state: present
+
+- name: Set WEB3_TOKEN secret in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}
+    state: present
+
 - name: Install dependencies
   become: yes
   apt:
@@ -40,6 +58,7 @@
       - rclone
     state: present
     update_cache: yes
+
 
 - name: Create rclone conf directory
   ansible.builtin.file:
