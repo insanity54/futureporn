@@ -1,11 +1,11 @@
 
 
 
-import VOD from './utils/VOD.js';
-import fg from 'fast-glob';
-import path from 'path';
-import * as fsp from 'fs/promises';
-import marked from 'gray-matter';
+const VOD = require('./utils/VOD.js');
+const fg = require('fast-glob');
+const path = require('path');
+const fsp = require('fs/promises');
+const marked = require('gray-matter');
 
 const workDir = __dirname // esm style which I'm avoiding for now: path.dirname(import.meta.url);
 const workDirPattern = path.join(workDir, '*.mp4');
