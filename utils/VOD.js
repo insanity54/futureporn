@@ -229,6 +229,7 @@ class VOD {
 			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
 		}
 		const files = await getFilesFromPath(this.tmpFilePath);
+		console.log(files)
 		const cid = await VOD.web3Client.put(files);
 		this.videoSrcHash = cid;
 		console.log(this.videoSrcHash);
