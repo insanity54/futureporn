@@ -8,7 +8,7 @@ const fsp = require('fs/promises');
 const { parseISO, isEqual, isValid } = require('date-fns');
 
 const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
-const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-2021-10-11.mp4';
+const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-3021-10-16T00%3A00%3A00.000Z.mp4';
 const ipfsHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 const annouceUrlFixture = 'https://twitter.com/ProjektMelody/status/1272965936685953024'
 const thiccHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
@@ -118,7 +118,21 @@ describe('VOD', function () {
         })
     })
 
-    xdescribe('downloadFromIPFS', function () {
+    describe('downloadFromB2', function () {
+        it('should download a file to /tmp', async function () {
+            const v = new VOD({
+                videoSrc: b2VODFixture,
+                date: '3021-10-16T00:00:00.000Z'
+            })
+            const res = await v.downloadFromB2(b2VODFixture);
+            const target = '/tmp/projektmelody-chaturbate-3021-10-16T00:00:00.000Z.mp4';
+            expect(v.tmpFilePath).to.equal(target);
+            const stat = await fsp.lstat(target);
+            expect(stat.size).to.equal(699305);
+        })
+    })
+
+    describe('downloadFromIPFS', function () {
         it('should download a file to /tmp', async function () {
             const v = new VOD({
                 videoSrcHash: ipfsHashFixture
