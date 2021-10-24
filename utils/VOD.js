@@ -224,17 +224,13 @@ class VOD {
 
 	async uploadToIpfs () {
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
-		// console.log(`uploading ${this.tmpFilePath} to IPFS`);
+		console.log(`uploading ${this.tmpFilePath} to IPFS`);
 		if (typeof VOD.web3Token === 'undefined') {
 			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
 		}
 		const files = await getFilesFromPath(this.tmpFilePath);
-		// console.log(files)
 		const rootCid = await VOD.web3Client.put(files);
 
-
-		// Get info on the Filecoin deals that the CID is stored in
-		// const info = await VOD.web3Client.status(rootCid) // Promise<Status | undefined>
 
 		// Fetch and verify files from web3.storage
 		const res = await VOD.web3Client.get(rootCid) // Promise<Web3Response | null>
@@ -242,6 +238,7 @@ class VOD {
 
 		
 		this.videoSrcHash = ipfsFiles[0].cid;
+		console.log(this.videoSrcHash)
 
 
 	}
