@@ -364,7 +364,8 @@ class VOD {
 		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
 		const remoteVideoBasename = path.basename(this.videoSrc);
 		console.log(`downloading ${remoteVideoBasename} from B2 => ${localFilePath}`);
-		const { killed, exitCode } = await execa('rclone', ['copy', `${VOD.rcloneDestination}:${VOD.B2BucketName}/${remoteVideoBasename}`, localFilePath ]);
+		const { killed, exitCode } = await execa('rclone', ['copy', `${VOD.rcloneDestination}:${VOD.B2BucketName}/${remoteVideoBasename}`, localFilePath ], { stdio: 'inherit' });
+		console.log(`killed:${killed}, exitCode:${exitCode}`)
 		this.tmpFilePath = localFilePath;
 		return this;
 	}
