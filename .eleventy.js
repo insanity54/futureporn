@@ -12,6 +12,15 @@ const manifest = JSON.parse(
   fs.readFileSync(manifestPath, { encoding: "utf8" })
 );
 
+const filterCompleted = (vods) => {
+  if (typeof vods[0].data.videoSrcHash === 'undefined') throw new Error('format not expected')  
+  let golo = [];
+  for (const vod of vods) {
+    if (vod.data.videoSrcHash !== null) golo.push(vod.data.videoSrcHash)
+  }
+  return golo.length;
+}
+
 module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(faviconPlugin);
   eleventyConfig.addPlugin(pluginRss);
@@ -23,6 +32,12 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addShortcode("buildIpfsUrl", function(urlFragment) {
     return `https://ipfs.io/ipfs/${urlFragment}`;
+  });
+
+  eleventyConfig.addShortcode("archivalProgressPercentage", function(vods) {
+    const totalVods = vods.length;
+    const completedVods = filterCompleted(vods)
+    return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
 
   // Adds a universal shortcode to return the URL to a webpack asset. In Nunjack templates:
@@ -117,6 +132,9 @@ module.exports = function(eleventyConfig) {
     ghostMode: false
   });
 
+
+
+
   return {
     templateFormats: [
       "md",
@@ -146,4 +164,7 @@ module.exports = function(eleventyConfig) {
       output: "_site"
     }
   };
+
+
+
 };
