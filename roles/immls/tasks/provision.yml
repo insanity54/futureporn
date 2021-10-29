@@ -34,13 +34,13 @@
 - name: Set Twitter secret in env
   ansible.builtin.lineinfile:
     dest: /root/.bashrc
-    line: export TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}
+    line: "export TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}"
     state: present
 
 - name: Set WEB3_TOKEN secret in env
   ansible.builtin.lineinfile:
     dest: /root/.bashrc
-    line: export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}
+    line: "export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}"
     state: present
 
 # - name: Add Eternal Terminal ppa @todo
