@@ -12,11 +12,18 @@ const manifest = JSON.parse(
   fs.readFileSync(manifestPath, { encoding: "utf8" })
 );
 
-const filterCompleted = (vods) => {
-  if (typeof vods[0].data.videoSrcHash === 'undefined') throw new Error('format not expected')  
+const filterIpfsCompleted = (vods) => {
   let golo = [];
   for (const vod of vods) {
     if (vod.data.videoSrcHash !== null) golo.push(vod.data.videoSrcHash)
+  }
+  return golo.length;
+}
+
+const filterB2Completed = (vods) => {
+  let golo = [];
+  for (const vod of vods) {
+    if (vod.data.videoSrc !== null) golo.push(vod.data.videoSrc)
   }
   return golo.length;
 }
@@ -34,9 +41,15 @@ module.exports = function(eleventyConfig) {
     return `https://ipfs.io/ipfs/${urlFragment}`;
   });
 
-  eleventyConfig.addShortcode("archivalProgressPercentage", function(vods) {
+  eleventyConfig.addShortcode("b2ProgressPercentage", function(vods) {
     const totalVods = vods.length;
-    const completedVods = filterCompleted(vods)
+    const completedVods = filterB2Completed(vods)
+    return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
+  });
+
+  eleventyConfig.addShortcode("ipfsProgressPercentage", function(vods) {
+    const totalVods = vods.length;
+    const completedVods = filterIpfsCompleted(vods)
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
 
