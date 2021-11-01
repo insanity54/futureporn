@@ -12,6 +12,12 @@ const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody
 const ipfsHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 const annouceUrlFixture = 'https://twitter.com/ProjektMelody/status/1272965936685953024'
 const thiccHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
+const futureDateFixture = '3021-10-16T00:00:00.000Z';
+const mp4Fixture = path.join(__dirname, 'testvid.mp4');
+const mkvFixture = path.join(__dirname, 'testvid.mkv');
+const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
+const mp4Regex = /\.mp4/;
+
 
 describe('VOD', function () {
 
@@ -79,18 +85,19 @@ describe('VOD', function () {
             })
             const res = v.getMarkdownFilename();
             expect(typeof res).to.equal('string');
-            expect(res).to.match(/\/futureporn\/website\/vods\/3031-10-16T00:00:00\.000Z\.md/);
+            expect(res).to.match(/\/futureporn\/website\/vods\/30311016T000000Z\.md/);
             expect(path.isAbsolute(res)).to.be.true;
         })
     })
 
     describe('saveMarkdown', function () {
+        const date = '3021-10-16T00:30:00Z';
+        const safeDate = '30211016T003000Z';
         after(async function () {
-            await fsp.unlink(path.join(__dirname, '..', 'website', 'vods', '3021-10-16T00:30:00.000Z.md'))
+            await fsp.unlink(path.join(__dirname, '..', 'website', 'vods', `${safeDate}.md`))
         })
         it('should save the vod data to disk as markdown', async function () {
             const note = 'This is not an actual VOD. This is only a test.';
-            const date = '3021-10-16T00:30:00.000Z';
             const v = new VOD({
                 date: date,
                 videoSrcHash: b2VODFixture,
@@ -103,7 +110,7 @@ describe('VOD', function () {
                 '..', 
                 'website', 
                 'vods', 
-                `${date}.md`
+                `${safeDate}.md`
             );
             const md = await fsp.readFile(
                 filePath,
@@ -118,59 +125,107 @@ describe('VOD', function () {
         })
     })
 
-    describe('downloadFromB2', function () {
+    xdescribe('downloadFromB2', function () {
+        this.timeout(30000)
         it('should download a file to /tmp', async function () {
             const v = new VOD({
                 videoSrc: b2VODFixture,
-                date: '3021-10-16T00:00:00.000Z'
+                date: futureDateFixture
             })
             const res = await v.downloadFromB2(b2VODFixture);
-            const target = '/tmp/projektmelody-chaturbate-3021-10-16T00:00:00.000Z.mp4';
+            const target = '/tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
             expect(v.tmpFilePath).to.equal(target);
             const stat = await fsp.lstat(target);
             expect(stat.size).to.equal(699305);
         })
     })
 
-    describe('downloadFromIPFS', function () {
+    describe('downloadFromIpfs', function () {
+        this.timeout(60000)
         it('should download a file to /tmp', async function () {
             const v = new VOD({
+                date: futureDateFixture,
                 videoSrcHash: ipfsHashFixture
             })
-            const res = await v.downloadFromIpfs(ipfsHashFixture);
-            expect(res).to.have.property('filename');
-            expect(res).to.have.property('execa');
-            expect(res.execa).to.have.property('killed', false);
-            expect(res.execa).to.have.property('exitCode', 0);
-            expect(res.filename).to.equal(`/tmp/${ipfsHashFixture}`);
+            await v.downloadFromIpfs(ipfsHashFixture);
+            const target = '/tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
+            expect(v.tmpFilePath).to.equal(target);
+            const stat = await fsp.lstat(target);
+            expect(stat.size).to.equal(202524);
         })
-    }, 30*1000)
+    })
 
     describe('getDatestamp', function () {
-        it('should return a date in Zulu tz', function () {
+        it('should return a formatted ISO date in Zulu tz', function () {
             const v = new VOD({ date: '3021-10-16' });
             expect(v.getDatestamp()).to.equal('3021-10-16T00:00:00.000Z');
         })
     })
 
-    describe('getVideoBasename', function () {
-        it('should generate a unique filename using the date', function () {
+
+    describe('getSafeDatestamp', function () {
+        it('should return a basic formatted ISO date in Zulu tz', function () {
+            const v = new VOD({ date: '3021-10-16' });
+            expect(v.getSafeDatestamp()).to.equal('30211016T000000Z');
+        })
+    })
+
+    describe('getVideoBasename', () => {
+        it('should generate a unique filename using the date', () => {
             const v = new VOD({
                 date: '3021-10-16T00:00:00.000Z'
             })
             const filename = v.getVideoBasename();
-            expect(filename).to.equal('projektmelody-chaturbate-3021-10-16T00:00:00.000Z.mp4');
+            expect(filename).to.equal('projektmelody-chaturbate-30211016T000000Z.mp4');
         })
     })
 
+    describe('encodeVideo', function () {
+        this.timeout(60000);
+        it('should transcode a mkv listed in VOD.tmpFilePath and then overwrite VOD.tmpFilePath with the mp4', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mkvFixture
+            });
+            await v.encodeVideo();
+            expect(v.tmpFilePath).to.match(mp4Regex);
+        });
+        it('should do nothing when the VOD.tmpFilePath video is already an mp4', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mp4Fixture
+            })
+            await v.encodeVideo();
+            expect(v.tmpFilePath).to.equal(mp4Fixture);
+        })
+    });
+
     describe('uploadToIpfs', function () {
-        this.timeout(30000);
+        this.timeout(45000);
         it('should upload a file and save the cid to vod.videoSrcHash', async function () {
             const v = new VOD({
+                date: futureDateFixture,
                 tmpFilePath: path.join(__dirname, 'cj_clippy_avatar.png')
             });
             await v.uploadToIpfs();
-            expect(v.videoSrcHash).to.equal(thiccHashFixture);
+            expect(v.videoSrcHash).to.match(ipfsHashRegex);
+        })
+        it('should first transcode a mkv to mp4', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mkvFixture
+            });
+            await v.uploadToIpfs();
+            expect(v.tmpFilePath).to.match(mp4Regex);
+            expect(v.videoSrcHash).to.match(ipfsHashRegex);
+        })
+        it('should upload a mp4', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mp4Fixture
+            });
+            await v.uploadToIpfs();
+            expect(v.videoSrcHash).to.match(ipfsHashRegex); 
         })
     })
 
@@ -224,60 +279,125 @@ describe('VOD', function () {
         })
     })
 
+    describe('getMethodToEnsureTmpFilePath', function() {
+        it('should return {function} downloadFromIpfs if videoSrcHash exists', function () {
+            const v = new VOD({
+
+            })
+        })
+    })
+
     describe('getMethodToEnsureB2', function () {
-        it('should return {function} this.copyIpfsToB2 if B2 is missing', function () {
+        it('should return {function} this.uploadToB2 if videoSrc is missing', function () {
             const v = new VOD({
                 videoSrc: '',
-                videoSrcHash: ipfsHashFixture
+                tmpFilePath: mp4Fixture,
             })
             const method = v.getMethodToEnsureB2();
             expect(method).to.be.an.instanceof(Function);
+            expect(method).to.have.property('name', 'uploadToB2');
         })
-        it('should return null if B2 exists', function () {
+        it('should return null if videoSrc exists', function () {
             const v = new VOD({
-                videoSrc: b2VODFixture,
-                videoSrcHash: ipfsHashFixture
+                videoSrc: b2VODFixture
             })
             const method = v.getMethodToEnsureB2();
             expect(method).to.be.null;  
         })
-        it('should return null if neither videoSrc nor videoSrcHash exists', function () {
+        it('should throw an error if neither tmpFilePath nor videoSrcHash exists', function () {
             const v = new VOD({});
-            expect(v.getMethodToEnsureB2()).to.be.null;
+            expect(v.getMethodToEnsureB2).to.throw;
         })
     })
 
     describe('getIpfsUrl', function () {
         it('should return ipfs.io url', function () {
-            const date = '3021-10-16T00:00:00.000Z';
+            const date = '30211016T000000Z';
             const v = new VOD({ videoSrcHash: ipfsHashFixture, date: date });
             expect(v.getIpfsUrl()).to.equal(`https://ipfs.io/ipfs/${ipfsHashFixture}?filename=projektmelody-chaturbate-${date}.mp4`)
         })
     })
 
     describe('getMethodToEnsureIpfs', function () {
-        it('should return {function} this.copyB2ToIpfs if ipfs is missing', function () {
+        it('should return {function} this.uploadToIpfs if ipfs is missing', function () {
             const v = new VOD({
                 videoSrcHash: '',
                 videoSrc: b2VODFixture
             })
             const method = v.getMethodToEnsureIpfs();
             expect(method).to.be.an.instanceof(Function);
+            expect(method).to.have.property('name', 'uploadToIpfs');
         })
-        it('should return null if B2 exists', function () {
+        it('should return null if videoSrcHash exists', function () {
             const v = new VOD({
                 videoSrcHash: ipfsHashFixture
-            })
+            });
             const method = v.getMethodToEnsureIpfs();
-            expect(method).to.be.null;  
+            expect(method).to.be.null;
         })
         it('should return null if neither videoSrc nor videoSrcHash exists', function () {
             const v = new VOD({});
             expect(v.getMethodToEnsureIpfs()).to.be.null;
         })
+        it('should return {function} this.uploadToIpfs if tmpFilePath contains an mp4 or mkv', function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: path.join(__dirname, 'testvid.mp4')
+            });
+            const method = v.getMethodToEnsureIpfs();
+            expect(method).to.be.an.instanceof(Function);
+            expect(method).to.have.property('name', 'uploadToIpfs')
+        })
     })
 
+
     xdescribe('generateThumbnail', function () {});
+
+    describe('getMethodToEnsureEncode', function () {
+        it('should return {function} encodeVideo if tmpFilePath contains an mkv', function () {
+            const v = new VOD({
+                tmpFilePath: mkvFixture
+            })
+            const method = v.getMethodToEnsureEncode();
+            expect(method).to.be.an.instanceof(Function);
+            expect(method).to.have.property('name', 'encodeVideo');
+        })
+        it('should return null if tmpFilePath contains an mp4', function () {
+            const v = new VOD({
+                tmpFilePath: mp4Fixture
+            })
+            const method = v.getMethodToEnsureEncode();
+            expect(method).to.be.null;  
+        })
+    })
+
+    describe('getMethodToEnsureTmpFilePath', function () {
+        it('should return {function} downloadFromIpfs if tmpFilePath is missing and videoSrcHash exists', function () {
+            const v = new VOD({
+                videoSrcHash: ipfsHashFixture
+            })
+            const method = v.getMethodToEnsureTmpFilePath();
+            expect(method).to.be.a('function');
+            expect(method).to.have.property('name', 'downloadFromIpfs');
+        })
+        it('should prefer downloadFromIpfs over downloadFromB2', function () {
+            const v = new VOD({
+                videoSrcHash: ipfsHashFixture,
+                videoSrc: b2VODFixture
+            })
+            const method = v.getMethodToEnsureTmpFilePath();
+            expect(method).to.be.a('function');
+            expect(method).to.have.property('name', 'downloadFromIpfs');
+        })
+        it('should return {function} downloadFromB2 when videoSrc is available and videoSrcHash is not', function () {
+            const v = new VOD({
+                videoSrc: b2VODFixture
+            })
+            const method = v.getMethodToEnsureTmpFilePath();
+            expect(method).to.be.a('function');
+            expect(method).to.have.property('name', 'downloadFromB2');
+        })
+    })
 
     describe('getMethodToEnsureThumbnail', function () {
         it('should return {function} this.generateThumbnail if thumbnail is missing', function () {
@@ -311,6 +431,51 @@ describe('VOD', function () {
         })
     })
 
+    describe('hasTmpFilePath', function () {
+        it('should return true if VOD.tmpFilePath exists', function () {
+            const v = new VOD({
+                tmpFilePath: '/tmp/mycoolfile.fake'
+            })
+            const res = v.hasTmpFilePath()
+            expect(res).to.be.true
+        })
+        it('should return false if VOD.tmpFilePath is empty', function () {
+            const v = new VOD({
+                tmpFilePath: ''
+            })
+            expect(v.hasTmpFilePath()).to.be.false
+        })
+    })
+
+    describe('isTmpFilePathMkv', function () {
+        it('should return true when mkv', function () {
+            const v = new VOD({
+                tmpFilePath: mkvFixture
+            })
+            const res = v.isTmpFilePathMkv()
+            expect(res).to.be.true
+        })
+        it('should return false when mp4', function () {
+            const v = new VOD({
+                tmpFilePath: mp4Fixture
+            })
+            expect(v.isTmpFilePathMkv()).to.be.false
+        })
+    })
+
+    describe('isMissingTmpFilePath', function () {
+        it('should return false if date is present', function () {
+            const v = new VOD({
+                tmpFilePath: '/tmp/mycoolfile.fake'
+            })
+            expect(v.isMissingTmpFilePath()).to.be.false;
+        });
+        it('should return true if date is missing', function () {
+            const v = new VOD({});
+            expect(v.isMissingTmpFilePath()).to.be.true;
+        });
+    })
+
     describe('hasB2', function () {
         it('should return true if VOD.videoSrc exists', function () {
             const v = new VOD({
@@ -329,7 +494,7 @@ describe('VOD', function () {
     describe('isMissingZuluDate', function () {
         it('should return false if date is present', function () {
             const v = new VOD({
-                date: '3021-10-16T00:00:00.000Z'
+                date: futureDateFixture
             })
             expect(v.isMissingZuluDate()).to.be.false;
         });
@@ -397,29 +562,66 @@ describe('VOD', function () {
     })
 
     describe('determineNecessaryActionsToEnsureComplete', function () {
-        it('Existence of B2 and date, absense of IPFS and thumbnail', function () {
+        it('should handle a missing date', function () {
             const v = new VOD({
-                videoSrc: b2VODFixture,
-                date: new Date()
+                announceUrl: 'https://twitter.com/ProjektMelody/status/1225922638687752192'
             })
             const actions = v.determineNecessaryActionsToEnsureComplete();
-            console.log(actions)
-            expect(actions).to.have.lengthOf(2) // thumbnail and ipfs functions
+            for (const action of actions) expect(action).to.be.a('function');
+            expect(actions[0]).to.have.property('name', 'getDateFromTwitter');
         })
-        it('existence of ipfs and date, absence of b2 and thumbnail', function () {
+        it('should handle when only videoSrc and date exists', function () {
+            const v = new VOD({
+                videoSrc: b2VODFixture,
+                date: futureDateFixture
+            })
+            const actions = v.determineNecessaryActionsToEnsureComplete();
+            for (const action of actions) expect(action).to.be.a('function');
+            console.log(actions);
+            expect(actions[0]).to.have.property('name', 'downloadFromB2');
+            expect(actions[1]).to.have.property('name', 'generateThumbnail');
+            expect(actions[2]).to.have.property('name', 'uploadToIpfs');
+        })
+        it('should handle when tmpFilePath exists and is an mp4', function () {
+            const v = new VOD({
+                tmpFilePath: path.join(__dirname, 'testvid.mp4')
+            })
+            const actions = v.determineNecessaryActionsToEnsureComplete();
+            for (const action of actions) expect(action).to.be.a('function');
+            expect(actions[1]).to.have.property('name', 'generateThumbnail');
+            expect(actions[2]).to.have.property('name', 'uploadToIpfs');
+        })
+        it('should handle when tmpFilePath exists and is an mkv', function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: path.join(__dirname, 'testvid.mkv')
+            })
+            const actions = v.determineNecessaryActionsToEnsureComplete();
+            for (const action of actions) expect(action).to.be.a('function');
+            expect(actions[0]).to.have.property('name', 'encodeVideo');
+            expect(actions[1]).to.have.property('name', 'generateThumbnail');
+            expect(actions[2]).to.have.property('name', 'uploadToIpfs');
+        })
+        it('should handle when only videoSrcHash exists', function () {
             const v = new VOD({
                 videoSrcHash: ipfsHashFixture,
-                date: new Date()
             })
             const actions = v.determineNecessaryActionsToEnsureComplete()
-            expect(actions).to.have.lengthOf(2) // thumbnail and ipfs functions
+            for (const action of actions) expect(action).to.be.a('function');
+            expect(actions[0]).to.have.property('name', 'generateThumbnail');
+            expect(actions[1]).to.have.property('name', 'uploadToIpfs');
+            expect(actions[2]).to.have.property('name', 'getDateFromTwitter');
         })
-        it('existence of ipfs, absence of b2 and date and thumnail', function () {
+        it('should handle when tmpFilePath exists, and videoSrcHash does not', function () {
             const v = new VOD({
-                videoSrcHash: ipfsHashFixture,
+                date: futureDateFixture,
+                tmpFilePath: mp4Fixture,
             })
             const actions = v.determineNecessaryActionsToEnsureComplete()
-            expect(actions).to.have.lengthOf(3) // thumbnail and ipfs and date functions
+            expect(actions[0]).to.be.a('function');
+            expect(actions[1]).to.be.a('function');
+            expect(actions[0]).to.have.property('name', 'generateThumbnail');
+            expect(actions[1]).to.have.property('name', 'uploadToIpfs');
         })
     })
 })
