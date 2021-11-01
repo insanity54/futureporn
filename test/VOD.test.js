@@ -577,7 +577,6 @@ describe('VOD', function () {
             })
             const actions = v.determineNecessaryActionsToEnsureComplete();
             for (const action of actions) expect(action).to.be.a('function');
-            console.log(actions);
             expect(actions[0]).to.have.property('name', 'downloadFromB2');
             expect(actions[1]).to.have.property('name', 'generateThumbnail');
             expect(actions[2]).to.have.property('name', 'uploadToIpfs');
@@ -607,10 +606,12 @@ describe('VOD', function () {
                 videoSrcHash: ipfsHashFixture,
             })
             const actions = v.determineNecessaryActionsToEnsureComplete()
+            console.log(actions)
             for (const action of actions) expect(action).to.be.a('function');
-            expect(actions[0]).to.have.property('name', 'generateThumbnail');
-            expect(actions[1]).to.have.property('name', 'uploadToIpfs');
-            expect(actions[2]).to.have.property('name', 'getDateFromTwitter');
+            expect(actions[0]).to.have.property('name', 'getDateFromTwitter');
+            expect(actions[1]).to.have.property('name', 'downloadFromIpfs');
+            expect(actions[2]).to.have.property('name', 'generateThumbnail');
+            expect(actions[3]).to.have.property('name', 'uploadToB2');
         })
         it('should handle when tmpFilePath exists, and videoSrcHash does not', function () {
             const v = new VOD({
