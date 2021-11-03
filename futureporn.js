@@ -30,7 +30,11 @@ console.log(`
 		const { data } = await marked(mdRaw);
 		const v = new VOD(data);
 		// console.log(`VOD found with date:${v.date}`);
-		vods.push(v);
+
+		if (
+			v.videoSrcHash === '' &&
+			v.tmpFilePath !== ''
+		) vods.push(v);
 	}
 
 	// create VOD object for each VOD *.mp4 file in the workdir (created by voddo)
@@ -43,6 +47,7 @@ console.log(`
 	console.log(`There are ${vods.length} known VODs`);
 
 	for (const vod of vods) {
+
 		console.log(`vod:${vod.getDatestamp()} processing begin`);
 
 		try {
