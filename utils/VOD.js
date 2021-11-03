@@ -153,6 +153,8 @@ class VOD {
 		}
 
 		methods.push(this.uploadToIpfs);
+		console.log(methods)
+
 		return methods;
 	}
 
