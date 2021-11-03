@@ -15,7 +15,8 @@
     "webpack:assets": "NODE_ENV=development webpack --mode=development",
     "test": "mocha",
     "down": "ansible-playbook -i ./vultr.yml destroy.yml",
-    "up": "ansible-playbook -i vultr.yml -e \"instances=1\" site.yml"
+    "up": "ansible-playbook -i vultr.yml -e \"instances=1\" site.yml",
+    "start": "node futureporn"
   },
   "repository": {
     "type": "git",
