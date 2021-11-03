@@ -101,15 +101,6 @@ class VOD {
 		if (R.is(String, date)) return zonedTimeToUtc(date, 'Zulu');
 	}
 
-	// DEPRECATED
-	// async copyIpfsToB2 () {
-	// 	await this.downloadFromIpfs();
-	// 	await this.uploadToB2();
-	// }
-	// async copyB2ToIpfs () {
-	// 	await this.downloadFromB2();
-	// 	await this.uploadToIpfs();
-	// }
 
 	async generateThumbnail () {
 		setTimeout(() => {
@@ -143,9 +134,26 @@ class VOD {
 		return this.isMissingB2() ? this.uploadToB2 : null;
 	}
 
-	getMethodToEnsureIpfs () {
-		if (R.or(this.hasB2(), this.hasTmpFilePath())) return this.uploadToIpfs;
-		return null;
+	getMethodsToEnsureIpfs () {
+		let methods = [];
+
+		// already done. nothing to do
+		if (this.hasIpfs()) return methods;
+
+		// there is no vod to work with
+		if (R.and(this.isMissingTmpFilePath(), this.isMissingB2())) return methods;
+
+		// we have a local mkv to work with
+		if (R.and(this.hasTmpFilePath(), this.isTmpFilePathMkv())) methods.push(this.encodeVideo);
+
+		// we have a remote b2 video to work with
+		if (this.hasB2()) {
+			methods.push(this.downloadFromB2);
+			methods.push(this.encodeVideo);
+		}
+
+		methods.push(this.uploadToIpfs);
+		return methods;
 	}
 
 	getMethodToEnsureThumbnail () {
@@ -215,6 +223,13 @@ class VOD {
 	}
 
 
+	async ensureIpfs () {
+		const actions = this.getMethodsToEnsureIpfs()
+		for (const action of actions) {
+			await action.call(this);
+		}
+	}
+
 	/**
 	 * determineNecessaryActionsToEnsureComplete
 	 */
@@ -224,7 +239,7 @@ class VOD {
 			this.getMethodToEnsureTmpFilePath(),
 			this.getMethodToEnsureEncode(),
 			this.getMethodToEnsureThumbnail(),
-			this.getMethodToEnsureIpfs(),
+			this.getMethodsToEnsureIpfs(),
 			this.getMethodToEnsureB2(),
 		])
 		return actions
@@ -249,9 +264,10 @@ class VOD {
 
 	async encodeVideo () {
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
-		if (R.test(/\.mp4$/, this.tmpFilePath)) return
+		if (R.test(/\.mp4$/, this.tmpFilePath)) return;
 		const videoBasename = this.getVideoBasename();
 		const target = VOD.getTmpDownloadPath(videoBasename);
+		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
 		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
 		if (exitCode !== 0 || killed !== false) {
 			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
@@ -261,6 +277,7 @@ class VOD {
 	}
 
 	async uploadToIpfs () {
+		if (typeof this === 'undefined') throw new Error('*this* is undefined in uploadToIpfs which is UNSUPPORTED. There is likely a problem with how you are calling uploadToIpfs()')
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
 
 		if (R.match(/\.mp4/, this.tmpFilePath)) {
@@ -275,15 +292,19 @@ class VOD {
 		const rootCid = await VOD.web3Client.put(files);
 
 		// Fetch and verify files from web3.storage
-		const res = await VOD.web3Client.get(rootCid) // Promise<Web3Response | null>
-		const ipfsFiles = await res.files() // Promise<Web3File[]>
+		const res = await VOD.web3Client.get(rootCid); // Promise<Web3Response | null>
+		const ipfsFiles = await res.files(); // Promise<Web3File[]>
 
 		this.videoSrcHash = ipfsFiles[0].cid;
-		console.log(this.videoSrcHash)
+		console.log(this.videoSrcHash);
 	}
 
 	async uploadToB2 () {
 		console.log(`uploading ${this.tmpFilePath} to B2`);
+		if (process.env.B2_UPLOAD===0) {
+			console.log('SKIPPING B2 upload due to B2_UPLOAD=0 set in env')
+			return;
+		}
 		let unsuccessful = true;
 		let attempts = 0;
 		while (unsuccessful) {
@@ -402,7 +423,6 @@ class VOD {
 	}
 
 	async downloadFromB2 () {
-		if (path.extname(this.videoSrc) === '.mkv') throw new Error('mkv containers are not supported') // @TODO support mkv by converting to mp4
 		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
 		const remoteVideoBasename = path.basename(this.videoSrc);
 		console.log(`downloading ${remoteVideoBasename} from B2 => ${localFilePath}`);
@@ -419,7 +439,6 @@ class VOD {
 	}
 
 	async downloadFromIpfs () {
-		if (path.extname(this.videoSrc) === '.mkv') throw new Error('mkv containers are not supported') // @TODO support mkv by converting to mp4
 		const hash = this.videoSrcHash;
 		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
 		const url = this.getIpfsUrl();
