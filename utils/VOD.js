@@ -16,6 +16,13 @@ const Twitter = require('twitter-v2');
 const { Web3Storage, getFilesFromPath } = require('web3.storage');
 
 
+class TranscodeError extends Error {
+	constructor (message) {
+		super(R.defaultTo('transcode error')(message));
+		this.name = 'TranscodeError';
+	}
+}
+
 class DateMissingError extends Error {
 	constructor (message) {
 		super(R.defaultTo('date is missing from VOD which is UNSUPPORTED')(message));
@@ -41,7 +48,7 @@ class TmpFilePathMissingError extends Error {
 	constructor (message) {
 		super(R.defaultTo('tmpFilePath is missing from VOD which is UNSUPPORTED')(message));
 		this.name = 'TmpFilePathMissingError';
-	}	
+	}
 }
 
 
@@ -95,23 +102,12 @@ class VOD {
 	}
 
 
-	async copyIpfsToB2 () {
-		await this.downloadFromIPFS();
-		await this.uploadToB2();
-	}
-
-	async copyB2ToIpfs () {
-		await this.downloadFromB2();
-		await this.uploadToIpfs();
-	}
-
 	async generateThumbnail () {
 		setTimeout(() => {
 			// @TODO no-op for now. Later on I want to actually generate a thumbnail.
 			return '';
 		}, 250);
 	}
-
 
 	ensureB2OrIpfs () {
 		const fault = R.and(this.isMissingB2(), this.isMissingIpfs());
@@ -123,31 +119,70 @@ class VOD {
 		return isActionRequired ? this.getDateFromTwitter : null;
 	}
 
-	getMethodToEnsureB2 () {
-		this.ensureB2OrIpfs();
-		const isActionRequired = R.and(this.isMissingB2(), this.hasIpfs());
-		return isActionRequired ? this.copyIpfsToB2 : null;
+	getMethodToEnsureEncode () {
+		if(R.and(this.hasTmpFilePath(), this.isTmpFilePathMkv())) return this.encodeVideo;
+		return null;
 	}
 
+	getMethodToEnsureTmpFilePath () {
+		if(R.and(this.isMissingTmpFilePath(), this.hasIpfs())) return this.downloadFromIpfs;
+		if(R.and(this.isMissingTmpFilePath(), this.hasB2())) return this.downloadFromB2;
+		return null;
+	}
 
-	getMethodToEnsureIpfs () {
-		this.ensureB2OrIpfs();
-		const isActionRequired = R.and(this.isMissingIpfs(), this.hasB2());
-		return isActionRequired ? this.copyB2ToIpfs : null;
+	getMethodToEnsureB2 () {
+		return this.isMissingB2() ? this.uploadToB2 : null;
+	}
+
+	getMethodsToEnsureIpfs () {
+		let methods = [];
+
+		// already done. nothing to do
+		if (this.hasIpfs()) return methods;
+
+		// there is no vod to work with
+		if (R.and(this.isMissingTmpFilePath(), this.isMissingB2())) return methods;
+
+		// we have a local mkv to work with
+		if (R.and(this.hasTmpFilePath(), this.isTmpFilePathMkv())) methods.push(this.encodeVideo);
+
+		// we have a remote b2 video to work with
+		if (this.hasB2()) {
+			methods.push(this.downloadFromB2);
+			methods.push(this.encodeVideo);
+		}
+
+		methods.push(this.uploadToIpfs);
+		console.log(methods)
+
+		return methods;
 	}
 
 	getMethodToEnsureThumbnail () {
 		return this.isMissingThumbnail() ? this.generateThumbnail : null;
 	}
 
+	isTmpFilePathMkv () {
+		return R.compose(
+			R.test(/\.mkv$/),
+			R.prop('tmpFilePath')
+		)(this)
+	}
 
 	isMissingZuluDate () {
 		return R.compose(
 			R.or(
 				R.isEmpty,
-				R.not(R.match(/Z$/))
+				R.not(R.test(/Z$/))
 			),
 			R.prop('date')
+		)(this)
+	}
+
+	isMissingTmpFilePath () {
+		return R.compose(
+			R.isEmpty,
+			R.prop('tmpFilePath')
 		)(this)
 	}
 
@@ -169,8 +204,14 @@ class VOD {
 			R.prop('thiccHash')
 		)(this)
 	}
+	hasTmpFilePath () {
+		return R.not(this.isMissingTmpFilePath());
+	}
 	hasB2 () {
 		return R.not(this.isMissingB2());
+	}
+	hasLocalVideo () {
+		return this.isMissingTmpFilePath
 	}
 	hasIpfs () {
 		return R.compose(
@@ -184,24 +225,25 @@ class VOD {
 	}
 
 
+	async ensureIpfs () {
+		const actions = this.getMethodsToEnsureIpfs()
+		for (const action of actions) {
+			await action.call(this);
+		}
+	}
+
 	/**
 	 * determineNecessaryActionsToEnsureComplete
 	 */
 	determineNecessaryActionsToEnsureComplete () {
-
-		// if (this.isMissingB2() && this.isMissingIpfs()) {
-		// 	console.warn(`WARNING: VOD ${this.date} is missing both B2 and IPFS!`)
-		// }
-
-
 		const actions = R.filter(R.is(Function), [
 			this.getMethodToEnsureDate(),
+			this.getMethodToEnsureTmpFilePath(),
+			this.getMethodToEnsureEncode(),
+			this.getMethodToEnsureThumbnail(),
+			this.getMethodsToEnsureIpfs(),
 			this.getMethodToEnsureB2(),
-			this.getMethodToEnsureIpfs(),
-			this.getMethodToEnsureThumbnail(), // @TODO
 		])
-
-
 		return actions
 	}
 
@@ -222,8 +264,28 @@ class VOD {
 		}
 	}
 
-	async uploadToIpfs () {
+	async encodeVideo () {
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
+		if (R.test(/\.mp4$/, this.tmpFilePath)) return;
+		const videoBasename = this.getVideoBasename();
+		const target = VOD.getTmpDownloadPath(videoBasename);
+		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
+		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
+		if (exitCode !== 0 || killed !== false) {
+			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+		} else {
+			this.tmpFilePath = target;
+		}
+	}
+
+	async uploadToIpfs () {
+		if (typeof this === 'undefined') throw new Error('*this* is undefined in uploadToIpfs which is UNSUPPORTED. There is likely a problem with how you are calling uploadToIpfs()')
+		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
+
+		if (R.match(/\.mp4/, this.tmpFilePath)) {
+			await this.encodeVideo();
+		}
+
 		console.log(`uploading ${this.tmpFilePath} to IPFS`);
 		if (typeof VOD.web3Token === 'undefined') {
 			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
@@ -231,20 +293,20 @@ class VOD {
 		const files = await getFilesFromPath(this.tmpFilePath);
 		const rootCid = await VOD.web3Client.put(files);
 
-
 		// Fetch and verify files from web3.storage
-		const res = await VOD.web3Client.get(rootCid) // Promise<Web3Response | null>
-		const ipfsFiles = await res.files() // Promise<Web3File[]>
+		const res = await VOD.web3Client.get(rootCid); // Promise<Web3Response | null>
+		const ipfsFiles = await res.files(); // Promise<Web3File[]>
 
-		
 		this.videoSrcHash = ipfsFiles[0].cid;
-		console.log(this.videoSrcHash)
-
-
+		console.log(this.videoSrcHash);
 	}
 
 	async uploadToB2 () {
 		console.log(`uploading ${this.tmpFilePath} to B2`);
+		if (process.env.B2_UPLOAD===0) {
+			console.log('SKIPPING B2 upload due to B2_UPLOAD=0 set in env')
+			return;
+		}
 		let unsuccessful = true;
 		let attempts = 0;
 		while (unsuccessful) {
@@ -267,16 +329,23 @@ class VOD {
 	 * 
 	 * normal behavior for date-fns is to process dates as local tz.
 	 * we don't want that because all dates in futureporn are saved as GMT+0 time
+	 * so we use date-fns-tz and format with timezone GMT
 	 */
 	getDatestamp () {
-		const date = utcToZonedTime(this.date, 'GMT');
-		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'GMT' });
+		const date = utcToZonedTime(this.date, 'UTC');
+		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'UTC' });
+		return formattedDate;
+	}
+
+	getSafeDatestamp () {
+		const date = utcToZonedTime(this.date, 'UTC');
+		const formattedDate = format(date, "yyyyMMdd'T'HHmmss'Z'", { timezone: 'UTC' });
 		return formattedDate;
 	}
 
 	getVideoBasename () {
 		if (R.isEmpty(this.date)) throw new DateMissingError();
-		const d = this.getDatestamp();
+		const d = this.getSafeDatestamp();
 		return `projektmelody-chaturbate-${d}.mp4`;
 	}
 
@@ -312,9 +381,8 @@ class VOD {
 
 	getMarkdownFilename () {
 		if (R.isEmpty(this.date)) throw new DateMissingError();
-		const date = utcToZonedTime(this.date, 'GMT');
-		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'GMT' });
-		return path.join(VOD.dataDir, `${formattedDate}.md`);
+		const datestamp = this.getSafeDatestamp();
+		return path.join(VOD.dataDir, `${datestamp}.md`);
 	}
 
 
@@ -357,7 +425,6 @@ class VOD {
 	}
 
 	async downloadFromB2 () {
-		if (path.extname(this.videoSrc) === '.mkv') throw new Error('mkv containers are not supported') // @TODO support mkv by converting to mp4
 		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
 		const remoteVideoBasename = path.basename(this.videoSrc);
 		console.log(`downloading ${remoteVideoBasename} from B2 => ${localFilePath}`);
@@ -374,7 +441,8 @@ class VOD {
 	}
 
 	async downloadFromIpfs () {
-		const localFilePath = VOD.getTmpDownloadPath(hash);
+		const hash = this.videoSrcHash;
+		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
 		const url = this.getIpfsUrl();
 		const remoteVideoBasename = path.basename(url);
 		console.log(`downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
