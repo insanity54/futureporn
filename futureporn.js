@@ -7,7 +7,7 @@ const path = require('path');
 const fsp = require('fs/promises');
 const marked = require('gray-matter');
 
-const workDir = __dirname // esm style which I'm avoiding for now: path.dirname(import.meta.url);
+const workDir = __dirname; // esm style which I'm avoiding for now: path.dirname(import.meta.url);
 const workDirPattern = path.join(workDir, '*.mp4');
 const vodDir = path.join(workDir, 'website', 'vods');
 const vodDirPattern = path.join(vodDir, `*.md`);
@@ -43,15 +43,16 @@ console.log(`
 	console.log(`There are ${vods.length} known VODs`);
 
 	for (const vod of vods) {
-		console.log(`vod:${vod.date}`)
+		console.log(`vod:${vod.getDatestamp()} processing begin`);
 
 		try {
-			// await vod.getDateFromTwitter()
-			await vod.ensureComplete()
-			await vod.saveMarkdown()
+			await vod.ensureIpfs();
+			await vod.saveMarkdown();
 		} catch (e) {
-			console.warn(e)
+			console.warn(e);
 		}
+
+		console.log(`vod:${vod.getDatestamp()} complete`)
 	}
 
 })()
