@@ -3,18 +3,21 @@
  * VOD.js
  */
 
-require('dotenv').config();
+import * as dotenv from 'dotenv'
+dotenv.config();
 
-const R = require('ramda');
-const execa = require('execa');
-const os = require('os');
-const fsp = require('fs/promises');
-const path = require('path');
-const { format, zonedTimeToUtc, utcToZonedTime } = require('date-fns-tz');
-const fetch = require('node-fetch');
-const Twitter = require('twitter-v2');
-const { Web3Storage, getFilesFromPath } = require('web3.storage');
+import * as R from 'ramda';
+import execa from 'execa';
+import os from 'os';
+import fsp from 'fs/promises';
+import path from 'path';
+import dateFnsTz from 'date-fns-tz';
+import fetch from 'node-fetch';
+import Twitter from 'twitter-v2';
+import { Web3Storage, getFilesFromPath } from 'web3.storage';
+const { format, zonedTimeToUtc, utcToZonedTime } = dateFnsTz;
 
+const __dirname = path.dirname(import.meta.url); // esm workaround for missing __dirname
 
 class TranscodeError extends Error {
 	constructor (message) {
@@ -53,7 +56,7 @@ class TmpFilePathMissingError extends Error {
 
 
 
-class VOD {
+export default class VOD {
 	
 	constructor (data) {
 		if (typeof data === 'undefined') throw new Error('VOD() constructor must receive a data object')
@@ -85,8 +88,16 @@ class VOD {
 		consumer_secret:      process.env.TWITTER_API_KEY_SECRET
 	})
 	static web3Client = new Web3Storage({ token: VOD.web3Token });
+
+	// greetz https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+	static fixedEncodeURIComponent(str) {
+	  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+	    return '%' + c.charCodeAt(0).toString(16);
+	  });
+	}
+
 	static getSafeText (text) {
-		return text.replace(/"/g, '\\"')
+		return VOD.fixedEncodeURIComponent(text)
 	}
 
 	static getTmpDownloadPath (filename) {
@@ -457,4 +468,3 @@ class VOD {
 
 
 
-module.exports = VOD;
