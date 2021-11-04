@@ -1,8 +1,12 @@
 {
   "name": "futureporn",
-  "version": "0.0.2",
+  "type": "module",
+  "version": "1.0.0",
   "description": "https://futureporn.neocities.org",
-  "engineStrict": "false",
+  "engineStrict": "true",
+  "engines": {
+    "node": "^12.20.0 || >=14.13.1"
+  },
   "scripts": {
     "build": "npm-run-all clean build:assets build:site",
     "build:assets": "NODE_ENV=production webpack --mode=production",
@@ -60,15 +64,12 @@
     "mini-css-extract-plugin": "^2.1.0",
     "minimist": "^1.2.5",
     "neocities-extended": "git://github.com/thatcomputerguy0101/neocities-node-extended",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.0.0",
     "node-sass": "^6.0.1",
-    "node-schedule": "^2.0.0",
     "npm-run-all": "^4.1.5",
-    "plyr": "^3.6.3",
     "postcss-loader": "^6.1.1",
     "process": "^0.11.10",
     "ramda": "^0.27.1",
-    "ramda-adjunct": "^2.33.0",
     "sass-loader": "^12.1.0",
     "sass-resources-loader": "^2.2.3",
     "style-loader": "^3.1.0",
@@ -76,9 +77,7 @@
     "twitter-v2": "^1.1.0",
     "web3.storage": "^3.3.2",
     "webpack": "^5.44.0",
-    "webpack-cli": "^4.7.2",
-    "webpack-manifest-plugin": "^3.1.1",
-    "yargs": "^16.2.0"
+    "webpack-manifest-plugin": "^3.1.1"
   },
   "private": "true",
   "devDependencies": {
