@@ -1,13 +1,15 @@
 
 
 
-const VOD = require('./utils/VOD.js');
-const fg = require('fast-glob');
-const path = require('path');
-const fsp = require('fs/promises');
-const marked = require('gray-matter');
+import VOD from './utils/VOD.js';
+import fg from 'fast-glob';
+import path from 'path';
+import fsp from 'fs/promises';
+import marked from 'gray-matter';
+import { fileURLToPath } from 'url';
 
-const workDir = __dirname; // esm style which I'm avoiding for now: path.dirname(import.meta.url);
+const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
+const workDir = __dirname; 
 const workDirPattern = path.join(workDir, '*.mp4');
 const vodDir = path.join(workDir, 'website', 'vods');
 const vodDirPattern = path.join(vodDir, `*.md`);
@@ -19,6 +21,7 @@ console.log(`
 	vodDirPattern: ${vodDirPattern}
 `);
 
+
 (async function main() {
 	let vods = [];
 
@@ -29,7 +32,7 @@ console.log(`
 		const mdRaw = await fsp.readFile(markdownFile);
 		const { data } = await marked(mdRaw);
 		const v = new VOD(data);
-		// console.log(`VOD found with date:${v.date}`);
+		console.log(`VOD found with date:${v.date}`);
 
 		if (
 			v.videoSrcHash === '' &&

@@ -1,12 +1,13 @@
 
 
-const expect = require('chai').expect
-const VOD = require('../utils/VOD.js');
-const path = require('path');
-const matter = require('gray-matter');
-const fsp = require('fs/promises');
-const { parseISO, isEqual, isValid } = require('date-fns');
+import { expect } from 'chai';
+import VOD from '../utils/VOD.js';
+import path from 'path';
+import matter from 'gray-matter';
+import fsp from 'fs/promises';
+import { parseISO, isEqual, isValid } from 'date-fns';
 
+const __dirname = path.dirname(import.meta.url); // esm workaround for missing __dirname
 const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
 const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-3021-10-16T00%3A00%3A00.000Z.mp4';
 const ipfsHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
@@ -22,7 +23,12 @@ const mp4Regex = /\.mp4/;
 describe('VOD', function () {
 
     after(async function () {
-        await fsp.unlink(path.join(__dirname, '..', 'website', 'vods', '3021-10-16T000000Z.md'))
+        const testVodMd = path.join(__dirname, '..', 'website', 'vods', '3021-10-16T000000Z.md');
+        try {
+            await fsp.unlink(testVodMd)
+        } catch (e) {
+            //console.log('testVodMd not exists but thats okay')
+        }
     })
 
     describe('instance', function () {
@@ -253,8 +259,12 @@ describe('VOD', function () {
     })
 
     describe('getSafeText', function () {
-        it('should escape double quotes', function () {
-            expect(VOD.getSafeText('Hello "world"')).to.match(/\\"world\\"/);
+        it('should urlencode double quotes', function () {
+            expect(VOD.getSafeText('Hello "world"')).to.equal("Hello%20%22world%22");
+        })
+        it('should urlencode asterisks', function () {
+            const unsafeMessage = '*this';
+            expect(VOD.getSafeText(unsafeMessage)).to.equal("%2athis");
         })
     })
 
