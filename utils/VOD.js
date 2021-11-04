@@ -88,8 +88,16 @@ export default class VOD {
 		consumer_secret:      process.env.TWITTER_API_KEY_SECRET
 	})
 	static web3Client = new Web3Storage({ token: VOD.web3Token });
+
+	// greetz https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
+	static fixedEncodeURIComponent(str) {
+	  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+	    return '%' + c.charCodeAt(0).toString(16);
+	  });
+	}
+
 	static getSafeText (text) {
-		return text.replace(/"/g, '\\"')
+		return VOD.fixedEncodeURIComponent(text)
 	}
 
 	static getTmpDownloadPath (filename) {
