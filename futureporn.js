@@ -6,8 +6,9 @@ import fg from 'fast-glob';
 import path from 'path';
 import fsp from 'fs/promises';
 import marked from 'gray-matter';
+import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(import.meta.url); // esm workaround for missing __dirname
+const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 const workDir = __dirname; 
 const workDirPattern = path.join(workDir, '*.mp4');
 const vodDir = path.join(workDir, 'website', 'vods');
@@ -20,6 +21,7 @@ console.log(`
 	vodDirPattern: ${vodDirPattern}
 `);
 
+
 (async function main() {
 	let vods = [];
 
@@ -30,7 +32,7 @@ console.log(`
 		const mdRaw = await fsp.readFile(markdownFile);
 		const { data } = await marked(mdRaw);
 		const v = new VOD(data);
-		// console.log(`VOD found with date:${v.date}`);
+		console.log(`VOD found with date:${v.date}`);
 
 		if (
 			v.videoSrcHash === '' &&
