@@ -12,7 +12,7 @@
     "build:assets": "NODE_ENV=production webpack --mode=production",
     "build:site": "NODE_ENV=production eleventy --config=./.eleventy.cjs",
     "clean": "rm -rf ./_site",
-    "deploy": "npm run build:assets && npm run build:site && node publish",
+    "deploy": "npm run build:assets && npm run build:site && node publish.cjs",
     "dev": "npm-run-all clean webpack:assets --parallel dev:*",
     "dev:assets": "yarn run webpack:assets --watch",
     "dev:site": "NODE_ENV=development eleventy --serve --config=./.eleventy.cjs",
