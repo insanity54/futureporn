@@ -10,7 +10,7 @@
   "scripts": {
     "build": "npm-run-all clean build:assets build:site",
     "build:assets": "NODE_ENV=production webpack --mode=production",
-    "build:site": "NODE_ENV=production eleventy",
+    "build:site": "NODE_ENV=production eleventy --config=./.eleventy.cjs",
     "clean": "rm -rf ./_site",
     "deploy": "npm run build:assets && npm run build:site && node publish",
     "dev": "npm-run-all clean webpack:assets --parallel dev:*",
