@@ -36,7 +36,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.setDataDeepMerge(true);
 
   eleventyConfig.addLayoutAlias("vod", "layouts/vod.njk");
-  eleventyConfig.addLayoutAlias("home", "layouts/vod.njk");
+  eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
 
   eleventyConfig.addShortcode("buildIpfsUrl", function(urlFragment) {
     return `https://ipfs.io/ipfs/${urlFragment}`;
