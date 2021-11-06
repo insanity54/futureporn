@@ -15,9 +15,11 @@ import dateFnsTz from 'date-fns-tz';
 import fetch from 'node-fetch';
 import Twitter from 'twitter-v2';
 import { Web3Storage, getFilesFromPath } from 'web3.storage';
+import Prevvy from 'prevvy';
+import { fileURLToPath } from 'url';
 const { format, zonedTimeToUtc, utcToZonedTime } = dateFnsTz;
 
-const __dirname = path.dirname(import.meta.url); // esm workaround for missing __dirname
+const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 
 class TranscodeError extends Error {
 	constructor (message) {
@@ -114,10 +116,36 @@ export default class VOD {
 
 
 	async generateThumbnail () {
-		setTimeout(() => {
-			// @TODO no-op for now. Later on I want to actually generate a thumbnail.
-			return '';
-		}, 250);
+		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
+		const tmpDateStamp = new Date().valueOf()
+		const thinThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thin.jpg`);
+		const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
+
+		let thiccOpts = {
+		  input: this.tmpFilePath,
+		  output: thiccThumbnailPath,
+		  width: 128,
+		  cols: 6,
+		  rows: 3
+		};
+		let pThicc = new Prevvy(thiccOpts);
+		await pThicc.generate();
+		const thiccFilePath = pThicc.output;
+		const thiccHash = await this._ipfsUpload(thiccFilePath);
+		this.thiccHash = thiccHash;
+
+		let thinOpts = {
+		  input: this.tmpFilePath,
+		  output: thinThumbnailPath,
+		  width: 128,
+		  cols: 5,
+		  rows: 1
+		};
+		let pThin = new Prevvy(thinOpts);
+		await pThin.generate();
+		const thinFilePath = pThin.output;
+		const thinHash = await this._ipfsUpload(thinFilePath);
+		this.thinHash = thinHash;
 	}
 
 	ensureB2OrIpfs () {
@@ -289,6 +317,17 @@ export default class VOD {
 		}
 	}
 
+	async _ipfsUpload (filename) {
+		const files = await getFilesFromPath(filename);
+		const rootCid = await VOD.web3Client.put(files);
+
+		// Fetch cid from web3.storage
+		const res = await VOD.web3Client.get(rootCid); // Promise<Web3Response | null>
+		const ipfsFiles = await res.files(); // Promise<Web3File[]>
+
+		return ipfsFiles[0].cid;
+	}
+
 	async uploadToIpfs () {
 		if (typeof this === 'undefined') throw new Error('*this* is undefined in uploadToIpfs which is UNSUPPORTED. There is likely a problem with how you are calling uploadToIpfs()')
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
@@ -301,14 +340,10 @@ export default class VOD {
 		if (typeof VOD.web3Token === 'undefined') {
 			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
 		}
-		const files = await getFilesFromPath(this.tmpFilePath);
-		const rootCid = await VOD.web3Client.put(files);
 
-		// Fetch and verify files from web3.storage
-		const res = await VOD.web3Client.get(rootCid); // Promise<Web3Response | null>
-		const ipfsFiles = await res.files(); // Promise<Web3File[]>
+		const hash = await this._ipfsUpload(this.tmpFilePath);
 
-		this.videoSrcHash = ipfsFiles[0].cid;
+		this.videoSrcHash = hash;
 		console.log(this.videoSrcHash);
 	}
 
