@@ -5,9 +5,10 @@ import VOD from '../utils/VOD.js';
 import path from 'path';
 import matter from 'gray-matter';
 import fsp from 'fs/promises';
+import { fileURLToPath } from 'url';
 import { parseISO, isEqual, isValid } from 'date-fns';
 
-const __dirname = path.dirname(import.meta.url); // esm workaround for missing __dirname
+const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
 const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-3021-10-16T00%3A00%3A00.000Z.mp4';
 const ipfsHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
@@ -15,6 +16,8 @@ const annouceUrlFixture = 'https://twitter.com/ProjektMelody/status/127296593668
 const thiccHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 const futureDateFixture = '3021-10-16T00:00:00.000Z';
 const mp4Fixture = path.join(__dirname, 'testvid.mp4');
+const mp4FixtureThiccHash = 'bafkreifquwillzg5jvp4cgjl7ki567ipmhp5zhyd6o2qft4flsmasbti6q';
+const mp4FixtureThinHash = 'bafkreibxdmuhnjaqqzrmhaeuo3elqw5wz53wlhbmfyjjjiw6o7mo4yngnu';
 const mkvFixture = path.join(__dirname, 'testvid.mkv');
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const mp4Regex = /\.mp4/;
@@ -401,7 +404,17 @@ describe('VOD', function () {
     })
 
 
-    xdescribe('generateThumbnail', function () {});
+    describe('generateThumbnail', function () {
+        this.timeout(60000);
+        it('should populate thiccHash and thinHash', async function () {
+            const v = new VOD({
+                tmpFilePath: mp4Fixture
+            })
+            await v.generateThumbnail();
+            expect(v).to.have.property('thiccHash', mp4FixtureThiccHash);
+            expect(v).to.have.property('thinHash', mp4FixtureThinHash);
+        })
+    });
 
     describe('getMethodToEnsureEncode', function () {
         it('should return {function} encodeVideo if tmpFilePath contains an mkv', function () {
