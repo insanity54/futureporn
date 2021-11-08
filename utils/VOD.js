@@ -277,11 +277,8 @@ export default class VOD {
 	determineNecessaryActionsToEnsureComplete () {
 		const actions = R.filter(R.is(Function), [
 			this.getMethodToEnsureDate(),
-			this.getMethodToEnsureTmpFilePath(),
-			this.getMethodToEnsureEncode(),
 			this.getMethodToEnsureThumbnail(),
 			this.getMethodsToEnsureIpfs(),
-			this.getMethodToEnsureB2(),
 		])
 		return actions
 	}

@@ -54,6 +54,8 @@ console.log(`
 		console.log(`vod:${vod.getDatestamp()} processing begin`);
 
 		try {
+			await vod.generateThumbnail();
+			await vod.saveMarkdown();
 			await vod.ensureIpfs();
 			await vod.saveMarkdown();
 		} catch (e) {
