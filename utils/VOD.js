@@ -56,6 +56,12 @@ class TmpFilePathMissingError extends Error {
 	}
 }
 
+class VideoMissingError extends Error {
+	constructor (message) {
+		super(R.defaultTo('The VOD data did not contain a video which is UNSUPPORTED')(message));
+		this.name = 'VideoMissingError';
+	}
+}
 
 
 export default class VOD {
@@ -115,37 +121,46 @@ export default class VOD {
 	}
 
 
+
 	async generateThumbnail () {
-		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
+		const thumbnailJobStartTime = new Date();
+
+		console.log(`this.tmpFilePath:${this.tmpFilePath}, this.videoSrcHash:${this.videoSrcHash}`)
+		if (this.tmpFilePath === '' && this.videoSrcHash === '') throw new VideoMissingError();
 		const tmpDateStamp = new Date().valueOf()
 		const thinThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thin.jpg`);
 		const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
 
+		const videoInputSource = (this.videoSrcHash !== '') ? this.getIpfsUrl() : this.tmpFilePath;
+		console.log(`videoInputSource:${videoInputSource}`)
+
 		let thiccOpts = {
-		  input: this.tmpFilePath,
-		  output: thiccThumbnailPath,
-		  width: 128,
-		  cols: 5,
-		  rows: 5
+			input: videoInputSource,
+			output: thiccThumbnailPath,
+			throttleTimeout: 10000,
+			width: 128,
+			cols: 5,
+			rows: 5,
 		};
 		let pThicc = new Prevvy(thiccOpts);
 		await pThicc.generate();
 		const thiccFilePath = pThicc.output;
 		const thiccHash = await this._ipfsUpload(thiccFilePath);
-		this.thiccHash = thiccHash;
+		this.thiccHash = `${thiccHash}?filename=${this.getSafeDatestamp()}_thicc.jpg`;
 
 		let thinOpts = {
-		  input: this.tmpFilePath,
-		  output: thinThumbnailPath,
-		  width: 128,
-		  cols: 5,
-		  rows: 1
+			input: videoInputSource,
+			output: thinThumbnailPath,
+			throttleTimeout: 10000,
+			width: 128,
+			cols: 5,
+			rows: 1,
 		};
 		let pThin = new Prevvy(thinOpts);
 		await pThin.generate();
 		const thinFilePath = pThin.output;
 		const thinHash = await this._ipfsUpload(thinFilePath);
-		this.thinHash = thinHash;
+		this.thinHash = `${thinHash}?filename=${this.getSafeDatestamp()}_thin.jpg`;
 	}
 
 	ensureB2OrIpfs () {
@@ -341,7 +356,6 @@ export default class VOD {
 		const hash = await this._ipfsUpload(this.tmpFilePath);
 
 		this.videoSrcHash = hash;
-		console.log(this.videoSrcHash);
 	}
 
 	async uploadToB2 () {
@@ -381,6 +395,7 @@ export default class VOD {
 	}
 
 	getSafeDatestamp () {
+		if (R.isEmpty(this.date)) throw new DateMissingError();
 		const date = utcToZonedTime(this.date, 'UTC');
 		const formattedDate = format(date, "yyyyMMdd'T'HHmmss'Z'", { timezone: 'UTC' });
 		return formattedDate;

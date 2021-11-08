@@ -5727,10 +5727,10 @@ pretty@^2.0.0:
     extend-shallow "^2.0.1"
     js-beautify "^1.6.12"
 
-prevvy@^2.4.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/prevvy/-/prevvy-2.5.1.tgz#cbf4755c9f4e08653bf8dd6e1cfa174db5fc517c"
-  integrity sha512-j84Lj03BcbM0GmMwao1lSQSPUDPnyvF2pn0sspU0N6q/CP98vmVTF159l24aW3e6SPHvl1dxyp+t79iyTG8BnQ==
+prevvy@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/prevvy/-/prevvy-4.0.0.tgz#2a7986f90098eeb88188716bf15710e88161027d"
+  integrity sha512-YQ9pr1rVWxKWZm43UbBfq6sLCht93oTgpZeQ49ZpOcw0FmNnw7K9q1PAfEM3kyT8YQWZRjTeP0HErqIzt0A1GA==
   dependencies:
     bluebird "^3.7.2"
     fluent-ffmpeg "^2.1.2"
@@ -6594,9 +6594,9 @@ slash@^3.0.0:
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
 
 slugify@^1.4.7:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.6.1.tgz#a5fcaef29f4e57c6e932ce7044b6ffd9cf81b641"
-  integrity sha512-5ofqMTbetNhxlzjYYLBaZFQd6oiTuSkQlyfPEFIMwgUABlZQ0hbk5xIV9Ydd5jghWeRoO7GkiJliUvTpLOjNRA==
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.6.2.tgz#4cb97220a2278e1b86fb017c6da668e6a865354c"
+  integrity sha512-XMtI8qD84LwCpthLMBHlIhcrj10cgA+U/Ot8G6FD6uFuWZtMfKK75JO7l81nzpFJsPlsW6LT+VKqWQJW3+6New==
 
 socket.io-adapter@~1.1.0:
   version "1.1.2"

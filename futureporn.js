@@ -34,18 +34,22 @@ console.log(`
 		const v = new VOD(data);
 		console.log(`VOD found with date:${v.date}`);
 
+		// if (
+		// 	v.videoSrcHash === '' &&
+		// 	v.tmpFilePath !== ''
+		// ) vods.push(v);
+
 		if (
-			v.videoSrcHash === '' &&
-			v.tmpFilePath !== ''
+			v.thiccHash === '' || v.thinHash === ''
 		) vods.push(v);
 	}
 
-	// create VOD object for each VOD *.mp4 file in the workdir (created by voddo)
-	const videoFiles = await fg([ workDirPattern ]);
-	for (const videoFile of videoFiles) {
-		const v = new VOD({ videoSrcTmp: videoFile });
-		vods.push(v);
-	}
+	// // create VOD object for each VOD *.mp4 file in the workdir (created by voddo)
+	// const videoFiles = await fg([ workDirPattern ]);
+	// for (const videoFile of videoFiles) {
+	// 	const v = new VOD({ videoSrcTmp: videoFile });
+	// 	vods.push(v);
+	// }
 
 	console.log(`There are ${vods.length} known VODs`);
 
@@ -56,8 +60,8 @@ console.log(`
 		try {
 			await vod.generateThumbnail();
 			await vod.saveMarkdown();
-			await vod.ensureIpfs();
-			await vod.saveMarkdown();
+			// await vod.ensureIpfs();
+			// await vod.saveMarkdown();
 		} catch (e) {
 			console.warn(e);
 		}

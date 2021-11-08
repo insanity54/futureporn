@@ -11,13 +11,14 @@ import { parseISO, isEqual, isValid } from 'date-fns';
 const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
 const b2VODFixture = 'https://f000.backblazeb2.com/file/futureporn/projektmelody-chaturbate-3021-10-16T00%3A00%3A00.000Z.mp4';
+const videoSrcHashFixture = 'bafkreifufx6uharnts5wy6smk7mxmlwg7fpzhf5s3n33kydfgr7zqhagme';
 const ipfsHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 const annouceUrlFixture = 'https://twitter.com/ProjektMelody/status/1272965936685953024'
 const thiccHashFixture = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 const futureDateFixture = '3021-10-16T00:00:00.000Z';
 const mp4Fixture = path.join(__dirname, 'testvid.mp4');
-const mp4FixtureThiccHash = 'bafkreifquwillzg5jvp4cgjl7ki567ipmhp5zhyd6o2qft4flsmasbti6q';
-const mp4FixtureThinHash = 'bafkreibxdmuhnjaqqzrmhaeuo3elqw5wz53wlhbmfyjjjiw6o7mo4yngnu';
+const mp4FixtureThiccHash = 'bafkreifb7opo6tqsftfnjmufo47e7nyuhnj2qcsd3bpqlbwwiyvot6ck5y';
+const mp4FixtureThinHash = 'bafkreig4n7tkww4uqkqpca7fbw7vm42nohyrixexd2klxbmrvrhawewyeq';
 const mkvFixture = path.join(__dirname, 'testvid.mkv');
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const mp4Regex = /\.mp4/;
@@ -187,6 +188,10 @@ describe('VOD', function () {
             const v = new VOD({ date: '3021-10-16' });
             expect(v.getSafeDatestamp()).to.equal('30211016T000000Z');
         })
+        it('should throw if there is no date', function () {
+            const v = new VOD({});
+            expect(function() { v.getSafeDatestamp() }).to.throw(/date is missing/);
+        })
     })
 
     describe('getVideoBasename', () => {
@@ -221,14 +226,6 @@ describe('VOD', function () {
 
     describe('uploadToIpfs', function () {
         this.timeout(45000);
-        it('should upload a file and save the cid to vod.videoSrcHash', async function () {
-            const v = new VOD({
-                date: futureDateFixture,
-                tmpFilePath: path.join(__dirname, 'cj_clippy_avatar.png')
-            });
-            await v.uploadToIpfs();
-            expect(v.videoSrcHash).to.match(ipfsHashRegex);
-        })
         it('should first transcode a mkv to mp4', async function () {
             const v = new VOD({
                 date: futureDateFixture,
@@ -238,12 +235,13 @@ describe('VOD', function () {
             expect(v.tmpFilePath).to.match(mp4Regex);
             expect(v.videoSrcHash).to.match(ipfsHashRegex);
         })
-        it('should upload a mp4', async function () {
+        it('should upload a mp4 and save the cid to vod.videoSrcHash', async function () {
             const v = new VOD({
                 date: futureDateFixture,
                 tmpFilePath: mp4Fixture
             });
             await v.uploadToIpfs();
+            console.log(v.videoSrcHash)
             expect(v.videoSrcHash).to.match(ipfsHashRegex); 
         })
     })
@@ -333,6 +331,8 @@ describe('VOD', function () {
         })
     })
 
+
+
     describe('getIpfsUrl', function () {
         it('should return ipfs.io url', function () {
             const date = '30211016T000000Z';
@@ -405,15 +405,28 @@ describe('VOD', function () {
 
 
     describe('generateThumbnail', function () {
-        this.timeout(60000);
-        it('should populate thiccHash and thinHash', async function () {
+        it('should populate thiccHash and thinHash using tmpFilePath', async function () {
+            this.timeout(60000);
             const v = new VOD({
-                tmpFilePath: mp4Fixture
-            })
+                tmpFilePath: mp4Fixture,
+                date: futureDateFixture
+            });
             await v.generateThumbnail();
-            expect(v).to.have.property('thiccHash', mp4FixtureThiccHash);
-            expect(v).to.have.property('thinHash', mp4FixtureThinHash);
-        })
+            const safeDate = v.getSafeDatestamp();
+            expect(v).to.have.property('thiccHash', `${mp4FixtureThiccHash}?filename=${safeDate}_thicc.jpg`);
+            expect(v).to.have.property('thinHash', `${mp4FixtureThinHash}?filename=${safeDate}_thin.jpg`);
+        });
+        it('should populate thiccHash and thinHash using videoSrcHash', async function () {
+            this.timeout(400000);
+            const v = new VOD({
+                videoSrcHash: videoSrcHashFixture,
+                date: futureDateFixture
+            });
+            await v.generateThumbnail();
+            const safeDate = v.getSafeDatestamp();
+            expect(v).to.have.property('thiccHash', `${mp4FixtureThiccHash}?filename=${safeDate}_thicc.jpg`);
+            expect(v).to.have.property('thinHash', `${mp4FixtureThinHash}?filename=${safeDate}_thin.jpg`);
+        });
     });
 
     describe('getMethodToEnsureEncode', function () {
