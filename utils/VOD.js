@@ -125,8 +125,8 @@ export default class VOD {
 		  input: this.tmpFilePath,
 		  output: thiccThumbnailPath,
 		  width: 128,
-		  cols: 6,
-		  rows: 3
+		  cols: 5,
+		  rows: 5
 		};
 		let pThicc = new Prevvy(thiccOpts);
 		await pThicc.generate();
