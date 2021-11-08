@@ -1,0 +1,27 @@
+---
+permalink: /feed/feed.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ metadata.title }}</title>
+  <subtitle>{{ metadata.description }}</subtitle>
+  <link href="{{ metadata.feedUrl }}" rel="self"/>
+  <link href="{{ metadata.url }}"/>
+  <updated>{{ collections.vods | getNewestCollectionItemDate | dateToRfc3339 }}</updated>
+  <id>{{ metadata.url }}</id>
+  <author>
+    <name>{{ metadata.author.name }}</name>
+    <email>{{ metadata.author.email }}</email>
+  </author>
+  {%- for vod in collections.vods %}
+  {% set absolutePostUrl %}{{ vod.url | url | absoluteUrl(metadata.url) }}{% endset %}
+  <entry>
+    <title>{{ vod.data.title }}</title>
+    <link href="{{ absolutePostUrl }}"/>
+    <updated>{{ vod.date | dateToRfc3339 }}</updated>
+    <id>{{ absolutePostUrl }}</id>
+    <content type="text/plain">{% buildIpfsUrl vod.data.videoSrcHash %}</content>
+  </entry>
+  {%- endfor %}
+</feed>
