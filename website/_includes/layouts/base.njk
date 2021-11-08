@@ -13,6 +13,7 @@
     <meta property="og:description" content="{{ metadata.description }}" />
     <link rel="stylesheet" href="{% webpackAsset 'main.css' %}">
     <link rel="canonical" href="{{ metadata.url }}">
+    <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
     <title>{{ title or metadata.title }}</title>
   </head>
   <body data-controller="fp">
@@ -27,12 +28,11 @@
 
     
       
-    <article class="mt-5 message is-danger">
+    {# <article class="mt-5 message is-danger">
       <div class="message-body">
-        Dear Science Team,
-        Thank you for checking out Futureporn! B2 videos may not be accessible due to high demand and low budget. Try the IPFS link, which does not have any limit.
+        Hello, World!
       </div>
-    </article>
+    </article> #}
 
 
 
