@@ -34,14 +34,7 @@ console.log(`
 		const v = new VOD(data);
 		console.log(`VOD found with date:${v.date}`);
 
-		// if (
-		// 	v.videoSrcHash === '' &&
-		// 	v.tmpFilePath !== ''
-		// ) vods.push(v);
-
-		if (
-			v.thiccHash === '' || v.thinHash === ''
-		) vods.push(v);
+		vods.push(v);
 	}
 
 	// // create VOD object for each VOD *.mp4 file in the workdir (created by voddo)
@@ -57,13 +50,23 @@ console.log(`
 
 		console.log(`vod:${vod.getDatestamp()} processing begin`);
 
-		try {
-			await vod.generateThumbnail();
-			await vod.saveMarkdown();
-			// await vod.ensureIpfs();
-			// await vod.saveMarkdown();
-		} catch (e) {
-			console.warn(e);
+		const ensuranceFunctions = [
+			vod.ensureDate,
+			//vod.ensureAudioOnly, // feature creep
+			vod.ensureVideo240Hash,
+			vod.ensureVideo480Hash,
+			vod.ensureThiccHash,
+			vod.ensureThinHash,
+			vod.saveMarkdown,
+		];
+
+		for (const f of ensuranceFunctions) {
+			try {
+				console.log(`${Date()}\n  | Starting ${f}`)
+				f.apply(this);
+			} catch (e) {
+				console.warn(e);
+			}
 		}
 
 		console.log(`vod:${vod.getDatestamp()} complete`)

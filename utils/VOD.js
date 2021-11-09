@@ -64,6 +64,8 @@ class VideoMissingError extends Error {
 }
 
 
+
+
 export default class VOD {
 	
 	constructor (data) {
@@ -179,8 +181,8 @@ export default class VOD {
 	}
 
 	getMethodToEnsureTmpFilePath () {
-		if(R.and(this.isMissingTmpFilePath(), this.hasIpfs())) return this.downloadFromIpfs;
-		if(R.and(this.isMissingTmpFilePath(), this.hasB2())) return this.downloadFromB2;
+		if (this.isMissingTmpFilePath() && this.hasIpfs()) return this.downloadFromIpfs;
+		if (this.isMissingTmpFilePath() && this.hasB2()) return this.downloadFromB2;
 		return null;
 	}
 
@@ -315,10 +317,34 @@ export default class VOD {
 		}
 	}
 
+	async ensureTmpFilePath () {
+		if (this.hasTmpFilePath()) return;
+		const downloadMethod = this.getMethodToEnsureTmpFilePath();
+
+		if (downloadMethod === null) {
+			throw new VideoMissingError();
+		}
+		await downloadMethod.apply(this);
+	}
+
+	async ensureVideo240Hash () {
+		if (R.test(/\.mp4$/, this.video240Hash)) return;
+		await this.ensureTmpFilePath();
+		const videoBasename = this._getVideoBasename('240p');
+		const target = VOD.getTmpDownloadPath(videoBasename);
+		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
+		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-vf', 'scale=w=-1:h=240', '-b:v', '386k', '-b:a', '45k', target]);
+		if (exitCode !== 0 || killed !== false) {
+			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+		} else {
+			this.tmpFilePath = target;
+		}
+	}
+
 	async encodeVideo () {
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
 		if (R.test(/\.mp4$/, this.tmpFilePath)) return;
-		const videoBasename = this.getVideoBasename();
+		const videoBasename = this._getVideoBasename();
 		const target = VOD.getTmpDownloadPath(videoBasename);
 		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
 		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
@@ -401,17 +427,18 @@ export default class VOD {
 		return formattedDate;
 	}
 
-	getVideoBasename () {
+	_getVideoBasename (param) {
 		if (R.isEmpty(this.date)) throw new DateMissingError();
 		const d = this.getSafeDatestamp();
-		return `projektmelody-chaturbate-${d}.mp4`;
+		const format = (R.isNil(param)) ? '' : `-${param}`;
+		return `projektmelody-chaturbate-${d}${format}.mp4`;
 	}
 
 	async getB2UrlFromB2 () {
 		let unsuccessful = true;
 		let attempts = 0;
 		let output = '';
-		let filename = this.getVideoBasename();
+		let filename = this._getVideoBasename();
 		while (unsuccessful) {
 			attempts += 1;
 			const { exitCode, killed, stdout } = await execa('rclone', [
@@ -434,7 +461,7 @@ export default class VOD {
 
 	getVideoFilename () {
 		if (R.isEmpty(this.date)) throw new DateMissingError();
-		return this.getVideoBasename();
+		return this._getVideoBasename();
 	}
 
 	getMarkdownFilename () {
@@ -483,10 +510,10 @@ export default class VOD {
 	}
 
 	async downloadFromB2 () {
-		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
+		const localFilePath = VOD.getTmpDownloadPath(this._getVideoBasename());
 		const remoteVideoBasename = path.basename(this.videoSrc);
 		console.log(`downloading ${remoteVideoBasename} from B2 => ${localFilePath}`);
-		const { killed, exitCode } = await execa('rclone', ['copy', `${VOD.rcloneDestination}:${VOD.B2BucketName}/${remoteVideoBasename}`, localFilePath ], { stdio: 'inherit' });
+		const { killed, exitCode } = await execa('rclone', ['copyto', `${VOD.rcloneDestination}:${VOD.B2BucketName}/${remoteVideoBasename}`, localFilePath ], { stdio: 'inherit' });
 		console.log(`killed:${killed}, exitCode:${exitCode}`)
 		this.tmpFilePath = localFilePath;
 		return this;
@@ -495,12 +522,12 @@ export default class VOD {
 	getIpfsUrl () {
 		if (R.isEmpty(this.videoSrcHash)) throw new VideoSrcHashMissingError();
 		if (R.isEmpty(this.date)) throw new DateMissingError();
-		return `https://ipfs.io/ipfs/${this.videoSrcHash}?filename=${this.getVideoBasename()}`
+		return `https://ipfs.io/ipfs/${this.videoSrcHash}?filename=${this._getVideoBasename()}`
 	}
 
 	async downloadFromIpfs () {
 		const hash = this.videoSrcHash;
-		const localFilePath = VOD.getTmpDownloadPath(this.getVideoBasename());
+		const localFilePath = VOD.getTmpDownloadPath(this._getVideoBasename());
 		const url = this.getIpfsUrl();
 		const remoteVideoBasename = path.basename(url);
 		console.log(`downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
