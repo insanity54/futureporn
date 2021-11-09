@@ -508,12 +508,14 @@ export default class VOD {
 			`video720Hash: ${this.video720Hash}\n`+
 			`video480Hash: ${this.video480Hash}\n`+
 			`video360Hash: ${this.video360Hash}\n`+
+			`video240Hash: ${this.video240Hash}\n`+
 			`thinHash: ${this.thinHash}\n`+
 			`thiccHash: ${this.thiccHash}\n`+
 			`announceTitle: "${VOD.getSafeText(this.announceTitle)}"\n`+
 			`announceUrl: ${this.announceUrl}\n`+
 			`date: ${this.getDatestamp()}\n`+
 			`note: ${this.note}\n`+
+			`tmpFilePath: ${this.tmpFilePath}\n`+
 			`layout: ${VOD.eleventyLayout}\n`+
 			'---\n';
 

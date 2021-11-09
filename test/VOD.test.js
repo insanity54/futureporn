@@ -144,6 +144,8 @@ describe('VOD', function () {
             expect(m.data).to.have.property('videoSrcHash', videoSrcFixture);
             expect(m.data).to.have.property('note', note);
             expect(m.data).to.have.property('date');
+            expect(m.data).to.have.property('video240Hash');
+            expect(m.data).to.have.property('tmpFilePath');
             expect(m.data.date).to.be.an.instanceof(Date);
             expect(isEqual(m.data.date, parseISO(date))).to.be.true;
         })
