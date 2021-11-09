@@ -54,16 +54,16 @@ console.log(`
 			vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
 			vod.ensureVideo240Hash,
-			vod.ensureVideo480Hash,
+			// vod.ensureVideo480Hash, // coming soon (TM)
 			vod.ensureThiccHash,
-			vod.ensureThinHash,
 			vod.saveMarkdown,
 		];
 
+		console.log(ensuranceFunctions);
+
 		for (const f of ensuranceFunctions) {
 			try {
-				console.log(`${Date()}\n  | Starting ${f}`)
-				f.apply(this);
+				await f.apply(vod);
 			} catch (e) {
 				console.warn(e);
 			}

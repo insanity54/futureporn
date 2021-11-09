@@ -73,11 +73,11 @@ export default class VOD {
 		this.date = VOD.parseDate(data.date);
 		this.title = VOD.default(data.title);
 		this.videoSrc = VOD.default(data.videoSrc);
-		this.videoSrcTmp = VOD.default(data.videoSrcTmp);
 		this.videoSrcHash = VOD.default(data.videoSrcHash);
 		this.video720Hash = VOD.default(data.video720Hash);
 		this.video480Hash = VOD.default(data.video480Hash);
 		this.video360Hash = VOD.default(data.video360Hash);
+		this.video240Hash = VOD.default(data.video240Hash);
 		this.thinHash = VOD.default(data.thinHash);
 		this.thiccHash = VOD.default(data.thiccHash);
 		this.announceTitle = VOD.default(data.announceTitle);
@@ -85,6 +85,7 @@ export default class VOD {
 		this.note = VOD.default(data.note);
 		this.layout = VOD.default(data.layout);
 		this.tmpFilePath = VOD.default(data.tmpFilePath);
+		this.video240HashTmpPath = VOD.default(data.video240HashTmpPath);
 	}
 
 	static B2BucketName = 'futureporn';
@@ -122,19 +123,14 @@ export default class VOD {
 		if (R.is(String, date)) return zonedTimeToUtc(date, 'Zulu');
 	}
 
-
-
-	async generateThumbnail () {
-		const thumbnailJobStartTime = new Date();
-
-		console.log(`this.tmpFilePath:${this.tmpFilePath}, this.videoSrcHash:${this.videoSrcHash}`)
+	async ensureThiccHash () {
+		if (this.thiccHash !== '') return;
 		if (this.tmpFilePath === '' && this.videoSrcHash === '') throw new VideoMissingError();
 		const tmpDateStamp = new Date().valueOf()
 		const thinThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thin.jpg`);
 		const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
 
 		const videoInputSource = (this.videoSrcHash !== '') ? this.getIpfsUrl() : this.tmpFilePath;
-		console.log(`videoInputSource:${videoInputSource}`)
 
 		let thiccOpts = {
 			input: videoInputSource,
@@ -148,7 +144,31 @@ export default class VOD {
 		await pThicc.generate();
 		const thiccFilePath = pThicc.output;
 		const thiccHash = await this._ipfsUpload(thiccFilePath);
-		this.thiccHash = `${thiccHash}?filename=${this.getSafeDatestamp()}_thicc.jpg`;
+		this.thiccHash = `${thiccHash}?filename=${this.getSafeDatestamp()}-thicc.jpg`;
+	}
+
+
+	async generateThumbnail () {
+		if (this.tmpFilePath === '' && this.videoSrcHash === '') throw new VideoMissingError();
+		const tmpDateStamp = new Date().valueOf()
+		const thinThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thin.jpg`);
+		const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
+
+		const videoInputSource = (this.videoSrcHash !== '') ? this.getIpfsUrl() : this.tmpFilePath;
+
+		let thiccOpts = {
+			input: videoInputSource,
+			output: thiccThumbnailPath,
+			throttleTimeout: 10000,
+			width: 128,
+			cols: 5,
+			rows: 5,
+		};
+		let pThicc = new Prevvy(thiccOpts);
+		await pThicc.generate();
+		const thiccFilePath = pThicc.output;
+		const thiccHash = await this._ipfsUpload(thiccFilePath);
+		this.thiccHash = `${thiccHash}?filename=${this.getSafeDatestamp()}-thicc.jpg`;
 
 		let thinOpts = {
 			input: videoInputSource,
@@ -162,7 +182,7 @@ export default class VOD {
 		await pThin.generate();
 		const thinFilePath = pThin.output;
 		const thinHash = await this._ipfsUpload(thinFilePath);
-		this.thinHash = `${thinHash}?filename=${this.getSafeDatestamp()}_thin.jpg`;
+		this.thinHash = `${thinHash}?filename=${this.getSafeDatestamp()}-thin.jpg`;
 	}
 
 	ensureB2OrIpfs () {
@@ -281,10 +301,16 @@ export default class VOD {
 	}
 
 
+	async ensureDate () {
+		const action = this.getMethodToEnsureDate();
+		if (action === null) return;
+		await action.apply(this);
+	}
+
 	async ensureIpfs () {
 		const actions = this.getMethodsToEnsureIpfs()
 		for (const action of actions) {
-			await action.call(this);
+			await action.apply(this);
 		}
 	}
 
@@ -328,17 +354,19 @@ export default class VOD {
 	}
 
 	async ensureVideo240Hash () {
-		if (R.test(/\.mp4$/, this.video240Hash)) return;
+		if (this.video240Hash !== '') return;
 		await this.ensureTmpFilePath();
 		const videoBasename = this._getVideoBasename('240p');
 		const target = VOD.getTmpDownloadPath(videoBasename);
 		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
-		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-vf', 'scale=w=-1:h=240', '-b:v', '386k', '-b:a', '45k', target]);
+		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-vf', 'scale=w=-2:h=240', '-b:v', '386k', '-b:a', '45k', target]);
 		if (exitCode !== 0 || killed !== false) {
 			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 		} else {
-			this.tmpFilePath = target;
+			this.video240HashTmpPath = target;
 		}
+		const hash = await this._ipfsUpload(this.video240HashTmpPath);
+		this.video240Hash = `${hash}?filename=${this._getVideoBasename('240p')}`
 	}
 
 	async encodeVideo () {
