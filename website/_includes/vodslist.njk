@@ -4,6 +4,11 @@
           <tr>
             <th>Date</th>
             <th>Video (Source)</th>
+            <th>Video (720p)</th>
+            <th>Video (480p)</th>
+            <th>Video (360p)</th>
+            <th>Video (240p)</th>
+            <th>Audio Only</th>
             <th>Thumbnail</th>
             <th>Title</th>
             <th>Annouce URL</th>
@@ -19,6 +24,71 @@
                 <a target="_blank" href="{% buildIpfsUrl vod.data.videoSrcHash %}">
                     <span>
                       <i class="fas fa-video"></i>
+                    </span>
+                    <span class="icon">
+                      <i class="fas fa-external-link-alt"></i>
+                    </span>
+                </a>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if vod.data.video720Hash %}
+                <a target="_blank" href="{% buildIpfsUrl vod.data.video720Hash %}">
+                    <span>
+                      <i class="fas fa-video"></i>
+                    </span>
+                    <span class="icon">
+                      <i class="fas fa-external-link-alt"></i>
+                    </span>
+                </a>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if vod.data.video480Hash %}
+                <a target="_blank" href="{% buildIpfsUrl vod.data.video480Hash %}">
+                    <span>
+                      <i class="fas fa-video"></i>
+                    </span>
+                    <span class="icon">
+                      <i class="fas fa-external-link-alt"></i>
+                    </span>
+                </a>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if vod.data.video360Hash %}
+                <a target="_blank" href="{% buildIpfsUrl vod.data.video360Hash %}">
+                    <span>
+                      <i class="fas fa-video"></i>
+                    </span>
+                    <span class="icon">
+                      <i class="fas fa-external-link-alt"></i>
+                    </span>
+                </a>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if vod.data.video240Hash %}
+                <a target="_blank" href="{% buildIpfsUrl vod.data.video240Hash %}">
+                    <span>
+                      <i class="fas fa-video"></i>
+                    </span>
+                    <span class="icon">
+                      <i class="fas fa-external-link-alt"></i>
+                    </span>
+                </a>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if vod.data.audioSrcHash %}
+                <a target="_blank" href="{% buildIpfsUrl vod.data.audioSrcHash %}">
+                    <span>
+                      <i class="fas fa-file-audio"></i>
                     </span>
                     <span class="icon">
                       <i class="fas fa-external-link-alt"></i>
