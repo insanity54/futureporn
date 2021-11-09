@@ -14,6 +14,14 @@ https://futureporn.neocities.org/
 
 All dates in VOD data are in GMT+0 timezone
 
+### Alternate video resolutions & respective bitrates
+
+#### 240p
+
+video 386 kb/s
+audio 45 kb/s
+
+
 ## Author
 
 Chris Grimmett <chris@grimtech.net> https://grimtech.net/contact
