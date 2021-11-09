@@ -85,7 +85,7 @@ export default class VOD {
 		this.note = VOD.default(data.note);
 		this.layout = VOD.default(data.layout);
 		this.tmpFilePath = VOD.default(data.tmpFilePath);
-		this.video240HashTmpPath = VOD.default(data.video240HashTmpPath);
+		this.video240TmpFilePath = VOD.default(data.video240TmpFilePath);
 	}
 
 	static B2BucketName = 'futureporn';
@@ -363,9 +363,9 @@ export default class VOD {
 		if (exitCode !== 0 || killed !== false) {
 			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 		} else {
-			this.video240HashTmpPath = target;
+			this.video240TmpFilePath = target;
 		}
-		const hash = await this._ipfsUpload(this.video240HashTmpPath);
+		const hash = await this._ipfsUpload(this.video240TmpFilePath);
 		this.video240Hash = `${hash}?filename=${this._getVideoBasename('240p')}`
 	}
 
@@ -515,6 +515,7 @@ export default class VOD {
 			`announceUrl: ${this.announceUrl}\n`+
 			`date: ${this.getDatestamp()}\n`+
 			`note: ${this.note}\n`+
+			`video240TmpFilePath: ${this.video240TmpFilePath}\n`+
 			`tmpFilePath: ${this.tmpFilePath}\n`+
 			`layout: ${VOD.eleventyLayout}\n`+
 			'---\n';
