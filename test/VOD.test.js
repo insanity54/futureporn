@@ -26,6 +26,9 @@ const mp4FixtureThinHash = 'bafkreig4n7tkww4uqkqpca7fbw7vm42nohyrixexd2klxbmrvrh
 const mkvFixture = path.join(__dirname, 'testvid.mkv');
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const mp4Regex = /\.mp4/;
+const doubleEncodedText = "Salutation%2520my%2520bruddas.%2520Gonna%2520be%2520along%2520fun%2520day%252C%2520starting%2520with%2520CB%2521%2521";
+const singleEncodedText = "Salutation%20my%20bruddas.%20Gonna%20be%20along%20fun%20day%2C%20starting%20with%20CB%21%21"
+const notEncodedText = "Salutation my bruddas. Gonna be along fun day, starting with CB!!";
 
 
 describe('VOD', function () {
@@ -227,6 +230,42 @@ describe('VOD', function () {
         })
     })
 
+    describe('ensureTextFormatting', function () {
+
+        it('should ensure that announceTitle is URL encoded', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                announceTitle: notEncodedText
+            })
+            await v.ensureTextFormatting();
+            expect(v).to.have.property('announceTitle', singleEncodedText);
+        })
+        it('should remove double URL encoding on announceTitle', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                announceTitle: doubleEncodedText
+            })
+            await v.ensureTextFormatting();
+            expect(v).to.have.property('announceTitle', singleEncodedText);
+        })
+        it('should ensure that title is URL encoded', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                title: notEncodedText
+            })
+            await v.ensureTextFormatting();
+            expect(v).to.have.property('title', singleEncodedText);
+        })
+        it('should remove double URL encoding on title', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                title: doubleEncodedText
+            })
+            await v.ensureTextFormatting();
+            expect(v).to.have.property('title', singleEncodedText);
+        })
+    })
+
     describe('ensureVideo240Hash', function () {
         this.timeout(60000);
         it('should transcode tmpFilePath video to 240p resolution, upload to ipfs and populate video240Hash', async function () {
@@ -309,13 +348,24 @@ describe('VOD', function () {
         })
     })
 
-    describe('getSafeText', function () {
+    describe('_getSafeText', function () {
         it('should urlencode double quotes', function () {
-            expect(VOD.getSafeText('Hello "world"')).to.equal("Hello%20%22world%22");
+            expect(VOD._getSafeText('Hello "world"')).to.equal("Hello%20%22world%22");
         })
         it('should urlencode asterisks', function () {
             const unsafeMessage = '*this';
-            expect(VOD.getSafeText(unsafeMessage)).to.equal("%2athis");
+            expect(VOD._getSafeText(unsafeMessage)).to.equal("%2athis");
+        })
+        it('should do nothing if text is already encoded', function () {
+            expect(VOD._getSafeText(singleEncodedText)).to.equal(singleEncodedText);
+            expect(VOD._getSafeText(doubleEncodedText)).to.equal(doubleEncodedText);
+        })
+    })
+
+    describe('_containsEncodedComponents', function () {
+        it('should detect %2A or %22', function () {
+            const wang = 'Updated my bar!!! It looks very cyberpunky (but all the bottles are filled with wang energy drink). %2Athis message sponsored by wang energy drink, %22Taste the Wang%22';
+            expect(VOD._containsEncodedComponents(wang)).to.be.true;
         })
     })
 

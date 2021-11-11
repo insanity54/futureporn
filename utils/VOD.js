@@ -107,8 +107,14 @@ export default class VOD {
 	  });
 	}
 
-	static getSafeText (text) {
-		return VOD.fixedEncodeURIComponent(text)
+	// greetz https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent
+	static _containsEncodedComponents(x) {
+	  return /%[0-9a-fA-F]+/.test(x);
+	}
+
+	static _getSafeText (text) {
+		if (VOD._containsEncodedComponents(text)) return text;
+		return VOD.fixedEncodeURIComponent(text);
 	}
 
 	static getTmpDownloadPath (filename) {
@@ -183,6 +189,28 @@ export default class VOD {
 		const thinFilePath = pThin.output;
 		const thinHash = await this._ipfsUpload(thinFilePath);
 		this.thinHash = `${thinHash}?filename=${this.getSafeDatestamp()}-thin.jpg`;
+	}
+
+	async ensureTextFormatting () {
+		// if announceTitle is double encoded, decode.
+		if (/%2520/.test(this.announceTitle)) {
+			this.announceTitle = decodeURIComponent(this.announceTitle)
+		}
+
+		// if announceTitle is not encoded, encode.
+		else if (/ /.test(this.announceTitle)) {
+			this.announceTitle = VOD._getSafeText(this.announceTitle)
+		}
+
+		// if title is double encoded, decode.
+		else if (/%2520/.test(this.title)) {
+			this.title = decodeURIComponent(this.title)
+		}
+
+		// if title is not encoded, encode.
+		else if (/ /.test(this.title)) {
+			this.title = VOD._getSafeText(this.title)
+		}
 	}
 
 	ensureB2OrIpfs () {
@@ -502,7 +530,7 @@ export default class VOD {
 
 	async saveMarkdown () {
 		const data = '---\n'+
-			`title: "${VOD.getSafeText(this.title)}"\n`+
+			`title: "${VOD._getSafeText(this.title)}"\n`+
 			`videoSrc: ${this.videoSrc}\n`+
 			`videoSrcHash: ${this.videoSrcHash}\n`+
 			`video720Hash: ${this.video720Hash}\n`+
@@ -511,7 +539,7 @@ export default class VOD {
 			`video240Hash: ${this.video240Hash}\n`+
 			`thinHash: ${this.thinHash}\n`+
 			`thiccHash: ${this.thiccHash}\n`+
-			`announceTitle: "${VOD.getSafeText(this.announceTitle)}"\n`+
+			`announceTitle: "${VOD._getSafeText(this.announceTitle)}"\n`+
 			`announceUrl: ${this.announceUrl}\n`+
 			`date: ${this.getDatestamp()}\n`+
 			`note: ${this.note}\n`+
