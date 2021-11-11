@@ -7,7 +7,7 @@
             {#<th>Video (720p)</th>#}
             {#<th>Video (480p)</th>#}
             {#<th>Video (360p)</th>#}
-            {#<th>Video (240p)</th>#}
+            <th>Video (240p)</th>
             {#<th>Audio Only</th>#}
             <th>Thumbnail</th>
             <th>Title</th>
@@ -71,7 +71,7 @@
               {% endif %}
             </td>#}
 
-            {#<td>
+            <td>
               {% if vod.data.video240Hash %}
                 <a target="_blank" href="{% buildIpfsUrl vod.data.video240Hash %}">
                     <span>
@@ -82,7 +82,7 @@
                     </span>
                 </a>
               {% endif %}
-            </td>#}
+            </td>
 
             {#<td>
               {% if vod.data.audioSrcHash %}
