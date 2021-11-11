@@ -53,9 +53,10 @@ console.log(`
 		const ensuranceFunctions = [
 			vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
-			vod.ensureVideo240Hash,
+			// vod.ensureVideo240Hash,
 			// vod.ensureVideo480Hash, // coming soon (TM)
-			vod.ensureThiccHash,
+			// vod.ensureThiccHash,
+			vod.ensureTextFormatting,
 			vod.saveMarkdown,
 		];
 
