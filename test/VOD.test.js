@@ -86,21 +86,21 @@ describe('VOD', function () {
 
     describe('parseDate', function () {
         it('should accept {String} 2021-10-16 and return a Date', function () {
-            const d = VOD.parseDate('2021-10-16');
+            const d = VOD._parseDate('2021-10-16');
             expect(d).to.be.an.instanceof(Date);
             expect(isValid(d)).to.be.true;
         })
         it('should accept 2021-10-16T00:00:00.000Z and return a Date', function () {
-            const d = VOD.parseDate('2021-10-16T00:00:00.000Z');
+            const d = VOD._parseDate('2021-10-16T00:00:00.000Z');
             expect(d).to.be.an.instanceof(Date);
             expect(isValid(d)).to.be.true;
         })
         it("should accept '' and return ''", function () {
-            const d = VOD.parseDate('');
+            const d = VOD._parseDate('');
             expect(d).to.equal('');
         })
         it("should accept undefined and return ''", function () {
-            const d = VOD.parseDate(undefined);
+            const d = VOD._parseDate(undefined);
             expect(d).to.equal('');
         })
     })
@@ -171,7 +171,7 @@ describe('VOD', function () {
     })
 
     describe('downloadFromIpfs', function () {
-        this.timeout(60000)
+        this.timeout(300000) // 5 min
         it('should download a file to /tmp', async function () {
             const v = new VOD({
                 date: futureDateFixture,
@@ -201,6 +201,12 @@ describe('VOD', function () {
         it('should throw if there is no date', function () {
             const v = new VOD({});
             expect(function() { v.getSafeDatestamp() }).to.throw(/date is missing/);
+        })
+    })
+
+    describe('_getIpfsHash', () => {
+        it('should strip away any query parameters and gateway url leaving only an ipfs hash', () => {
+            expect(VOD._getIpfsHash('https://ipfs.io/ipfs/bafybeiay5gbvtseoldxc4hduflzx2tjjqhcry3dyylxa7q47pbobkvu27a?filename=projektmelody-chaturbate-20211112T000700Z.mp4')).to.match(ipfsHashRegex);
         })
     })
 
@@ -264,6 +270,35 @@ describe('VOD', function () {
             await v.ensureTextFormatting();
             expect(v).to.have.property('title', singleEncodedText);
         })
+    })
+
+    describe('ensureVideoSrcHash', function () {
+        this.timeout(1000*60*20);
+        it('should upload an mp4 listed in tmpFilePath to ipfs and populate videoSrcHash', async function () {
+            const expectedVideoSrcHash = `${videoSrcHashFixture}?filename=projektmelody-chaturbate-30211016T000000Z-source.mp4`
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mp4Fixture
+            });
+            await v.ensureVideoSrcHash();
+            expect(v.videoSrcHash).to.equal(expectedVideoSrcHash);
+        });
+        it('should transcode an mkv listed in tmpFilePath to mp4, then upload to ipfs and populate videoSrcHash', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mkvFixture
+            });
+            await v.ensureVideoSrcHash();
+            expect(v.videoSrcHash).to.equal('bafkreigencclktw34fjka3kebamncvl4wyovwyzn5idntnu5f7iegl3u3u?filename=projektmelody-chaturbate-30211016T000000Z-source.mp4')
+        });
+        it('should do nothing if videoSrcHash already exists', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                videoSrcHash: videoSrcHashFixture
+            });
+            await v.ensureVideoSrcHash();
+            expect(v.videoSrcHash).to.equal(videoSrcHashFixture);
+        });
     })
 
     describe('ensureVideo240Hash', function () {
@@ -369,9 +404,9 @@ describe('VOD', function () {
         })
     })
 
-    describe('getTmpDownloadPath', function () {
+    describe('_getTmpDownloadPath', function () {
         it('should return something like /tmp/<filename>.<extension>', function () {
-            const dlPath = VOD.getTmpDownloadPath('myfile.txt');
+            const dlPath = VOD._getTmpDownloadPath('myfile.txt');
             expect(dlPath).to.equal('/tmp/myfile.txt');
         })
     })
@@ -821,7 +856,7 @@ describe('VOD', function () {
 
     
 
-    describe('determineNecessaryActionsToEnsureComplete', function () {
+    xdescribe('determineNecessaryActionsToEnsureComplete', function () {
         it('should handle a missing date', function () {
             const v = new VOD({
                 announceUrl: 'https://twitter.com/ProjektMelody/status/1225922638687752192'
