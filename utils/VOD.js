@@ -420,9 +420,9 @@ export default class VOD {
 		if (exitCode !== 0 || killed !== false) {
 			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 		} else {
-			this.tmpFilePath = target;
+			this.video240HashTmp = target;
 		}
-		const hash = await this._ipfsUpload(this.tmpFilePath);
+		const hash = await this._ipfsUpload(this.video240HashTmp);
 		this.video240Hash = `${hash}?filename=${videoBasename}`
 	}
 

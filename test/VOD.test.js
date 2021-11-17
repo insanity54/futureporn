@@ -330,6 +330,14 @@ describe('VOD', function () {
             await v.ensureVideo240Hash();
             expect(v.video240Hash).to.equal(video240HashFixture);
         });
+        it('should populate video240HashTmp', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mp4Fixture
+            });
+            await v.ensureVideo240Hash();
+            expect(v.video240HashTmp).to.match(/-240p.mp4$/);
+        });        
         it('should not throw if tmpFilePath is an mkv', async function () {
             const v = new VOD({
                 date: futureDateFixture,
