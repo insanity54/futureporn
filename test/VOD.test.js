@@ -291,6 +291,17 @@ describe('VOD', function () {
             await v.ensureVideoSrcHash();
             expect(v.videoSrcHash).to.equal('bafkreigencclktw34fjka3kebamncvl4wyovwyzn5idntnu5f7iegl3u3u?filename=projektmelody-chaturbate-30211016T000000Z-source.mp4')
         });
+        xit('should populate videoSrcHashTmp after transcoding an mkv to mp4', async function () {
+            // there is a potential problem where the transcode is unecessarily re-done because the previous run of this function exited with error
+            // I don't think i want to implement this.
+            // the absense of videoSrcHashTmp is only a problem if the program is interrupted
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mkvFixture
+            });
+            await v.ensureVideoSrcHash();
+            expect(v.videoSrcHashTmp).to.match(/\/tmp\/.*.mp4/);
+        });
         it('should do nothing if videoSrcHash already exists', async function () {
             const v = new VOD({
                 date: futureDateFixture,
