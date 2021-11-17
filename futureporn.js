@@ -45,6 +45,8 @@ console.log(`
 	// }
 
 	console.log(`There are ${vods.length} known VODs`);
+	// process latest vods first
+	vods.reverse()
 
 	for (const vod of vods) {
 

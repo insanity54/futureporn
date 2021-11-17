@@ -139,6 +139,7 @@ export default class VOD {
 	async ensureThiccHash () {
 		if (this.thiccHash !== '') return;
 		if (this.tmpFilePath === '' && this.videoSrcHash === '') throw new VideoMissingError();
+		console.log('Generating thiccHash Thumbnail...');
 		const tmpDateStamp = new Date().valueOf()
 		const thinThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thin.jpg`);
 		const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
