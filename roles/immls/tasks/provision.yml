@@ -43,10 +43,6 @@
     line: "export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}"
     state: present
 
-# - name: Add Eternal Terminal PPA (removing for nowbecause et is not mature and it crashes too much)
-#   ansible.builtin.apt_repository:
-#     repo: ppa:jgmath2000/et
-
 - name: Install dependencies
   become: yes
   apt:
@@ -60,7 +56,6 @@
       - ffmpeg
       - rclone
       - mosh
-      # - et # et crashes too much
     state: present
     update_cache: yes
 
