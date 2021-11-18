@@ -4,6 +4,13 @@
   wait_for_connection:
     timeout: 300
 
+- name: wait for boot-finished file to exist
+  raw: test -f /var/lib/cloud/instance/boot-finished
+  retries: 50
+  register: cmd_res
+  changed_when: false
+  until: cmd_res is success
+
 - name: gather facts
   ansible.builtin.setup:
 
@@ -50,7 +57,6 @@
       - python3
       - python3-pip
       - mg 
-      - screen 
       - git
       - magic-wormhole
       - ffmpeg
