@@ -65,6 +65,11 @@
     state: present
     update_cache: yes
 
+- name: create ufw exception for mosh
+  community.general.ufw:
+    rule: allow
+    port: 60000:61000
+    proto: udp
 
 - name: Create rclone conf directory
   ansible.builtin.file:
