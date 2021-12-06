@@ -62,7 +62,6 @@
     "fdir": "^5.1.0",
     "globby": "^11.0.4",
     "gray-matter": "^4.0.3",
-    "ipfs-car": "^0.5.9",
     "markdown-it-anchor": "^8.1.0",
     "mini-css-extract-plugin": "^2.1.0",
     "minimist": "^1.2.5",
