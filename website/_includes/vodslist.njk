@@ -17,8 +17,7 @@
         <tbody>
           {% for vod in vodslist | reverse %}
           <tr>
-            <td>{{ vod.data.date | htmlDateString }}</td>
-            
+            <td><a href="{{ vod.url | url }}">{{ vod.data.date | htmlDateString }}</a></td>
             <td>
               {% if vod.data.videoSrcHash %}
                 <a target="_blank" href="{% buildIpfsUrl vod.data.videoSrcHash %}">
