@@ -249,9 +249,6 @@ module.exports = class VOD {
 		return null;
 	}
 
-	getMethodToEnsureB2 () {
-		return this.isMissingB2() ? this.uploadToB2 : null;
-	}
 
 	getMethodsToEnsureIpfs () {
 		let methods = [];
@@ -396,6 +393,14 @@ module.exports = class VOD {
 		await downloadMethod.apply(this);
 	}
 
+	async ensureVideoSrc () {
+		if (this.videoSrc !== '') return;
+		await this.ensureTmpFilePath();
+		const videoBasename = this._getVideoBasename('source');
+		const url = await this._B2Upload(this.tmpFilePath);
+		this.videoSrc = url;
+	}
+
 	async ensureVideoSrcHash () {
 		if (this.videoSrcHash !== '') return;
 		await this.ensureTmpFilePath();
@@ -477,8 +482,8 @@ module.exports = class VOD {
 		this.videoSrcHash = hash;
 	}
 
-	async uploadToB2 () {
-		console.log(`uploading ${this.tmpFilePath} to B2`);
+	async _B2Upload (filename) {
+		console.log(`uploading ${filename} to B2`);
 		if (process.env.B2_UPLOAD===0) {
 			console.log('SKIPPING B2 upload due to B2_UPLOAD=0 set in env')
 			return;
@@ -487,7 +492,7 @@ module.exports = class VOD {
 		let attempts = 0;
 		while (unsuccessful) {
 			attempts += 1
-			const { exitCode, killed } = await execa('rclone', ['copy', this.tmpFilePath, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
+			const { exitCode, killed } = await execa('rclone', ['copy', filename, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
 			if (exitCode === 0 && killed === false) {
 				unsuccessful = false;
 			}
@@ -495,8 +500,8 @@ module.exports = class VOD {
 				break;
 			}
 		}
-		this.videoSrc = await this.getB2UrlFromB2();
-		return this;
+		const url = await this._getB2UrlFromB2(path.basename(filename));
+		return url;
 	}
 
 
@@ -527,11 +532,10 @@ module.exports = class VOD {
 		return `projektmelody-chaturbate-${d}${format}.mp4`;
 	}
 
-	async getB2UrlFromB2 () {
+	async _getB2UrlFromB2 (filename) {
 		let unsuccessful = true;
 		let attempts = 0;
 		let output = '';
-		let filename = this._getVideoBasename();
 		while (unsuccessful) {
 			attempts += 1;
 			const { exitCode, killed, stdout } = await execa('rclone', [

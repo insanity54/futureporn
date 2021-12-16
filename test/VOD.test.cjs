@@ -275,6 +275,18 @@ describe('VOD', function () {
         })
     })
 
+    describe('ensureVideoSrc', function () {
+        this.timeout(1000*60);
+        it('should upload an mp4 listed in tmpFilePath to Backblaze and populate videoSrc', async function () {
+            const v = new VOD({
+                date: futureDateFixture,
+                tmpFilePath: mp4Fixture
+            })
+            await v.ensureVideoSrc();
+            chai.expect(v.videoSrc).to.equal(videoSrcFixture);
+        })
+    })
+
     describe('ensureVideoSrcHash', function () {
         this.timeout(1000*60*20);
         it('should upload an mp4 listed in tmpFilePath to ipfs and populate videoSrcHash', async function () {
