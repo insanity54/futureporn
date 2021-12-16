@@ -67,8 +67,8 @@
 - name: Install latest rclone
   apt:
     deb: https://downloads.rclone.org/rclone-current-linux-amd64.deb
-  state: present
-  # this is necessary because the apt version has a B2 upload bug
+    state: present
+    # this is necessary because the apt version has a B2 upload bug
 
 - name: create ufw exception for mosh
   community.general.ufw:
