@@ -416,7 +416,7 @@ module.exports = class VOD {
 			}
 		}
 		if (this.isMissingTmpFilePath()) throw new TmpFilePathMissingError('tmpFilePath is missing prior to upload which should not occur')
-		console.log(`~~~ uploading ${this.tmpFilePath} ~~~`)
+		console.log(`~~~ uploading ${this.tmpFilePath} to web3 (IPFS) ~~~`)
 		const hash = await this._ipfsUpload(this.tmpFilePath);
 		this.videoSrcHash = `${hash}?filename=${videoBasename}`
 		console.log('done')

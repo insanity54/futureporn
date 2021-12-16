@@ -56,6 +56,7 @@ console.log(`
 			vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
 			vod.ensureVideoSrc,
+			vod.saveMarkdown,
 			vod.ensureVideoSrcHash,
 			vod.saveMarkdown,
 			vod.ensureVideo240Hash,
