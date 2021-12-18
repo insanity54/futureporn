@@ -1,6 +1,6 @@
 
 
-const deriveTitle = (text) => {
+export function deriveTitle (text) {
 	// greetz https://www.urlregex.com/
 	const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/g;
 	let title = text
@@ -11,7 +11,7 @@ const deriveTitle = (text) => {
 }
 
 
-const getFullTweetText = (tweet) => {
+export function getFullTweetText (tweet) {
 	let truncated = tweet.truncated;
 	if (truncated) return tweet.extended_tweet.full_text;
 	else return tweet.text;
@@ -21,7 +21,7 @@ const getFullTweetText = (tweet) => {
 /**
  * Does stuff with filtered tweets. (side-effects)
  */
-const processTweet = (tweet) => {
+export function processTweet (tweet) {
 	// console.log(`processTweet() is as follows \n${JSON.stringify(tweet, 0, 2)}`);
 	const id = (tweet.id || tweet.user.id);
 	console.log('>>> Processing Tweet');
@@ -38,8 +38,8 @@ const processTweet = (tweet) => {
 }
 
 
-module.exports = {
-	deriveTitle,
-	processTweet,
-	getFullTweetText
-}
+// module.exports = {
+// 	deriveTitle,
+// 	processTweet,
+// 	getFullTweetText
+// }

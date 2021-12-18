@@ -3,23 +3,32 @@
  * VOD.js
  */
 
-import * as dotenv from 'dotenv'
+const dotenv = require('dotenv')
 dotenv.config();
 
-import * as R from 'ramda';
-import execa from 'execa';
-import os from 'os';
-import fsp from 'fs/promises';
-import path from 'path';
-import dateFnsTz from 'date-fns-tz';
-import fetch from 'node-fetch';
-import Twitter from 'twitter-v2';
-import { Web3Storage, getFilesFromPath } from 'web3.storage';
-import Prevvy from 'prevvy';
-import { fileURLToPath } from 'url';
+const R = require('ramda');
+const execa = require('execa');
+const os = require('os');
+const fsp = require('fs/promises');
+const path = require('path');
+const dateFnsTz = require('date-fns-tz');
+const fetch = require('node-fetch');
+const Twitter = require('twitter-v2');
+const { Web3Storage, getFilesFromPath } = require('web3.storage');
+const Prevvy = require('prevvy');
+const { fileURLToPath } = require('url');
 const { format, zonedTimeToUtc, utcToZonedTime } = dateFnsTz;
+const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 
-const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
+
+// const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
+
+class NotEnoughMemoryError extends Error {
+	constructor (message) {
+		super(R.defaultTo('This machine does not have enough RAM. ')(message));
+		this.name = 'NotEnoughMemoryError';
+	}
+}
 
 class TranscodeError extends Error {
 	constructor (message) {
@@ -66,11 +75,11 @@ class VideoMissingError extends Error {
 
 
 
-export default class VOD {
+module.exports = class VOD {
 	
 	constructor (data) {
 		if (typeof data === 'undefined') throw new Error('VOD() constructor must receive a data object')
-		this.date = VOD.parseDate(data.date);
+		this.date = VOD._parseDate(data.date);
 		this.title = VOD.default(data.title);
 		this.videoSrc = VOD.default(data.videoSrc);
 		this.videoSrcHash = VOD.default(data.videoSrcHash);
@@ -112,17 +121,22 @@ export default class VOD {
 	  return /%[0-9a-fA-F]+/.test(x);
 	}
 
+	static _getIpfsHash (input) {
+		const result = ipfsHashRegex.exec(input);
+		return result[0]
+	}
+
 	static _getSafeText (text) {
 		if (VOD._containsEncodedComponents(text)) return text;
 		return VOD.fixedEncodeURIComponent(text);
 	}
 
-	static getTmpDownloadPath (filename) {
+	static _getTmpDownloadPath (filename) {
 		const tmpDir = os.tmpdir();
 		return path.join(tmpDir, filename);
 	}
 
-	static parseDate (date) {
+	static _parseDate (date) {
 		if (R.isEmpty(date)) return '';
 		if (R.isNil(date)) return '';
 		if (R.is(Date, date)) return date;
@@ -132,6 +146,7 @@ export default class VOD {
 	async ensureThiccHash () {
 		if (this.thiccHash !== '') return;
 		if (this.tmpFilePath === '' && this.videoSrcHash === '') throw new VideoMissingError();
+		console.log('Generating thiccHash Thumbnail...');
 		const tmpDateStamp = new Date().valueOf()
 		const thinThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thin.jpg`);
 		const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
@@ -234,9 +249,6 @@ export default class VOD {
 		return null;
 	}
 
-	getMethodToEnsureB2 () {
-		return this.isMissingB2() ? this.uploadToB2 : null;
-	}
 
 	getMethodsToEnsureIpfs () {
 		let methods = [];
@@ -381,27 +393,56 @@ export default class VOD {
 		await downloadMethod.apply(this);
 	}
 
+	async ensureVideoSrc () {
+		if (this.videoSrc !== '') return;
+		await this.ensureTmpFilePath();
+		const videoBasename = this._getVideoBasename('source');
+		const url = await this._B2Upload(this.tmpFilePath);
+		this.videoSrc = url;
+	}
+
+	async ensureVideoSrcHash () {
+		if (this.videoSrcHash !== '') return;
+		await this.ensureTmpFilePath();
+		const videoBasename = this._getVideoBasename('source');
+		const target = VOD._getTmpDownloadPath(videoBasename);
+		if (this.isTmpFilePathMkv()) {
+			console.log(`transcoding ${this.tmpFilePath} to ${target}`);
+			const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
+			if (exitCode !== 0 || killed !== false) {
+				throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+			} else {
+				this.tmpFilePath = target;
+			}
+		}
+		if (this.isMissingTmpFilePath()) throw new TmpFilePathMissingError('tmpFilePath is missing prior to upload which should not occur')
+		console.log(`~~~ uploading ${this.tmpFilePath} to web3 (IPFS) ~~~`)
+		const hash = await this._ipfsUpload(this.tmpFilePath);
+		this.videoSrcHash = `${hash}?filename=${videoBasename}`
+		console.log('done')
+	}
+
 	async ensureVideo240Hash () {
 		if (this.video240Hash !== '') return;
 		await this.ensureTmpFilePath();
 		const videoBasename = this._getVideoBasename('240p');
-		const target = VOD.getTmpDownloadPath(videoBasename);
+		const target = VOD._getTmpDownloadPath(videoBasename);
 		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
 		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-vf', 'scale=w=-2:h=240', '-b:v', '386k', '-b:a', '45k', target]);
 		if (exitCode !== 0 || killed !== false) {
 			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 		} else {
-			this.video240TmpFilePath = target;
+			this.video240HashTmp = target;
 		}
-		const hash = await this._ipfsUpload(this.video240TmpFilePath);
-		this.video240Hash = `${hash}?filename=${this._getVideoBasename('240p')}`
+		const hash = await this._ipfsUpload(this.video240HashTmp);
+		this.video240Hash = `${hash}?filename=${videoBasename}`
 	}
 
 	async encodeVideo () {
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
 		if (R.test(/\.mp4$/, this.tmpFilePath)) return;
 		const videoBasename = this._getVideoBasename();
-		const target = VOD.getTmpDownloadPath(videoBasename);
+		const target = VOD._getTmpDownloadPath(videoBasename);
 		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
 		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
 		if (exitCode !== 0 || killed !== false) {
@@ -425,6 +466,7 @@ export default class VOD {
 	async uploadToIpfs () {
 		if (typeof this === 'undefined') throw new Error('*this* is undefined in uploadToIpfs which is UNSUPPORTED. There is likely a problem with how you are calling uploadToIpfs()')
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
+		if (os.totalmem() < 17179870000) throw new NotEnoughMemoryError('>=16GB is required for this task.');
 
 		if (R.match(/\.mp4/, this.tmpFilePath)) {
 			await this.encodeVideo();
@@ -440,8 +482,8 @@ export default class VOD {
 		this.videoSrcHash = hash;
 	}
 
-	async uploadToB2 () {
-		console.log(`uploading ${this.tmpFilePath} to B2`);
+	async _B2Upload (filename) {
+		console.log(`uploading ${filename} to B2`);
 		if (process.env.B2_UPLOAD===0) {
 			console.log('SKIPPING B2 upload due to B2_UPLOAD=0 set in env')
 			return;
@@ -450,7 +492,7 @@ export default class VOD {
 		let attempts = 0;
 		while (unsuccessful) {
 			attempts += 1
-			const { exitCode, killed } = await execa('rclone', ['copy', this.tmpFilePath, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
+			const { exitCode, killed } = await execa('rclone', ['copy', filename, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
 			if (exitCode === 0 && killed === false) {
 				unsuccessful = false;
 			}
@@ -458,8 +500,8 @@ export default class VOD {
 				break;
 			}
 		}
-		this.videoSrc = await this.getB2UrlFromB2();
-		return this;
+		const url = await this._getB2UrlFromB2(path.basename(filename));
+		return url;
 	}
 
 
@@ -490,11 +532,10 @@ export default class VOD {
 		return `projektmelody-chaturbate-${d}${format}.mp4`;
 	}
 
-	async getB2UrlFromB2 () {
+	async _getB2UrlFromB2 (filename) {
 		let unsuccessful = true;
 		let attempts = 0;
 		let output = '';
-		let filename = this._getVideoBasename();
 		while (unsuccessful) {
 			attempts += 1;
 			const { exitCode, killed, stdout } = await execa('rclone', [
@@ -569,7 +610,7 @@ export default class VOD {
 	}
 
 	async downloadFromB2 () {
-		const localFilePath = VOD.getTmpDownloadPath(this._getVideoBasename());
+		const localFilePath = VOD._getTmpDownloadPath(this._getVideoBasename());
 		const remoteVideoBasename = path.basename(this.videoSrc);
 		console.log(`downloading ${remoteVideoBasename} from B2 => ${localFilePath}`);
 		const { killed, exitCode } = await execa('rclone', ['copyto', `${VOD.rcloneDestination}:${VOD.B2BucketName}/${remoteVideoBasename}`, localFilePath ], { stdio: 'inherit' });
@@ -585,12 +626,13 @@ export default class VOD {
 	}
 
 	async downloadFromIpfs () {
-		const hash = this.videoSrcHash;
-		const localFilePath = VOD.getTmpDownloadPath(this._getVideoBasename());
+		const hash = VOD._getIpfsHash(this.videoSrcHash);
+		const localFilePath = VOD._getTmpDownloadPath(this._getVideoBasename());
 		const url = this.getIpfsUrl();
 		const remoteVideoBasename = path.basename(url);
 		console.log(`downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
-		await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
+		//await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
+		await execa('ipfs', ['get', '-o', localFilePath, hash])
 		this.tmpFilePath = localFilePath;
 		return this;
 	}

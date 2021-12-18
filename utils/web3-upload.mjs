@@ -2,15 +2,18 @@
 
 import dotenv from 'dotenv'
 import minimist from 'minimist'
-import { Web3Storage, getFilesFromPath } from 'web3.storage'
+import { Web3Storage, filesFromPath } from 'web3.storage'
 
 
 dotenv.config();
 
 
 async function getFiles(path) {
-  const files = await getFilesFromPath(path)
-  console.log(`read ${files.length} file(s) from ${path}`)
+  let files = [];
+  for await (const f of filesFromPath(path)) {
+    console.log(`file:${f.name}`);
+    files.push(f);
+  }
   return files
 }
 
