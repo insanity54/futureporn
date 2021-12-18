@@ -1,14 +1,17 @@
 
-require('dotenv').config();
-const envImport = require('@grimtech/envimport');
-// const Twitter = require('twitter-lite');
-const Twitter = require('twitter-v2');
-const { processTweet } = require('./tweetProcess');
+import * as dotenv from 'dotenv'
+dotenv.config();
 
-const twitterConsumerKey = envImport('TWITTER_API_KEY');
-const twitterConsumerSecret = envImport('TWITTER_API_KEY_SECRET');
-const twitterAccessToken = envImport('TWITTER_ACCESS_TOKEN');
-const twitterAccessTokenSecret = envImport('TWITTER_ACCESS_TOKEN_SECRET');
+// const Twitter = require('twitter-lite');
+import Twitter from 'twitter-v2';
+import { processTweet } from './tweetProcess.js';
+
+console.log(processTweet);
+
+const twitterConsumerKey = process.env.TWITTER_API_KEY;
+const twitterConsumerSecret = process.env.TWITTER_API_KEY_SECRET;
+const twitterAccessToken = process.env.TWITTER_ACCESS_TOKEN;
+const twitterAccessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET;
 const timeout = 60*1000; // optional HTTP request timeout to apply to all requests.
 const strictSSL = true;  // optional - requires SSL certificates to be valid.
 
@@ -94,8 +97,8 @@ async function listenForever(streamFactory, dataConsumer) {
 
 	const stream = await client.stream('tweets/search/stream', parameters)
 	console.log(stream)
-	// listenForever(
-	//   () => client.stream('tweets/search/stream', parameters),
-	//   (data) => console.log(data)
-	// );
+	listenForever(
+	  () => client.stream('tweets/search/stream', parameters),
+	  (data) => console.log(data)
+	);
 })()

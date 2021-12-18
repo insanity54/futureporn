@@ -24,4 +24,4 @@ audio 45 kb/s
 
 ## Author
 
-Chris Grimmett <chris@grimtech.net> https://grimtech.net/contact
+Chris Grimmett a.k.a. [@cj_clippy](https://twitter.com/cj_clippy) <chris@grimtech.net> https://grimtech.net/contact 

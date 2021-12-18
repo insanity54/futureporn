@@ -4,6 +4,13 @@
   wait_for_connection:
     timeout: 300
 
+- name: wait for boot-finished file to exist
+  raw: test -f /var/lib/cloud/instance/boot-finished
+  retries: 50
+  register: cmd_res
+  changed_when: false
+  until: cmd_res is success
+
 - name: gather facts
   ansible.builtin.setup:
 
@@ -43,10 +50,6 @@
     line: "export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}"
     state: present
 
-- name: Add Eternal Terminal PPA
-  ansible.builtin.apt_repository:
-    repo: ppa:jgmath2000/et
-
 - name: Install dependencies
   become: yes
   apt:
@@ -54,15 +57,24 @@
       - python3
       - python3-pip
       - mg 
-      - screen 
       - git
       - magic-wormhole
       - ffmpeg
-      - rclone
-      - et
+      - mosh
     state: present
     update_cache: yes
 
+- name: Install latest rclone
+  apt:
+    deb: https://downloads.rclone.org/rclone-current-linux-amd64.deb
+    state: present
+    # this is necessary because the apt version has a B2 upload bug
+
+- name: create ufw exception for mosh
+  community.general.ufw:
+    rule: allow
+    port: 60000:61000
+    proto: udp
 
 - name: Create rclone conf directory
   ansible.builtin.file:

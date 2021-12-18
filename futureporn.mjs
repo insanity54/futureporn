@@ -1,7 +1,7 @@
 
 
 
-import VOD from './utils/VOD.js';
+import VOD from './utils/VOD.cjs';
 import fg from 'fast-glob';
 import path from 'path';
 import fsp from 'fs/promises';
@@ -45,6 +45,8 @@ console.log(`
 	// }
 
 	console.log(`There are ${vods.length} known VODs`);
+	// process latest vods first
+	vods.reverse()
 
 	for (const vod of vods) {
 
@@ -53,9 +55,13 @@ console.log(`
 		const ensuranceFunctions = [
 			vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
-			// vod.ensureVideo240Hash,
+			vod.ensureVideoSrc,
+			vod.saveMarkdown,
+			vod.ensureVideoSrcHash,
+			vod.saveMarkdown,
+			vod.ensureVideo240Hash,
 			// vod.ensureVideo480Hash, // coming soon (TM)
-			// vod.ensureThiccHash,
+			vod.ensureThiccHash,
 			vod.ensureTextFormatting,
 			vod.saveMarkdown,
 		];
