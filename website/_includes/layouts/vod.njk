@@ -11,7 +11,7 @@ templateClass: tmpl-Vod
         {%- if announceTitle %}
         {{ announceTitle | urlDecode }}
         {% elif title %}
-        {{ title }}
+        {{ title | urlDecode }}
         {% elif date %}
         {{ date }}
         {% endif %}
