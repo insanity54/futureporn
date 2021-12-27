@@ -40,7 +40,7 @@ module.exports = function(eleventyConfig) {
 
 
   eleventyConfig.addShortcode("buildIpfsUrl", function(urlFragment) {
-    return `https://ipfs.io/ipfs/${urlFragment}`;
+    return `https://dweb.link/ipfs/${urlFragment}`;
   });
 
   eleventyConfig.addShortcode("b2ProgressPercentage", function(vods) {
