@@ -457,6 +457,29 @@ describe('VOD', function () {
         })
     })
 
+    describe('ensureAnnounceUrl', function () {
+        it('should throw an error if there is no announceUrl', async function () {
+            const v = new VOD({ date: futureDateFixture });
+            chai.expect(v.ensureAnnounceUrl).to.throw();
+        });
+        xit('should find the most recent tweet containing a chaturbate link and use that link')
+    })
+
+    describe('ensureAnnounceTitle', function () {
+        it('should derive a title from the announcement tweet', async function () {
+            const v = new VOD({ 
+                date: futureDateFixture,
+                announceUrl: 'https://twitter.com/ProjektMelody/status/1343698295563153408'
+            });
+            await v.ensureAnnouceTitle();
+            chai.expect(v.announceTitle).to.be('don%27t%20look%20chat%21%20I%20feel%20shy%21%21%20XD');
+        });
+        it('should throw if VOD.announceUrl is missing', async function () {
+            const v = new VOD({ date: futureDateFixture });
+            chai.expect(v.ensureAnnounceUrl).to.throw();
+        })
+    })
+
     describe('ensureDate', function () {
         it('should do nothing if date already exists', async function () {
             const v = new VOD({
@@ -530,28 +553,7 @@ describe('VOD', function () {
         })
     })
 
-    describe('getMethodToEnsureB2', function () {
-        it('should return {function} this.uploadToB2 if videoSrc is missing', function () {
-            const v = new VOD({
-                videoSrc: '',
-                tmpFilePath: mp4Fixture,
-            })
-            const method = v.getMethodToEnsureB2();
-            chai.expect(method).to.be.an.instanceof(Function);
-            chai.expect(method).to.have.property('name', 'uploadToB2');
-        })
-        it('should return null if videoSrc exists', function () {
-            const v = new VOD({
-                videoSrc: videoSrcFixture
-            })
-            const method = v.getMethodToEnsureB2();
-            chai.expect(method).to.be.null;  
-        })
-        it('should throw an error if neither tmpFilePath nor videoSrcHash exists', function () {
-            const v = new VOD({});
-            chai.expect(v.getMethodToEnsureB2).to.throw;
-        })
-    })
+
 
 
 
@@ -628,6 +630,7 @@ describe('VOD', function () {
 
     describe('ensureThiccHash', function () {
         it('should do nothing if thiccHash already exists', async function () {
+            this.timeout(1000);
             const v = new VOD({
                 date: futureDateFixture,
                 thiccHash: thiccHashFixture
@@ -644,8 +647,23 @@ describe('VOD', function () {
             await v.ensureThiccHash();
             chai.expect(v.thiccHash).to.equal(`${thiccHashFixture}?filename=${v.getSafeDatestamp()}-thicc.jpg`);
         })
+        it('should throw an error if tmpFilePath doesnt exist', async function () {
+            // this is temporary to increase speed.
+            // @todo delete this test spec and implement the next spec
+            //       maybe add a test mock so testing is quick
+            //       see issue #9
+            const v = new VOD({
+                date: futureDateFixture
+            })
+
+            await chai.expect(v.ensureThiccHash()).to.be.rejectedWith('UNSUPPORTED')
+            // await expect(fails()).to.be.rejectedWith(Error)
+
+        })
         xit('should generate thiccHash using videoSrcHash', async function () {
-            // too slow!
+            // it's slow but this is strictly what I want this function to do...
+            // download the video from B2 if its not already local
+            // see issue #9
             this.timeout(120000);
             const v = new VOD({
                 date: futureDateFixture,
@@ -665,17 +683,6 @@ describe('VOD', function () {
             this.timeout(60000);
             const v = new VOD({
                 tmpFilePath: mp4Fixture,
-                date: futureDateFixture
-            });
-            await v.generateThumbnail();
-            const safeDate = v.getSafeDatestamp();
-            chai.expect(v).to.have.property('thiccHash', `${mp4FixtureThiccHash}?filename=${safeDate}-thicc.jpg`);
-            chai.expect(v).to.have.property('thinHash', `${mp4FixtureThinHash}?filename=${safeDate}-thin.jpg`);
-        });
-        it('should populate thiccHash and thinHash using videoSrcHash', async function () {
-            this.timeout(400000);
-            const v = new VOD({
-                videoSrcHash: videoSrcHashFixture,
                 date: futureDateFixture
             });
             await v.generateThumbnail();
