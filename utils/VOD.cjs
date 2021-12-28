@@ -6,6 +6,7 @@
 const dotenv = require('dotenv')
 dotenv.config();
 
+const debug = require('debug')('futureporn');
 const R = require('ramda');
 const execa = require('execa');
 const os = require('os');
@@ -144,17 +145,20 @@ module.exports = class VOD {
 	}
 
 	async ensureThiccHash () {
+		debug(this)
 		if (this.thiccHash !== '') return;
-		if (this.tmpFilePath === '' && this.videoSrcHash === '') throw new VideoMissingError();
-		console.log('Generating thiccHash Thumbnail...');
+		if (this.tmpFilePath === '') {
+			debug('video is missing so im gonna throw')
+			throw new VideoMissingError();
+		} else {
+			debug(`video is present ${this.tmpFilePath}`)
+		}
+		debug('Generating thiccHash Thumbnail...');
 		const tmpDateStamp = new Date().valueOf()
 		const thinThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thin.jpg`);
 		const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
-
-		const videoInputSource = (this.videoSrcHash !== '') ? this.getIpfsUrl() : this.tmpFilePath;
-
 		let thiccOpts = {
-			input: videoInputSource,
+			input: this.tmpFilePath,
 			output: thiccThumbnailPath,
 			throttleTimeout: 10000,
 			width: 128,
