@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% webpackAsset 'main.css' %}">
     <link rel="canonical" href="{{ metadata.url }}">
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
-    <title>{{ title or metadata.title }}</title>
+    <title>{{ metadata.title }}</title>
   </head>
   <body data-controller="fp">
     <div class="container">
