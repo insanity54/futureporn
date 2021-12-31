@@ -1,0 +1,13 @@
+---
+
+- hosts: localhost
+  roles:
+    - role: vps-up
+
+- hosts: futureporn-gateway
+  gather_facts: no
+  vars:
+    - ansible_user: root
+  roles:
+    - role: base
+    - role: andrewrothstein.ipfs
