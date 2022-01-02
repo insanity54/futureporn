@@ -53,7 +53,9 @@ console.log(`
 		console.log(`vod:${vod.getDatestamp()} processing begin`);
 
 		const ensuranceFunctions = [
-			vod.ensureDate,
+//			vod.ensureAnnounceUrl,
+//			vod.ensureAnnounceTitle,
+//			vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
 			vod.ensureVideoSrc,
 			vod.saveMarkdown,
