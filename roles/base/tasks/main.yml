@@ -1,0 +1,11 @@
+---
+
+
+- name: Enable journalctl persistent logging
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    search_string: '^Storage='
+    line: 'Storage=persistent'
+    state: present
+  notify: 
+    - restart systemd-journald
