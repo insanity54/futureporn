@@ -1,7 +1,7 @@
 
 
 
-import VOD from './utils/VOD.cjs';
+import VOD from './utils/VOD.js';
 import fg from 'fast-glob';
 import path from 'path';
 import fsp from 'fs/promises';

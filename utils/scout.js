@@ -1,12 +1,13 @@
+#!/usr/bin/env node
 
-import * as dotenv from 'dotenv'
-dotenv.config();
+
+require('dotenv').config();
+const debug = require('debug')('futureporn');
 
 // const Twitter = require('twitter-lite');
-import Twitter from 'twitter-v2';
-import { processTweet } from './tweetProcess.js';
+const Twitter = require('twitter-v2');
+const { processTweet } = require('./tweetProcess.js');
 
-console.log(processTweet);
 
 const twitterConsumerKey = process.env.TWITTER_API_KEY;
 const twitterConsumerSecret = process.env.TWITTER_API_KEY_SECRET;
@@ -31,17 +32,32 @@ var client = new Twitter({
 //	track: "chaturbate.com/in"
 //}
 
+// const ruleBody = {
+// 	'add': [
+// 		{ 
+// 			'value': 'from:projektmelody -is:retweet',
+// 			'tag': 'tweets from melody'
+// 		}
+// 	]
+// };
+
 const ruleBody = {
 	'add': [
-		{ 
-			'value': 'from:projektmelody -is:retweet',
-			'tag': 'tweets from melody'
+		{
+			'value': 'from:test5f1798',
+			'tag': 'test tweets'
 		}
 	]
-};
+}
 
 const parameters = {
-	
+  expansions: [ 'author_id', 'referenced_tweets.id' ],
+  tweet: {
+    fields: ['created_at'],
+  },
+  user: {
+  	fields: ['description', 'name', 'username']
+  }
 }
 
 
@@ -58,14 +74,14 @@ async function setup() {
 	// 	}
 	// })
 
-	console.log('getting existing rules')
+	debug('getting existing rules')
 	const ruleQueryRes = await client.get('tweets/search/stream/rules');
-	console.log(ruleQueryRes)
+	debug(ruleQueryRes)
 
 
-	console.log(`creating rule.`)
+	debug(`creating rule.`)
 	const ruleRes = await client.post('tweets/search/stream/rules', ruleBody);
-	console.log(`rule created with response ${JSON.stringify(ruleRes)}`);
+	debug(`rule created with response ${JSON.stringify(ruleRes)}`);
 
 }	
 
@@ -77,28 +93,23 @@ async function listenForever(streamFactory, dataConsumer) {
     }
     // The stream has been closed by Twitter. It is usually safe to reconnect.
     console.log('Stream disconnected healthily. Reconnecting.');
-    setTimeout(() => {
-    	listenForever(streamFactory, dataConsumer);
-    }, 3000);
+    listenForever(streamFactory, dataConsumer);
   } catch (error) {
     // An error occurred so we reconnect to the stream. Note that we should
     // probably have retry logic here to prevent reconnection after a number of
     // closely timed failures (may indicate a problem that is not downstream).
     console.warn('Stream disconnected with error. Retrying.', error);
-    setTimeout(() => {
-    	listenForever(streamFactory, dataConsumer);
-    }, 3000);
+    listenForever(streamFactory, dataConsumer);
   }
 }
+
 
 
 (async function main () {
 	await setup()
 
-	const stream = await client.stream('tweets/search/stream', parameters)
-	console.log(stream)
 	listenForever(
 	  () => client.stream('tweets/search/stream', parameters),
-	  (data) => console.log(data)
+	  (data) => processTweet(data)
 	);
 })()

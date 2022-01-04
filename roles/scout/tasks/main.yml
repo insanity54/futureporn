@@ -1,0 +1,28 @@
+---
+
+
+- name: Ensure futureporn is installed & updated
+  git:
+    repo: https://github.com/insanity54/futureporn
+    dest: /root/futureporn
+    update: yes
+
+- name: Install futureporn-scout system service
+  ansible.builtin.template:
+    src: templates/futureporn-scout.service.j2
+    dest: /etc/systemd/system/futureporn-scout.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart futureporn-scout
+
+- name: Enable futureporn-scout system service
+  systemd:
+    name: futureporn-scout
+    state: started
+    daemon_reload: yes
+    enabled: yes
+  notify:
+    - restart futureporn-scout
+
