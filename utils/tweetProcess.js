@@ -5,8 +5,8 @@ const cbUrlRegex = /chaturbate\.com.*projektmelody/i
 
 const containsCBInviteLink = (tweet) => {
 	try {
-		if tweet?.entities.urls === undefined return false;
-		for (url of tweet.entities.urls.) {
+		if (tweet?.entities.urls === undefined) return false;
+		for (url of tweet.entities.urls) {
 			if (cbUrlRegex.test(url.unwound_url)) {
 				return true;
 			} else {
