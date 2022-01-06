@@ -1,7 +1,7 @@
 
 
 const chai = require('chai');
-const VOD = require('../utils/VOD.cjs');
+const VOD = require('../utils/VOD.js');
 const path = require('path');
 const matter = require('gray-matter');
 const fsp = require('fs/promises');
