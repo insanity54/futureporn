@@ -2,7 +2,7 @@
 
 Unofficial ProjektMelody Chaturbate VOD Archive. For Adults Only.
 
-https://futureporn.neocities.org/
+https://futureporn.net/
 
 ## What this codebase does
 
