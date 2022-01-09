@@ -7,7 +7,7 @@
     "node": "^12.20.0 || >=14.13.1"
   },
   "scripts": {
-    "build": "npm-run-all clean build:assets build:site",
+    "build": "yarn run clean && yarn run build:assets && yarn run build:site",
     "build:assets": "NODE_ENV=production webpack --mode=production",
     "build:site": "NODE_ENV=production eleventy --config=./.eleventy.cjs",
     "clean": "rm -rf ./_site",

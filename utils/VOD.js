@@ -31,10 +31,10 @@ class NotEnoughMemoryError extends Error {
 	}
 }
 
-class TranscodeError extends Error {
+class RemuxError extends Error {
 	constructor (message) {
-		super(R.defaultTo('transcode error')(message));
-		this.name = 'TranscodeError';
+		super(R.defaultTo('remux error')(message));
+		this.name = 'RemuxError';
 	}
 }
 
@@ -414,7 +414,7 @@ module.exports = class VOD {
 			console.log(`transcoding ${this.tmpFilePath} to ${target}`);
 			const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
 			if (exitCode !== 0 || killed !== false) {
-				throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+				throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 			} else {
 				this.tmpFilePath = target;
 			}
@@ -434,7 +434,7 @@ module.exports = class VOD {
 		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
 		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-vf', 'scale=w=-2:h=240', '-b:v', '386k', '-b:a', '45k', target]);
 		if (exitCode !== 0 || killed !== false) {
-			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+			throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 		} else {
 			this.video240HashTmp = target;
 		}
@@ -442,15 +442,15 @@ module.exports = class VOD {
 		this.video240Hash = `${hash}?filename=${videoBasename}`
 	}
 
-	async encodeVideo () {
+	async remuxVideo () {
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
 		if (R.test(/\.mp4$/, this.tmpFilePath)) return;
 		const videoBasename = this._getVideoBasename();
 		const target = VOD._getTmpDownloadPath(videoBasename);
-		console.log(`transcoding ${this.tmpFilePath} to ${target}`);
-		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
+		console.log(`remuxing ${this.tmpFilePath} to ${target}`);
+		const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-c', 'copy', target]);
 		if (exitCode !== 0 || killed !== false) {
-			throw new TranscodeError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+			throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 		} else {
 			this.tmpFilePath = target;
 		}

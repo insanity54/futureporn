@@ -298,7 +298,7 @@ describe('VOD', function () {
             await v.ensureVideoSrcHash();
             chai.expect(v.videoSrcHash).to.equal(expectedVideoSrcHash);
         });
-        it('should transcode an mkv listed in tmpFilePath to mp4, then upload to ipfs and populate videoSrcHash', async function () {
+        it('should remux an mkv listed in tmpFilePath to mp4, then upload to ipfs and populate videoSrcHash', async function () {
             const v = new VOD({
                 date: futureDateFixture,
                 tmpFilePath: mkvFixture
@@ -306,8 +306,8 @@ describe('VOD', function () {
             await v.ensureVideoSrcHash();
             chai.expect(v.videoSrcHash).to.equal('bafkreigencclktw34fjka3kebamncvl4wyovwyzn5idntnu5f7iegl3u3u?filename=projektmelody-chaturbate-30211016T000000Z-source.mp4')
         });
-        xit('should populate videoSrcHashTmp after transcoding an mkv to mp4', async function () {
-            // there is a potential problem where the transcode is unecessarily re-done because the previous run of this function exited with error
+        xit('should populate videoSrcHashTmp after remuxing an mkv to mp4', async function () {
+            // there is a potential problem where the remux is unecessarily re-done because the previous run of this function exited with error
             // I don't think i want to implement this.
             // the absense of videoSrcHashTmp is only a problem if the program is interrupted
             const v = new VOD({
@@ -362,9 +362,9 @@ describe('VOD', function () {
         });
     })
 
-    describe('encodeVideo', function () {
+    describe('remuxVideo', function () {
         this.timeout(60000);
-        it('should transcode a mkv listed in VOD.tmpFilePath and then overwrite VOD.tmpFilePath with the mp4', async function () {
+        it('should remux a mkv listed in VOD.tmpFilePath and then overwrite VOD.tmpFilePath with the mp4', async function () {
             const v = new VOD({
                 date: futureDateFixture,
                 tmpFilePath: mkvFixture
@@ -396,7 +396,7 @@ describe('VOD', function () {
             });
             chai.expect(v.uploadToIpfs()).to.be.rejectedWith('RAM')
         })
-        it('should first transcode a mkv to mp4', async function () {
+        it('should first remux a mkv to mp4', async function () {
             const v = new VOD({
                 date: futureDateFixture,
                 tmpFilePath: mkvFixture
