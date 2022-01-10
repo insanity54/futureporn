@@ -40,7 +40,7 @@ module.exports = function(eleventyConfig) {
 
 
   eleventyConfig.addShortcode("buildIpfsUrl", function(urlFragment) {
-    return `https://dweb.link/ipfs/${urlFragment}`;
+    return `https://gateway.futureporn.net/ipfs/${urlFragment}`;
   });
 
   eleventyConfig.addShortcode("b2ProgressPercentage", function(vods) {

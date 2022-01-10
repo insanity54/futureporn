@@ -1,7 +1,7 @@
 {
   "name": "futureporn",
   "version": "1.0.0",
-  "description": "https://futureporn.neocities.org",
+  "description": "https://futureporn.net",
   "engineStrict": "true",
   "engines": {
     "node": "^12.20.0 || >=14.13.1"
