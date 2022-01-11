@@ -1,6 +1,18 @@
 ---
 
 
+- name: Set Twitter api key in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export TWITTER_API_KEY={{ lookup('env', 'TWITTER_API_KEY') }}"
+    state: present
+
+- name: Set Twitter secret in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}"
+    state: present
+
 - name: Ensure futureporn is installed & updated
   git:
     repo: https://github.com/insanity54/futureporn

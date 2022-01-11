@@ -1,13 +1,27 @@
 ---
 
 - hosts: localhost
-  roles:
-    - role: vps-up
+  tasks:
+    - name: Ensure a VPS for the gateway
+      ngine_io.vultr.vultr_server:
+        name: "gateway-1"
+        os: Ubuntu 20.04 x64
+        region: Atlanta
+        plan: 2048 MB RAM,55 GB SSD,2.00 TB BW
+        ssh_keys:
+          - 612fa1f7d1e42
+        tag: futureporn
+        state: present
+    - name: Refresh Inventory
+      meta: refresh_inventory
 
-- hosts: futureporn-gateway
+- hosts: gateway-*
   gather_facts: no
   vars:
     - ansible_user: root
+    
   roles:
     - role: base
-    - role: andrewrothstein.ipfs
+    - role: geerlingguy.nodejs
+    - role: nvjacobo.caddy
+    - role: gateway

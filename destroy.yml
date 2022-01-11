@@ -1,5 +1,13 @@
 ---
 
 - hosts: localhost
-  roles:
-    - role: vps-down
+  tasks:
+  - name: Ensure VPS 1 is spun down
+    ngine_io.vultr.vultr_server:
+      name: "capture-1"
+      state: absent
+
+  - name: Ensure VPS 2 is spun down
+    ngine_io.vultr.vultr_server:
+      name: "capture-2"
+      state: absent
