@@ -95,7 +95,7 @@
     "webpack-cli": "^4.9.1"
   },
   "optionalDependencies": {
-    "neocities-extended": "git://github.com/thatcomputerguy0101/neocities-node-extended",    
+    "neocities-extended": "https://github.com/thatcomputerguy0101/neocities-node-extended",    
     "web3.storage": "^3.3.2"
   }
 }
