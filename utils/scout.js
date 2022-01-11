@@ -32,52 +32,52 @@ var client = new Twitter({
 //	track: "chaturbate.com/in"
 //}
 
-// const ruleBody = {
-// 	'add': [
-// 		{ 
-// 			'value': 'from:projektmelody -is:retweet',
-// 			'tag': 'tweets from melody'
-// 		}
-// 	]
-// };
-
 const ruleBody = {
 	'add': [
-		{
-			'value': 'from:test5f1798',
-			'tag': 'test tweets'
+		{ 
+			'value': 'from:projektmelody -is:retweet',
+			'tag': 'tweets from melody'
 		}
 	]
-}
+};
+
+// const ruleBody = {
+// 	'add': [
+// 		{
+// 			'value': 'from:Every3Minutes OR from:Stupidcounter',
+// 			'tag': 'test tweets'
+// 		}
+// 	]
+// }
 
 const parameters = {
-  expansions: [ 'author_id', 'referenced_tweets.id' ],
+  expansions: [
+  	'author_id'
+  ],
   tweet: {
-    fields: ['created_at'],
-  },
-  user: {
-  	fields: ['description', 'name', 'username']
+    fields: ['created_at', 'entities'],
   }
 }
 
 
 async function setup() {
-	// EXAMPLE: delete old rules
-	// await client.post('tweets/search/stream/rules',
-	// {
-	// 	'delete': {
-	// 		"ids": [
-	// 			"1416377627577749514",
-	// 			"1416386720669392901",
-	// 			"1437569472114606080"
-	// 		]
-	// 	}
-	// })
 
-	debug('getting existing rules')
-	const ruleQueryRes = await client.get('tweets/search/stream/rules');
-	debug(ruleQueryRes)
-
+	// Delete all rules and add just the ones we want
+	try {
+		const { data: rules } = await client.get('tweets/search/stream/rules');
+		debug(rules)
+		const ruleIds = rules.map((r) => r.id );
+		debug(ruleIds)
+		await client.post('tweets/search/stream/rules',
+		{
+			'delete': {
+				"ids": ruleIds
+			}
+		})
+	} catch (e) {
+		console.error(e)
+		console.error('no big d.')
+	}
 
 	debug(`creating rule.`)
 	const ruleRes = await client.post('tweets/search/stream/rules', ruleBody);
@@ -108,8 +108,24 @@ async function listenForever(streamFactory, dataConsumer) {
 (async function main () {
 	await setup()
 
+
+	// debug sample tweet
+	// const { data, errors } = await client.get('tweets', {
+	// 	ids: '1476259783791497217',
+	//   tweet: {
+	//     fields: ['created_at', 'entities', 'author_id'],
+	//   },
+	// })
+	// debug(data)
+	// debug(data[0]['entities']['urls']);
+	// debug(errors);
+
+	// process.exit();
+	debug('[*] waiting for tweets');
+
 	listenForever(
 	  () => client.stream('tweets/search/stream', parameters),
 	  (data) => processTweet(data)
 	);
 })()
+
