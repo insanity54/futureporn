@@ -1,0 +1,15 @@
+[Unit]
+Description=IPFS Daemon
+After=network.target
+
+[Service]
+User=ipfs
+Group=ipfs
+Environment=IPFS_PATH=/home/ipfs/.ipfs
+ExecStart=/usr/local/bin/ipfs daemon --init --migrate
+StandardOutput=journal
+Restart=on-failure
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

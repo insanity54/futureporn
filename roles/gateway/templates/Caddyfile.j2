@@ -1,0 +1,25 @@
+{
+    email "chris@grimtech.net"
+}
+(cidList) {
+    {% for cid in whitelisted_cids %}
+        path /ipfs/{{ cid }}*
+    {% endfor %}
+}
+gateway.futureporn.net {
+    @allowed {
+        import cidList
+    }
+
+    @disallowed {
+        not {
+            import cidList
+        }
+    }
+
+    reverse_proxy @allowed 127.0.0.1:8080
+    respond @disallowed 403 {
+        body "This gateway is dedicated to futureporn.net use only"
+        close
+    }
+}

@@ -1,0 +1,37 @@
+---
+
+- hosts: localhost
+  tasks:
+    - name: Spin up a VPS in Atlanta
+      ngine_io.vultr.vultr_server:
+        name: "capture-1"
+        os: Ubuntu 20.04 x64
+        region: Atlanta
+        plan: 1024 MB RAM,25 GB SSD,1.00 TB BW
+        ssh_keys:
+          - 612fa1f7d1e42
+        tag: futureporn
+        state: present
+
+    - name: Spin up a STRONK VPS to handle ul/dl file tasks
+      ngine_io.vultr.vultr_server:
+        name: "capture-2"
+        os: Ubuntu 20.04 x64
+        region: Seattle
+        plan: 16384 MB RAM,320 GB SSD,5.00 TB BW
+        ssh_keys:
+          - 612fa1f7d1e42
+        tag: futureporn
+        state: present
+
+    - name: Refresh Inventory
+      meta: refresh_inventory
+
+
+- hosts: capture-*
+  gather_facts: no
+  vars:
+    - ansible_user: root
+  roles:
+    - role: capture
+    - role: geerlingguy.nodejs

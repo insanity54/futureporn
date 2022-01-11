@@ -1,0 +1,7 @@
+---
+
+
+- name: restart voddo
+  ansible.builtin.systemd:
+    name: voddo
+    state: restarted
