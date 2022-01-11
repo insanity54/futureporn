@@ -65,10 +65,9 @@ const getVodsAsJson = async () => {
 			})
 
 
-		console.log(JSON.stringify(cidlist, 0, 2));
-		console.log(cidlist.length)
+		console.log(JSON.stringify(cidlist));
 	} else if (args.mode === 'all') {
-		console.log(JSON.stringify(vods, 0, 2));
+		console.log(JSON.stringify(vods));
 	}
 })()
 
