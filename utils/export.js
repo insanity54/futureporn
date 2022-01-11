@@ -40,7 +40,6 @@ const getVodsAsJson = async () => {
 
 	const md = await getVodsAsJson();
 	const vods = pluck('data', md)
-	console.log(vods)
 	if (args.mode === 'cidlist') {
 
 		const getProps = props ([
