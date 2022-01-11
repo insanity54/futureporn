@@ -21,6 +21,7 @@
     "down": "ansible-playbook -i ./vultr.yml destroy.yml",
     "up": "ansible-playbook -i vultr.yml -e \"instances=1\" site.yml",
     "bigup": "ansible-playbook -i vultr.yml -e \"instances=3\" site.yml",
+    "gateway": "./ansible-playbook.sh -i vultr.yml gateway.yml",
     "start": "node futureporn.mjs"
   },
   "repository": {

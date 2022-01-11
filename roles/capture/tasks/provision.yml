@@ -1,68 +1,11 @@
 ---
 
-- name: Wait up to 300 seconds for SSH to be up
-  wait_for_connection:
-    timeout: 300
-
-- name: wait for boot-finished file to exist
-  raw: test -f /var/lib/cloud/instance/boot-finished
-  retries: 50
-  register: cmd_res
-  changed_when: false
-  until: cmd_res is success
-
-- name: gather facts
-  ansible.builtin.setup:
-
-- name: determine a valid hostname
-  set_fact:
-    hostonamu: "{{ inventory_hostname | regex_replace('_', '-') }}"
-
-- name: deboogey
-  debug:
-    var: hostonamu
-
-- name: set hostname
-  ansible.builtin.hostname:
-    name: "{{ hostonamu }}"
-
-- name: Set FUTUREPORN_WORKDIR env var
-  ansible.builtin.lineinfile:
-    dest: /root/.bashrc
-    line: "export FUTUREPORN_WORKDIR=/root/"
-    state: present
-
-- name: Set Twitter api key in env
-  ansible.builtin.lineinfile:
-    dest: /root/.bashrc
-    line: "export TWITTER_API_KEY={{ lookup('env', 'TWITTER_API_KEY') }}"
-    state: present
-
-- name: Set Twitter secret in env
-  ansible.builtin.lineinfile:
-    dest: /root/.bashrc
-    line: "export TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}"
-    state: present
 
 - name: Set WEB3_TOKEN secret in env
   ansible.builtin.lineinfile:
     dest: /root/.bashrc
     line: "export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}"
     state: present
-
-- name: Install dependencies
-  become: yes
-  apt:
-    pkg: 
-      - python3
-      - python3-pip
-      - mg 
-      - git
-      - magic-wormhole
-      - ffmpeg
-      - mosh
-    state: present
-    update_cache: yes
 
 - name: Install latest rclone
   apt:
