@@ -5,6 +5,7 @@
   ansible.builtin.git:
     repo: 'https://github.com/insanity54/futureporn'
     dest: /root/futureporn
+    force: yes
     clone: yes
     update: yes
 
