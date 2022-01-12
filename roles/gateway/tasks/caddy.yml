@@ -11,14 +11,14 @@
 
 - name: Gather IPFS hashes from VOD files
   ansible.builtin.command:
-    cmd: "/root/futureporn/utils/getVodsAsJson.js"
+    cmd: "/root/futureporn/utils/export.js --mode cidlist"
   register: vodlist
 
 - debug: var=vodlist
 
 - name: create whitelisted_cids
   ansible.builtin.set_fact:
-    whitelisted_cids: vodlist.stdout
+    whitelisted_cids: "{{ vodlist.stdout }}"
 
 - name: Configure Caddy
   ansible.builtin.template:
