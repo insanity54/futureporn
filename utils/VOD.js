@@ -468,7 +468,7 @@ module.exports = class VOD {
 		  try {
 		    attempt++;
 
-		    debug(`uploading ${files}`);
+		    debug(`uploading ${files.map(f => f.name)}`);
 		    const rootCid = await storage.put(files)
 
 		    debug(`the rootCid is ${rootCid}`);
