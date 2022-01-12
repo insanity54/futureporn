@@ -464,33 +464,50 @@ module.exports = class VOD {
 		const storage = new Web3Storage({ token })
 		const files = await getFilesFromPath(filename);
 
+		async function __getBranchHash (rootCid, attempt = 0) {
+			try {
+				attempt++;
+
+				debug(`[<] getting branch hash of rootCid:${rootCid}`);
+			    const res = await storage.get(rootCid); // Promise<Web3Response | null>
+
+			    debug(`[>] getting files within this archive`);
+			    const ipfsFiles = await res.files(); // Promise<Web3File[]>
+
+			    const cid = ipfsFiles[0].cid;
+			    debug(`[<] the first file cid is ${cid}`)
+
+			    return cid;
+			} catch (e) {
+				console.error(e);
+				debug(`[!] __getBranchHash error at attempt ${attempt}`)
+
+				if (attempt > 2) throw new Error(`__getBranchHash tried ${attempt} times but failed all times. Somethin' is probably broken or no internet or something liek that.`);
+				else return __getBranchHash(rootCid);
+			}
+		}
+
 		async function __upload (storage, files, attempt = 0) {
 		  try {
 		    attempt++;
 
-		    debug(`uploading ${files.map(f => f.name)}`);
+		    debug(`[^] uploading ${files.map(f => f.name)}`);
 		    const rootCid = await storage.put(files)
 
-		    debug(`the rootCid is ${rootCid}`);
-
-		    const res = await storage.get(rootCid); // Promise<Web3Response | null>
-		    const ipfsFiles = await res.files(); // Promise<Web3File[]>
-
-		    const cid = ipfsFiles[0].cid;
-		    debug(`the file cid is ${cid}`)
-
-		    return cid;
+		    debug(`[^] Upload complete. The rootCid is ${rootCid}`);
+		    return rootCid;
 
 		  } catch (e) {
 		    console.error(e);
-		    debug(`upload error at attempt ${attempt}. trying again.`);
+		    debug(`[^] upload error at attempt ${attempt}. trying again.`);
 
 		    if (attempt > 2) throw new Error(`Upload failed. Tried ${attempt} times.`);
 		    else return __upload(storage, files, attempt);
 		  }
 		}
 
-		const cid = await __upload(storage, files);
+		const rootCid = await __upload(storage, files);
+		const cid = await __getBranchHash(rootCid);
 		return cid;
 	}
 
