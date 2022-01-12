@@ -457,14 +457,21 @@ module.exports = class VOD {
 	}
 
 	async _ipfsUpload (filename) {
+		debug(`[^] getting files from path ${filename}`)
 		const files = await getFilesFromPath(filename);
+
+		debug(`[^] uploading`)
 		const rootCid = await VOD.web3Client.put(files);
 
-		// Fetch cid from web3.storage
+		debug(`[^] Fetching CID from web3.storage`)
 		const res = await VOD.web3Client.get(rootCid); // Promise<Web3Response | null>
+
+		debug(`[.] Getting the file list from web3.storage`)
 		const ipfsFiles = await res.files(); // Promise<Web3File[]>
 
-		return ipfsFiles[0].cid;
+		const file = ipfsFiles[0].cid;
+		debug(`[v] here is the first file CID:${file}`)
+		return file;
 	}
 
 	async uploadToIpfs () {
