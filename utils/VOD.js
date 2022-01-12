@@ -20,7 +20,6 @@ const Prevvy = require('prevvy');
 const { fileURLToPath } = require('url');
 const { format, zonedTimeToUtc, utcToZonedTime } = dateFnsTz;
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
-const { upload } = require('./put-files-from-fs.js');
 
 
 // const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
@@ -463,8 +462,36 @@ module.exports = class VOD {
 			throw new Error('A token is needed. (WEB3_TOKEN in env must be defined). You can create one on https://web3.storage. ')
 		}
 		const storage = new Web3Storage({ token })
-		const files = getFilesFromPath(filename);
-		const cid = await upload(storage, filename);
+		const files = await getFilesFromPath(filename);
+
+		async function __upload (storage, files, attempt = 0) {
+		  try {
+		    attempt++;
+
+		    debug(`uploading ${files}`);
+		    const rootCid = await storage.put(files)
+
+		    debug(`the rootCid is ${rootCid}`);
+
+		    const res = await storage.get(rootCid); // Promise<Web3Response | null>
+		    const ipfsFiles = await res.files(); // Promise<Web3File[]>
+
+		    const cid = ipfsFiles[0].cid;
+		    debug(`the file cid is ${cid}`)
+
+		    return cid;
+
+		  } catch (e) {
+		    console.error(e);
+		    debug(`upload error at attempt ${attempt}. trying again.`);
+
+		    if (attempt > 2) throw new Error(`Upload failed. Tried ${attempt} times.`);
+		    else return __upload(storage, files, attempt);
+		  }
+		}
+
+		const cid = await __upload(storage, files);
+		return cid;
 	}
 
 	async uploadToIpfs () {
