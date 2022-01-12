@@ -19,7 +19,7 @@ gateway.futureporn.net {
 
     reverse_proxy @allowed 127.0.0.1:8080
     respond @disallowed 403 {
-        body "This gateway is dedicated to futureporn.net use only"
+        body "<h1>Error 403: Forbidden</h1><br /><p>This gateway is for futureporn.net use only</p>"
         close
     }
 }
