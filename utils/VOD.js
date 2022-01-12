@@ -411,8 +411,8 @@ module.exports = class VOD {
 		const videoBasename = this._getVideoBasename('source');
 		const target = VOD._getTmpDownloadPath(videoBasename);
 		if (this.isTmpFilePathMkv()) {
-			console.log(`transcoding ${this.tmpFilePath} to ${target}`);
-			const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, target]);
+			console.log(`remuxing ${this.tmpFilePath} to ${target}`);
+			const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-c', 'copy', target]);
 			if (exitCode !== 0 || killed !== false) {
 				throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
 			} else {

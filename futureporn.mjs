@@ -68,7 +68,6 @@ console.log(`
 			vod.saveMarkdown,
 		];
 
-		console.log(ensuranceFunctions);
 
 		for (const f of ensuranceFunctions) {
 			try {
