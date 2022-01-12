@@ -8,6 +8,8 @@ dotenv.config();
 
 async function upload (storage, files, attempt = 0) {
   try {
+    attempt++;
+
     debug('uploading');
     const rootCid = await storage.put(files)
 
@@ -26,7 +28,7 @@ async function upload (storage, files, attempt = 0) {
     debug(`upload error at attempt ${attempt}. trying again.`);
 
     if (attempt > 2) throw new Error(`Upload failed. Tried ${attempt} times.`);
-    else return upload(storage, files, attempt++);
+    else return upload(storage, files, attempt);
   }
 }
 
