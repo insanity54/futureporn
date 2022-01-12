@@ -10,7 +10,7 @@ async function upload (storage, files, attempt = 0) {
   try {
     attempt++;
 
-    debug('uploading');
+    debug(`uploading ${files}`);
     const rootCid = await storage.put(files)
 
     debug(`the rootCid is ${rootCid}`);
@@ -59,7 +59,3 @@ async function main () {
 }
 
 main()
-
-module.exports = {
-  upload
-}

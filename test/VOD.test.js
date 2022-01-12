@@ -16,6 +16,7 @@ chai.use(chaiAsPromised);
 
 // const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 const pngFixture = path.join(__dirname, './cj_clippy_avatar.png');
+const pngFixtureCID = 'bafkreiek3g2fikcwe672ayjeab3atgpmxlyfv32clxfcu5r4xv66iz4nlm';
 const videoSrcFixture = 'https://f000.backblazeb2.com/file/futureporn/testvid.mp4';
 const videoSrcHashFixture = 'bafkreifufx6uharnts5wy6smk7mxmlwg7fpzhf5s3n33kydfgr7zqhagme';
 const video240HashFixture = 'bafkreifkv6h7ceavdgymqn6b3uqpvpfictjorrwkp5q4v4jzeen3jncvci';
@@ -970,6 +971,16 @@ describe('VOD', function () {
             chai.expect(actions[1]).to.be.a('function');
             chai.expect(actions[0]).to.have.property('name', 'generateThumbnail');
             chai.expect(actions[1]).to.have.property('name', 'uploadToIpfs');
+        })
+    })
+
+    describe('_ipfsUpload', function () {
+        it('should upload a file to web3 and return an object containing a CID', async function () {
+            this.timeout(60000);
+            console.log(pngFixture)
+            const v = new VOD({ date: futureDateFixture });
+            const cid = await v._ipfsUpload(pngFixture);
+            chai.expect(cid).to.equal(pngFixtureCID);
         })
     })
 })
