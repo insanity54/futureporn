@@ -458,49 +458,29 @@ module.exports = class VOD {
 	}
 
 
-	async _getBranchHash (storage, rootCid, attempt = 0) {
+	static async _getBranchHash (rootCid, attempt = 0) {
+		const cheerio = require('cheerio');
+
 		try {
 			attempt++;
 
-			debug(`[<] getting branch hash of rootCid:${rootCid}`);
-		    const res = await storage.get(rootCid); // Promise<Web3Response | null>
+		    // the web3.storage way of doing this is broken
+		    // https://github.com/web3-storage/web3.storage/issues/840
+		    // our workaround is to scrape the index via IPFS gateway
+			const response = await fetch(`https://gateway.ipfs.io/ipfs/${rootCid}`);
+			const body = await response.text();
+			const $ = cheerio.load(body);
+			const cidHref = $('a.ipfs-hash').attr('href');
+			const cid = ipfsHashRegex.exec(cidHref)[0]
+
+			return cid;
 
 
-		    debug(res)
-		    // debug(`[>] getting files within the ipfs-car`);
-		    // const iterator = await res.unixFsIterator();
-		    // debug(iterator)
-
-		    // debug(`[v] getting first file`);
-		    // const firstFile = await iterator.next();
-
-		    // debug(`[<] got the first file`)
-		    // const cid = firstFile.cid;
-		    for await (const entry of res.unixFsIterator()) {
-				debug(`[*] got unixfs of type ${entry.type}. cid: ${entry.cid} path: ${entry.path}`)
-		        // entry.content() returns another async iterator for the chunked file contents  
-		        for await (const chunk of entry.content()) {
-		            debug(`[*] got a chunk of ${chunk.size} bytes of data`)  
-		        }
-		    }
-
-		    debug("[88888888] that's all i got")
-
-
-
-
-		    // const ipfsFiles = await res.files(); // Promise<Web3File[]>
-
-		    // const cid = ipfsFiles[0].cid;
-		    // debug(`[<] the first file cid is ${cid}`)
-
-		    return cid;
 		} catch (e) {
 			console.error(e);
 			debug(`[!] _getBranchHash error at attempt ${attempt}`)
-
 			if (attempt > 2) throw new Error(`_getBranchHash tried ${attempt} times but failed all times. Somethin' is probably broken or no internet or something liek that.`);
-			else return this._getBranchHash(storage, rootCid, attempt);
+			else return VOD._getBranchHash(rootCid, attempt);
 		}
 	}
 
