@@ -14,6 +14,7 @@
         state: present
 
     - name: Spin up a STRONK VPS to handle ul/dl file tasks
+      when: manager is true
       ngine_io.vultr.vultr_server:
         name: "capture-2"
         os: Ubuntu 20.04 x64
@@ -33,5 +34,8 @@
   vars:
     - ansible_user: root
   roles:
+    - role: base
     - role: capture
+    - role: scout
     - role: geerlingguy.nodejs
+      when: manager is true
