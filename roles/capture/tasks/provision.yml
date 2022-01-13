@@ -7,6 +7,18 @@
     line: "export WEB3_TOKEN={{ lookup('env', 'WEB3_TOKEN') }}"
     state: present
 
+- name: Set TWITTER_API_KEY in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export TWITTER_API_KEY={{ lookup('env', 'TWITTER_API_KEY') }}"
+    state: present
+
+- name: Set TWITTER_API_KEY_SECRET in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}"
+    state: present
+
 - name: Install latest rclone
   apt:
     deb: https://downloads.rclone.org/rclone-current-linux-amd64.deb

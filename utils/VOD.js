@@ -144,6 +144,7 @@ module.exports = class VOD {
 		if (R.is(String, date)) return zonedTimeToUtc(date, 'Zulu');
 	}
 
+
 	async ensureThiccHash () {
 		debug(this)
 		if (this.thiccHash !== '') return;
@@ -456,6 +457,53 @@ module.exports = class VOD {
 		}
 	}
 
+
+	async _getBranchHash (storage, rootCid, attempt = 0) {
+		try {
+			attempt++;
+
+			debug(`[<] getting branch hash of rootCid:${rootCid}`);
+		    const res = await storage.get(rootCid); // Promise<Web3Response | null>
+
+
+		    debug(res)
+		    // debug(`[>] getting files within the ipfs-car`);
+		    // const iterator = await res.unixFsIterator();
+		    // debug(iterator)
+
+		    // debug(`[v] getting first file`);
+		    // const firstFile = await iterator.next();
+
+		    // debug(`[<] got the first file`)
+		    // const cid = firstFile.cid;
+		    for await (const entry of res.unixFsIterator()) {
+				debug(`[*] got unixfs of type ${entry.type}. cid: ${entry.cid} path: ${entry.path}`)
+		        // entry.content() returns another async iterator for the chunked file contents  
+		        for await (const chunk of entry.content()) {
+		            debug(`[*] got a chunk of ${chunk.size} bytes of data`)  
+		        }
+		    }
+
+		    debug("[88888888] that's all i got")
+
+
+
+
+		    // const ipfsFiles = await res.files(); // Promise<Web3File[]>
+
+		    // const cid = ipfsFiles[0].cid;
+		    // debug(`[<] the first file cid is ${cid}`)
+
+		    return cid;
+		} catch (e) {
+			console.error(e);
+			debug(`[!] _getBranchHash error at attempt ${attempt}`)
+
+			if (attempt > 2) throw new Error(`_getBranchHash tried ${attempt} times but failed all times. Somethin' is probably broken or no internet or something liek that.`);
+			else return this._getBranchHash(storage, rootCid, attempt);
+		}
+	}
+
 	async _ipfsUpload (filename) {
 		const token = process.env.WEB3_TOKEN;
 		if (typeof token === 'undefined') {
@@ -464,28 +512,6 @@ module.exports = class VOD {
 		const storage = new Web3Storage({ token })
 		const files = await getFilesFromPath(filename);
 
-		async function __getBranchHash (rootCid, attempt = 0) {
-			try {
-				attempt++;
-
-				debug(`[<] getting branch hash of rootCid:${rootCid}`);
-			    const res = await storage.get(rootCid); // Promise<Web3Response | null>
-
-			    debug(`[>] getting files within this archive`);
-			    const ipfsFiles = await res.files(); // Promise<Web3File[]>
-
-			    const cid = ipfsFiles[0].cid;
-			    debug(`[<] the first file cid is ${cid}`)
-
-			    return cid;
-			} catch (e) {
-				console.error(e);
-				debug(`[!] __getBranchHash error at attempt ${attempt}`)
-
-				if (attempt > 2) throw new Error(`__getBranchHash tried ${attempt} times but failed all times. Somethin' is probably broken or no internet or something liek that.`);
-				else return __getBranchHash(rootCid);
-			}
-		}
 
 		async function __upload (storage, files, attempt = 0) {
 		  try {
@@ -507,7 +533,7 @@ module.exports = class VOD {
 		}
 
 		const rootCid = await __upload(storage, files);
-		const cid = await __getBranchHash(rootCid);
+		const cid = await _getBranchHash(storage, rootCid);
 		return cid;
 	}
 

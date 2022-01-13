@@ -983,4 +983,13 @@ describe('VOD', function () {
             chai.expect(cid).to.equal(pngFixtureCID);
         })
     })
+
+    describe('_getBranchHash', function () {
+        it('should fetch the CID of the first file in a content archive', async function () {
+            this.timeout(60000);
+            const v = new VOD({ date: futureDateFixture });
+            const cid = await v._getBranchHash(VOD.web3Client, 'bafybeig6xsdyaph7awkzixrjcpdkq4m75muybebrcih5lpss3skkrsheum');
+            chai.expect(cid).to.equal('bafybeihggyg54iqrjsvcmrnihwoq54xtqkpznnsao47nhwopmkcmnslv5a');
+        })
+    })
 })
