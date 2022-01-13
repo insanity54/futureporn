@@ -52,6 +52,7 @@
     - restart systemd-journald
 
 
+
 - name: Install dependencies
   become: yes
   apt:
@@ -65,14 +66,3 @@
       - mosh
     state: present
     update_cache: yes
-    cache_valid_time: 3600
-  register: apt_result
-  until: apt_result|success
-  retries: 3
-  delay: 1
-
-
-- name: retry if needed using command apt-get update
-  command: apt-get update
-  become: yes
-  when: apt_result|failed
