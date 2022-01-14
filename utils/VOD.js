@@ -513,7 +513,7 @@ module.exports = class VOD {
 		}
 
 		const rootCid = await __upload(storage, files);
-		const cid = await _getBranchHash(storage, rootCid);
+		const cid = await VOD._getBranchHash(rootCid);
 		return cid;
 	}
 
