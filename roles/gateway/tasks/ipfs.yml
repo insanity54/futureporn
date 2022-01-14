@@ -73,3 +73,23 @@
     daemon_reload: yes
 
 
+- name: configure ipfs StorageMax
+  ansible.builtin.lineinfile:
+    dest: /home/ipfs/.ipfs/config
+    regexp: "StorageMax"
+    line: "\"StorageMax\": \"20GB\","
+    state: present
+    owner: ipfs
+    group: ipfs
+  notify: restart ipfs
+
+
+- name: configure ipfs GCPeriod
+  ansible.builtin.lineinfile:
+    dest: /home/ipfs/.ipfs/config
+    regexp: "GCPeriod"
+    line: "\"GCPeriod\": \"15m\","
+    state: present
+    owner: ipfs
+    group: ipfs
+  notify: restart ipfs
