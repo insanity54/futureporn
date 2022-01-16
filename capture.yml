@@ -16,7 +16,7 @@
     - debug: var=manager
 
     - name: Spin up a STRONK VPS to handle ul/dl file tasks
-      when: manager | bool
+      when: manager | default(false) | bool
       ngine_io.vultr.vultr_server:
         name: "capture-2"
         os: Ubuntu 20.04 x64
