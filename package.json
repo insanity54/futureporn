@@ -37,6 +37,7 @@
   "homepage": "https://github.com/insanity54/futureporn#readme",
   "dependencies": {
     "@grimtech/envimport": "^0.0.1",
+    "bulma-prefers-dark": "^0.1.0-beta.1",
     "cheerio": "^1.0.0-rc.10",
     "date-fns": "^2.25.0",
     "date-fns-tz": "^1.1.6",
