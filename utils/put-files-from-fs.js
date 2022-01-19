@@ -13,7 +13,7 @@ async function upload (storage, files, attempt = 0) {
     debug(`uploading ${files}`);
     const rootCid = await storage.put(files)
 
-    debug(`the rootCid is ${rootCid}`);
+    console.log(`the rootCid is ${rootCid}`);
 
     const res = await storage.get(rootCid); // Promise<Web3Response | null>
     const ipfsFiles = await res.files(); // Promise<Web3File[]>
