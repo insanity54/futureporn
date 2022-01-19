@@ -113,7 +113,7 @@
               {% if vod.data.announceTitle %}
                 {{ vod.data.announceTitle | urlDecode }}
               {% elseif vod.data.title %}
-                {{ vod.data.title }}
+                {{ vod.data.title | urlDecode }}
               {% endif %}
             </td>
 

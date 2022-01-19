@@ -133,7 +133,7 @@ module.exports = class VOD {
 	}
 
 	static _getTmpDownloadPath (filename) {
-		const tmpDir = os.tmpdir();
+		const tmpDir = path.join(os.homedir(), 'futureporn_tmp');
 		return path.join(tmpDir, filename);
 	}
 

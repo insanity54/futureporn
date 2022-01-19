@@ -13,8 +13,10 @@
         tag: futureporn
         state: present
 
+    - debug: var=manager
+
     - name: Spin up a STRONK VPS to handle ul/dl file tasks
-      when: manager is true
+      when: manager | default(false) | bool
       ngine_io.vultr.vultr_server:
         name: "capture-2"
         os: Ubuntu 20.04 x64
@@ -35,7 +37,7 @@
     - ansible_user: root
   roles:
     - role: base
+    - role: geerlingguy.nodejs
     - role: capture
     - role: scout
-    - role: geerlingguy.nodejs
       when: manager is true
