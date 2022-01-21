@@ -11,20 +11,23 @@
     <meta property="og:url" content="{{ metadata.url }}" />
     <meta property="og:image" content="{{ metadata.url }}favicon.ico" />
     <meta property="og:description" content="{{ metadata.description }}" />
+    <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
     <link rel="stylesheet" href="{% webpackAsset 'main.css' %}">
     <link rel="canonical" href="{{ metadata.url }}">
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
     <title>{{ metadata.title }}</title>
   </head>
   <body>
-    <div class="container">
-
-      <div class="block">
-        <div class="box">
-          <a href="/"><h1 class="title">Futureporn.net</h1></a>
-          <h2 class="subtitle">Unofficial <a target="_blank" href="https://twitter.com/ProjektMelody">ProjektMelody <span class="icon"><i class="fas fa-external-link-alt"></i></span></a> Chaturbate VOD Archive. For Adults Only.</h2>
-        </div>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <h1 class="title">{{ metadata.title }}</h1>
+        </a>
       </div>
+      <a class="navbar-item" href="/about">About</a>
+      <a class="navbar-item" href="/faq">FAQ</a>
+    </nav>
+    <div class="container">
 
 
     <div class="advert">
@@ -44,62 +47,12 @@
 
         <div class="content">
           <div class="columns">
-            <div class="column is-6">
-              <p class="title">NEWS
-              </p>
-
-                <article class="mt-5 message is-success">
-                  <div class="message-body">
-                    <p><a target="_blank" href="https://stars.avn.com/avn_awards/voting/33">Vote for Mel!<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
-                  </div>
-                </article>
-
-                <article class="mt-5 message is-danger">
-                  <div class="message-body">
-                    <p>I had to shut down Futureporn's IPFS gateway due to budget constraints. It looks like bandwidth for that gateway will cost about $3 per day, which is impossible for me to cover. My budget for this project is $8 per month.</p>
-                    <p>I switched back to a public gateway, dweb.link. <b>Expect outages!</b></p>
-                    <p>If you can't download a video, workarounds include running your own IPFS gateway or using a less loaded public IPFS gateway. <a target="_blank" href="https://ipfs.github.io/public-gateway-checker/">List of public gateways<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
-                  </div>
-                </article>
-
-
-                <article class="mt-5 message is-success">
-                <div class="message-body">
-                  <p>Futureporn needs financial support to continue improving. If you enjoy this website, please consider <a target="_blank" href="https://patreon.com/CJ_Clippy">becoming a patron<span class="icon"><i class="fas fa-external-link-alt"></i></span></a>.</p>
-                </div>
-              </article>
-            </div>
-            <div class="column is-6">
-                <p class="title">Goals for this website</p>
-                <ol>
-                  <li><p>✅ Get a domain name. <a href="https://futureporn.net">futureporn.net</a></p></li>
-                  <li><p>☐ Archive every ProjektMelody Chaturbate stream. <mark>Progress: {% ipfsProgressPercentage collections.vods %}</mark></p></li>
-                  <li><p>☐ Create mobile-friendly version of each video.</p></li>
-                  <li><p>☐ Add a fap counter (A fancy <i>like</i> button so I can tell if people enjoy the site.)</p></li>
-                  <li><p>☐ Secure website funding.</p></li>
-                  <li><p>☐ Solicit viewer feedback.</p></li>
-                  <li><p>☐ Design a sexy UI.</p></li>
-                  <li><p>☐ Increase video playback performance.</p></li>
-                  <li><p>☐ Enable video clipping, for highlighting crowd favorite moments.</p></li>
-                  <li><p>☐ Develop Lovense vibration recording</p></li>
-                  <li><p>☐ Implement syncronized Lovense vibration playback (for the audience with their own toys.)</p></li>
-                  <li><p>☐ Label each VOD with tags</p></li>
-                  <li><p>☐ Transcribe Closed Captions on all videos.</p></li>
-                  <li><p>✅ Serve ProjektMelody VODs to Earth.</p></li>
-                  <li><p>☐ Serve ProjektMelody VODs to Low Earth Orbit.</p></li>
-                  <li><p>☐ Serve ProjektMelody VODs to Moonbase.</p></li>
-                  <li><p>☐ Serve ProjektMelody VODs to Mars.</p></li>
-                </ol>
-              </div>
-            </div>
-          
-
+     
               <div class="column is-6">
-                <p class="title">Meta</p>
                 <p class="mt-4">
-                  Website made by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+                  Futureporn.net is made with ❤️ by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
                 </p>
-                <p>Website source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+                <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
                 <p><a 
                   target="_blank" 
                   href="https://www.reddit.com/r/projektmelody/comments/qikzy0/futureporn_an_unofficial_projektmelody_chaturbate/"

@@ -1,0 +1,34 @@
+---
+layout: layouts/base.njk
+eleventyNavigation:
+  key: FAQ
+  order: 2
+---
+
+
+<div class="content">
+  <div class="block">
+    <div class="box">
+      <div class="columns">
+        <div class="column is-6">
+          <p id="faq" class="title">Frequently Asked Questions (FAQ)<p>
+          <div>
+            <a id="not-working" class="title is-5">The videos are not working? / I can't download VODs?</a>
+
+            <p>It's due to the public IPFS gateway (https://dweb.link) being overloaded by requests of popular content. The IPFS gateway is a courtesy service and there are a lot of people visiting Futureporn and using that free IPFS gateway to download VODs. After so much traffic, the gateway starts dropping requests.</p>
+
+            <p>Futureporn is not using the public IPFS gateway as it's developers intend. The intention of the public gateway is short-term developer testing. In the early days, files listed on Futureporn were served because the traffic was small. Futureporn has grown and now the public gateway is cutting us off.</p>
+
+            <p>The intended method for serving lots of files is for every participant in IPFS to run their own gateway. For a time, I ran an IPFS gateway for Futureporn, but quickly discovered that it would cost $100+ every month to operate. My budget for Futureporn is $8/month which ended the gateway. For now, it's just going to be spotty as Futureporn uses the public IPFS gateway.</p>
+
+            <p>There's a workaround which is to use a different gateway. example: <pre>https://ipfs.io/ipfs/[INSERT_CONTENT_ID_HERE]</pre> instead of <pre>https://dweb.link/ipfs/[INSERT_CONTENT_ID_HERE]</pre></p>
+
+            <p><a target="_blank" href="https://ipfs.github.io/public-gateway-checker/">List of public IPFS gateways<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+
+            <p>Technically savvy? Even better is to <a target="_blank" href="https://docs.ipfs.io/install/ipfs-desktop/">run your own IPFS node <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
