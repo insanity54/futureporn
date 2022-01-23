@@ -70,3 +70,12 @@
       - mosh
     state: present
     update_cache: yes
+
+
+- name: Create tmp dir
+  file:
+    path: /root/futureporn_tmp
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
