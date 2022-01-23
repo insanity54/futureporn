@@ -1,0 +1,39 @@
+---
+layout: layouts/base.njk
+eleventyNavigation:
+  key: Supporters
+  order: 3
+---
+
+
+<div class="content">
+  <div class="block">
+    <div class="box">
+      <div class="columns">
+        <div class="column is-6">
+          <p class="title">Patron List</p>
+          <p class="subtitle">Futureporn.net continues to improve thanks to these generous supporters.</p>
+
+          {% if metadata.patrons.length < 1 %}
+          <article class="mt-5 message is-warning">
+            <div class="message-body">
+              <p>None yet! Care to be the first? <a target="_blank" href="https://patreon.com/CJ_Clippy">Support CJ_Clippy on Patreon<span class="icon"><i class="fas fa-external-link-alt"></i></span></a>.</p>
+            </div>
+          </article>
+          {% else %}
+
+          <ul class="patron-list">
+          {%- for patron in metadata.patrons %}
+            <li>{{ patron }}</li>
+          {% endfor %}
+          </ul>
+
+          <p>Want to get your name on this list? <a href="https://patreon.com/CJ_Clippy" target="_blank">Become a patron today!<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
