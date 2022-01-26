@@ -40,4 +40,3 @@
     - role: geerlingguy.nodejs
     - role: capture
     - role: scout
-      when: manager is true
