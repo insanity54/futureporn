@@ -9,8 +9,6 @@ After=network.target
 ExecStart=/root/futureporn/utils/scout.js
 WorkingDirectory=/root/futureporn
 Restart=always
-User=nobody
-Group=nogroup
 Environment=PATH=/usr/bin:/usr/local/bin
 Environment=NODE_ENV=production
 Environment=DEBUG=futureporn
