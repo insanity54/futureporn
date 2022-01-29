@@ -40,3 +40,4 @@
     - role: geerlingguy.nodejs
     - role: capture
     - role: scout
+      when: not (manager | default(false) | bool)
