@@ -159,7 +159,7 @@ describe('VOD', function () {
         })
     })
 
-    describe('downloadFromB2', function () {
+    describe('downloadFrom', function () {
         this.timeout(30000)
         it('should download a file to /tmp', async function () {
             const v = new VOD({
@@ -971,6 +971,14 @@ describe('VOD', function () {
             chai.expect(actions[1]).to.be.a('function');
             chai.expect(actions[0]).to.have.property('name', 'generateThumbnail');
             chai.expect(actions[1]).to.have.property('name', 'uploadToIpfs');
+        })
+    })
+
+    describe('_B2Upload', function () {
+        it('should upload a file to B2 and return the URL of the file', async function () {
+            this.timeout(69000);
+            const url = await VOD._B2Upload(pngFixture);
+            chai.expect(url).to.equal('https://f000.backblazeb2.com/file/futureporn/cj_clippy_avatar.png');
         })
     })
 
