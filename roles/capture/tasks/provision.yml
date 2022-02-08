@@ -1,5 +1,16 @@
 ---
 
+- name: Set B2_APPLICATION_KEY in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export B2_APPLICATION_KEY={{ lookup('env', 'B2_APPLICATION_KEY') }}"
+    state: present
+
+- name: Set B2_APPLICATION_KEY_ID in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export B2_APPLICATION_KEY_ID={{ lookup('env', 'B2_APPLICATION_KEY_ID') }}"
+    state: present
 
 - name: Set WEB3_TOKEN secret in env
   ansible.builtin.lineinfile:
