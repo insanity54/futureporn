@@ -402,7 +402,7 @@ module.exports = class VOD {
 		if (this.videoSrc !== '') return;
 		await this.ensureTmpFilePath();
 		const videoBasename = this._getVideoBasename('source');
-		const url = await this._B2Upload(this.tmpFilePath);
+		const url = await VOD._B2Upload(this.tmpFilePath);
 		this.videoSrc = url;
 	}
 
@@ -536,25 +536,31 @@ module.exports = class VOD {
 		this.videoSrcHash = hash;
 	}
 
-	async _B2Upload (filename) {
+	static async _B2Upload (filename) {
 		console.log(`uploading ${filename} to B2`);
 		if (process.env.B2_UPLOAD===0) {
 			console.log('SKIPPING B2 upload due to B2_UPLOAD=0 set in env')
 			return;
 		}
 		let unsuccessful = true;
+		let url = '';
 		let attempts = 0;
 		while (unsuccessful) {
 			attempts += 1
-			const { exitCode, killed } = await execa('rclone', ['copy', filename, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
+			// const { exitCode, killed } = await execa('rclone', ['copy', filename, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
+			const { exitCode, killed, stdout } = await execa('b2-linux', ['upload-file', 'futureporn', filename, path.basename(filename)])
+			console.log(stdout)
 			if (exitCode === 0 && killed === false) {
+				console.log('all good')
 				unsuccessful = false;
+				url = /URL by file name: (.*)$/m.exec(stdout)[1];
+				console.log(`url->${url}`)
+				break;
 			}
 			if (attempts === 3) {
 				break;
 			}
 		}
-		const url = await this._getB2UrlFromB2(path.basename(filename));
 		return url;
 	}
 
@@ -584,29 +590,6 @@ module.exports = class VOD {
 		const d = this.getSafeDatestamp();
 		const format = (R.isNil(param)) ? '' : `-${param}`;
 		return `projektmelody-chaturbate-${d}${format}.mp4`;
-	}
-
-	async _getB2UrlFromB2 (filename) {
-		let unsuccessful = true;
-		let attempts = 0;
-		let output = '';
-		while (unsuccessful) {
-			attempts += 1;
-			const { exitCode, killed, stdout } = await execa('rclone', [
-				'link', 
-				`${VOD.rcloneDestination}:${VOD.B2BucketName}/${filename}`
-			])
-
-			if (exitCode === 0 && killed === false) {
-				unsuccessful = false;
-				output = stdout;
-			}
-
-			if (attempts === 3) {
-				break;
-			}
-		}
-		return output;
 	}
 
 
