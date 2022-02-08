@@ -1,0 +1,24 @@
+
+# rclone is deprecated in favor of b2-linux
+# due to Backblaze behaving poorly with rclone
+# im keeping this file here for reference
+
+- name: Install latest rclone
+  apt:
+    deb: https://downloads.rclone.org/rclone-current-linux-amd64.deb
+    state: present
+    # this is necessary because the apt version has a B2 upload bug
+
+- name: Create rclone conf directory
+  ansible.builtin.file:
+    state: directory
+    path: /root/.config/rclone
+    mode: '0755'
+
+- name: Configure rclone
+  ansible.builtin.template:
+    src: templates/rclone.conf.j2
+    dest: /root/.config/rclone/rclone.conf
+    owner: root
+    group: root
+    mode: '0600'
