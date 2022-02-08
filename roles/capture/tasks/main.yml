@@ -8,6 +8,9 @@
 - include: ./provision.yml
   when: task == "provision"
 
+- include: ./b2-linux.yml
+  when: task == "provision"
+
 - include: ./upload.yml
   when: task == "upload"
 
