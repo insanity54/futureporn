@@ -26,7 +26,7 @@ import HlsjsIpfsLoader from 'hlsjs-ipfs-loader'
     const filename = "projektmelody-chaturbate-2022-02-13.mp4"
     const testhash = "bafybeidhrsuwcuibaqoya4ufzgzjz3xiqj3otvkudv62rmnn3qjl6yb7sa";
     Hls.DefaultConfig.loader = HlsjsIpfsLoader;
-    Hls.DefaultConfig.debug = false;
+    Hls.DefaultConfig.debug = true; //@todo change to false for deploy
     if (Hls.isSupported()) {
       const video = document.getElementById('player');
       const hls = new Hls();
