@@ -111,5 +111,8 @@
   "target": [
     "web",
     "es5"
+  ],
+  "browserslist": [
+    "defaults"
   ]
 }
