@@ -52,6 +52,7 @@
   git:
     repo: https://github.com/insanity54/futureporn
     dest: /root/futureporn
+    force: yes
 
 - name: Install & update voddo
   git:
