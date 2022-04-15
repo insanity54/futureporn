@@ -119,7 +119,7 @@ module.exports = class VOD {
 
 	// greetz https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent
 	static _containsEncodedComponents(x) {
-	  return /%[0-9a-fA-F]+/.test(x);
+	  return /%[0-9a-fA-F]+/.test(x); // &gt;
 	}
 
 	static _getIpfsHash (input) {

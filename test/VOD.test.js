@@ -274,6 +274,16 @@ describe('VOD', function () {
             await v.ensureTextFormatting();
             chai.expect(v).to.have.property('title', singleEncodedText);
         })
+        it('should remove double encoding on title with greater than symbols', async function () {
+            const doubleEncodedText = 'ass%20kissing%20--------%26gt%3B';
+            const singleEncodedText = 'ass kissing -------->';
+            const v = new VOD({
+                date: futureDateFixture,
+                title: doubleEncodedText
+            })
+            await v.ensureTextFormatting();
+            chai.expect(v).to.have.property('title', singleEncodedText);
+        })
     })
 
     describe('ensureVideoSrc', function () {
@@ -438,15 +448,33 @@ describe('VOD', function () {
             const unsafeMessage = '*this';
             chai.expect(VOD._getSafeText(unsafeMessage)).to.equal("%2athis");
         })
+        it('should urlencode greaterthan symbols', function () {
+            const unsafeMessage = '---->';
+            chai.expect(VOD._getSafeText(unsafeMessage)).to.equal("----%3E")
+        })
         it('should do nothing if text is already encoded', function () {
             chai.expect(VOD._getSafeText(singleEncodedText)).to.equal(singleEncodedText);
             chai.expect(VOD._getSafeText(doubleEncodedText)).to.equal(doubleEncodedText);
         })
     })
 
+    describe('fixedEncodeURIComponent', function () {
+        it('should not detect &gt;', function () {
+            chai.expect(VOD.fixedEncodeURIComponent('&gt;')).to.equal('&gt;');
+        })
+    })
+
     describe('_containsEncodedComponents', function () {
         it('should detect %2A or %22', function () {
             const wang = 'Updated my bar!!! It looks very cyberpunky (but all the bottles are filled with wang energy drink). %2Athis message sponsored by wang energy drink, %22Taste the Wang%22';
+            chai.expect(VOD._containsEncodedComponents(wang)).to.be.true;
+        })
+        it('should detect greater than symbols', function () {
+            const wang = 'ass%20kissing%20--------%26gt%3B';
+            chai.expect(VOD._containsEncodedComponents(wang)).to.be.true;
+        })
+        it('should detect &gt;', function () {
+            const wang = '&gt;'
             chai.expect(VOD._containsEncodedComponents(wang)).to.be.true;
         })
     })
