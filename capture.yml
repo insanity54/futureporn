@@ -5,7 +5,7 @@
     - name: Spin up a VPS in Atlanta
       ngine_io.vultr.vultr_server:
         name: "capture-1"
-        os: Ubuntu 20.04 x64
+        os: Ubuntu 20.04 LTS x64
         region: Atlanta
         plan: 1024 MB RAM,25 GB SSD,1.00 TB BW
         ssh_keys:
@@ -15,17 +15,37 @@
 
     - debug: var=manager
 
+
+    - name: Determine if manager is up
+      uri:
+        method: GET
+        url: "https://api.vultr.com/v2/instances?label=capture-2"
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
+      register: manager_check
+
+      # total var is 0 if there is NOT a capture-2
+    - debug: var=manager_check.json.meta.total
+
     - name: Spin up a STRONK VPS to handle ul/dl file tasks
-      when: manager | default(false) | bool
-      ngine_io.vultr.vultr_server:
-        name: "capture-2"
-        os: Ubuntu 20.04 x64
-        region: Seattle
-        plan: 16384 MB RAM,320 GB SSD,5.00 TB BW
-        ssh_keys:
-          - 612fa1f7d1e42
-        tag: futureporn
-        state: present
+      when: manager_check.json.meta.total | int == 0
+      uri:
+        status_code:
+          - 200
+          - 202 # Vultr returns status 202 so we gotta tell ansible that that is acceptible
+        method: POST
+        url: "https://api.vultr.com/v2/instances"
+        body_format: json
+        body:
+          os_id: 387 # Ubuntu 20.04 LTS x64
+          region: dfw
+          plan: vc2-6c-16gb
+          sshkey_id: 
+            - 30abb7c0-0361-4e6f-8168-e9ac464b2ba3
+          tag: futureporn
+          label: capture-2
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
 
     - name: Refresh Inventory
       meta: refresh_inventory
