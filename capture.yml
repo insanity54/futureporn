@@ -28,7 +28,7 @@
     - debug: var=manager_check.json.meta.total
 
     - name: Spin up a STRONK VPS to handle ul/dl file tasks
-      when: manager_check.json.meta.total | int == 0
+      when: (manager is defined and (manager | bool)) and (manager_check.json.meta.total | int == 0)
       uri:
         status_code:
           - 200
