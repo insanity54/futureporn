@@ -26,21 +26,40 @@
       </div>
       <a class="navbar-item" href="/about">About</a>
       <a class="navbar-item" href="/faq">FAQ</a>
+      <a class="navbar-item" href="/goals">Goals</a>
       <a class="navbar-item" href="/patrons">Patrons</a>
-      {# <a class="navbar-item" href="/feedback">Feedback</a> #}
+      {# <a class="navbar-item" href="/feedback">Feedback</a> COMING SOMEDAY #}
+
     </nav>
     <div class="container">
 
+      <div class="card">
+        <a target="_blank" href="https://www.ebay.com/str/sakurablossomtradingpost?mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=5338923381&customid=&toolid=10001&mkevt=1">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <img src="/img/sbtpxyz2.jpg" alt="Sakura Blossom Trading Post on eBay">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4">Looking for VOCALOID trading cards?</p>
+                <p class="subtitle is-6">Check out Sakura Blossom Trading Post<span class="icon"><i class="fas fa-external-link-alt"></i></span></p>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
 
-    <div class="advert">
-      <ins class="adsbyexoclick" data-zoneid="4557794"></ins>
-    </div>
+
+      <div class="news notification is-primary">
+        <p>Archive Progress: <mark>{% ipfsProgressPercentage collections.vods %}</mark></p>
+        <p>100% <strong>PUSH</strong> is in progress!</p>
+        <p>Got missing VODs? Please E-Mail <a href="mailto:cj@sbtp.xyz">cj@sbtp.xyz</a> or tweet <a href="https://twitter.com/CJ_Clippy">@CJ_Clippy</a></p>
+      </div>
 
     {{ content | safe }}
 
-    <div class="advert">
-      <ins class="adsbyexoclick" data-zoneid="4557984"></ins> 
-    </div>
 
 
 
@@ -81,7 +100,5 @@
 
   </div>
     <script src="{% webpackAsset 'main.js' %}"></script>
-    <script async type="application/javascript" src="https://a.realsrv.com/ad-provider.js"></script>
-    <script>(AdProvider = window.AdProvider || []).push({'serve': {}});</script> 
   </body>
 </html>

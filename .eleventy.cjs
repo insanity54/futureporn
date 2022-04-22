@@ -29,6 +29,8 @@ const filterB2Completed = (vods) => {
 }
 
 module.exports = function(eleventyConfig) {
+  eleventyConfig.addPassthroughCopy({ "website/img": "img" });
+
   eleventyConfig.addPlugin(faviconPlugin);
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginNavigation);
@@ -41,6 +43,14 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addShortcode("buildIpfsUrl", function(urlFragment) {
     return `https://dweb.link/ipfs/${urlFragment}`;
+  });
+
+  eleventyConfig.addShortcode("ipfsProgressComplete", function(vods) {
+    return `${filterIpfsCompleted(vods)}`;
+  });
+
+  eleventyConfig.addShortcode("ipfsProgressTotal", function(vods) {
+    return `${vods.length}`;
   });
 
   eleventyConfig.addShortcode("b2ProgressPercentage", function(vods) {
