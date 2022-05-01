@@ -1,6 +1,5 @@
 ---
 
 - include_tasks: ./futureporn.yml
-- include_tasks: ./ipfs.yml
 - include_tasks: ./caddy.yml
 - include_tasks: ./dns.yml
