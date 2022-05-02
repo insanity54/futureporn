@@ -5,15 +5,18 @@ const cbUrlRegex = /chaturbate\.com.*projektmelody/i
 
 const containsCBInviteLink = (tweet) => {
 	try {
-		if (tweet?.entities.urls === undefined) return false;
+		if (tweet?.entities?.urls === undefined) return false;
 		for (url of tweet.entities.urls) {
-			if (cbUrlRegex.test(url.unwound_url)) {
-				return true;
+			if (url.unwound_url) {
+				if (cbUrlRegex.test(url.unwound_url)) return true;
+				else return false;
 			} else {
-				return false;
+				if (cbUrlRegex.test(url.expanded_url)) return true;
+				else return false;
 			}
 		}
 	} catch (e) {
+		console.log('ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR ERROR')
 		console.error(e);
 		return false;
 	}
@@ -24,9 +27,12 @@ const deriveTitle = (text) => {
 	// greetz https://www.urlregex.com/
 	const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/g;
 	let title = text
-		.replace(urlRegex, '') // remove urls
-		.replace(/\n/g, ' ')   // replace newlines with spaces
-		.replace(/\s+$/, '');  // remove trailing whitespace
+		.replace(urlRegex, '')   // remove urls
+		.replace(/\n/g, ' ')     // replace newlines with spaces
+		.replace(/&gt;/g, '>')   // gimme dem greater-than brackets
+		.replace(/&lt;/g, '<')   // i want them less-thans too
+		.replace(/&amp;/g, '&')  // ampersands are sexy
+		.replace(/\s+$/, '');    // remove trailing whitespace
 	return title;
 }
 
