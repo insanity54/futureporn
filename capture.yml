@@ -84,11 +84,13 @@
   vars:
     - ansible_user: root
     - ipfs_version: v0.12.2
+    - ipfs_private_key: "{{ lookup('env', 'IPFS_PRIVATE_KEY') }}"
+    - ipfs_peer_id: "{{ lookup('env', 'IPFS_PEER_ID') }}"
   roles:
     - role: base
     - role: geerlingguy.nodejs
     - role: capture
     - role: scout
-      when: not (manager | default(false) | bool)
-    - role: jeffbr13.ipfs 
-      when: (manager | default(false) | bool)
+      when: inventory_hostname == 'capture-1'
+    # - role: jeffbr13.ipfs 
+    #   when: (manager | default(false) | bool)
