@@ -29,6 +29,7 @@ const { deriveTitle, containsCBInviteLink } = require('./tweetProcess.js');
 const { isBefore, add, formatISO, parseISO } = require('date-fns')
 const { zonedTimeToUtc, utcToZonedTime, format, formatInTimeZone } = require('date-fns-tz')
 const VOD = require('./VOD.js')
+const { blacklist } = require('./tweetBlacklist.js');
 
 const datastore = Datastore.create(path.join(os.tmpdir(), 'projektmelody-tweets.db'));
 // const twitterConsumerKey = process.env.TWITTER_API_KEY;
@@ -38,7 +39,6 @@ const datastore = Datastore.create(path.join(os.tmpdir(), 'projektmelody-tweets.
 const timeout = 6*1000; // optional HTTP request timeout to apply to all requests.
 const strictSSL = true;  // optional - requires SSL certificates to be valid.
 const projektMelodyEpoch = new Date('2020-02-07T23:21:48.000Z');
-
 
 
 function later(delay, value) {
@@ -134,7 +134,7 @@ const filterInviteTweets = async() => {
     for (const tweet of tweets) {
         if (containsCBInviteLink(tweet)) {
             console.log(deriveTitle(tweet.text || tweet.full_text));
-            inviteTweets.push(tweet)
+            if (!blacklist.includes(tweet.id_str || tweet.id)) inviteTweets.push(tweet)
         }
     }
     console.log(`  There are ${inviteTweets.length} invite tweets`)
@@ -163,31 +163,29 @@ const updateMarkdownFiles = async (inviteTweets) => {
 
         const announceTitle = deriveTitle(tweet.text || tweet.full_text);
 
+        const vod = new VOD({ date: formattedDate });
+
         // find existing VOD (already on disk)
         try {
-            const vod = new VOD({ date: formattedDate });
             await vod.loadMarkdown();
-
-
-            vod.mergeProperties({
-                announceTitle: announceTitle,
-                announceUrl: `https://twitter.com/ProjektMelody/status/${tweet.id_str}`,
-                date: formattedDate
-            });
-
-            // console.log(vod);
-
-
-            // @TODO 
-            //  DANGEROUS
-            //  PROCEED WITH CAUTION
-            //  MAKE SURE THE DATA IS RIGHT BEFORE UNCOMMENTING NEXT LINE!!!1
-            //await vod.saveMarkdown()
 
         } catch (e) {
             // console.log(e)
             console.log(`  [✨] [${safeDate}] [https://twitter.com/ProjektMelody/status/${tweet.id_str || tweet.id}] tweet "${announceTitle.substring(0, 80)}"`);
         }
+
+
+        vod.mergeProperties({
+            announceTitle: announceTitle,
+            announceUrl: `https://twitter.com/ProjektMelody/status/${tweet.id_str || tweet.id}`,
+            date: formattedDate,
+            layout: 'layouts/vod.njk'
+        });
+
+        // console.log(vod);
+
+
+        await vod.saveMarkdown()
 
     }
 }
