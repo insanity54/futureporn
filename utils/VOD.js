@@ -18,9 +18,11 @@ const Twitter = require('twitter-v2');
 const { Web3Storage, getFilesFromPath } = require('web3.storage');
 const Prevvy = require('prevvy');
 const { fileURLToPath } = require('url');
-const { format, zonedTimeToUtc, utcToZonedTime } = dateFnsTz;
+const matter = require('gray-matter');
+const { localTimeZone } = require('./constants');
+const { format, zonedTimeToUtc, utcToZonedTime, toDate } = dateFnsTz;
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
-
+const exoticTwitterDateFormat = "";
 
 // const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 
@@ -140,8 +142,8 @@ module.exports = class VOD {
 	static _parseDate (date) {
 		if (R.isEmpty(date)) return '';
 		if (R.isNil(date)) return '';
-		if (R.is(Date, date)) return date;
-		if (R.is(String, date)) return zonedTimeToUtc(date, 'Zulu');
+		if (R.is(Date, date)) return zonedTimeToUtc(date, localTimeZone);
+		if (R.is(String, date)) return new Date(date);
 	}
 
 
@@ -573,7 +575,7 @@ module.exports = class VOD {
 	 * so we use date-fns-tz and format with timezone GMT
 	 */
 	getDatestamp () {
-		const date = utcToZonedTime(this.date, 'UTC');
+		const date = zonedTimeToUtc(this.date, 'UTC');
 		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'UTC' });
 		return formattedDate;
 	}
@@ -605,6 +607,26 @@ module.exports = class VOD {
 	}
 
 
+    mergeProperties (vod) {
+        Object.keys(vod).forEach((key) => {
+            if (key === 'date') return;
+            this[key] = vod[key] || ""
+        });
+    }
+
+	async loadMarkdown () {
+		const filename = this.getMarkdownFilename();
+		// console.log(`  [l] loading ${filename}`)
+		const rawData = await fsp.readFile(filename, { encoding: 'utf-8' });
+		const { data } = matter(rawData);
+
+		// prevent overwriting any existing k/v
+		Object.keys(this).forEach((key) => {
+			if (key !== 'date' && this[key] !== '') throw new Error(`  [d] loadMarkdown detected that this vod already has a key/value ${key}/${this[key]} which means loadMarkdown would overwrite the value. This is unsupported. Please make a VOD instance with only a date, then loadMarkdown. (or code new behavior)`)
+		});
+
+		this.mergeProperties(data);
+	}
 
 	async saveMarkdown () {
 		const data = '---\n'+

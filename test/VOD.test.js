@@ -7,9 +7,11 @@ const matter = require('gray-matter');
 const fsp = require('fs/promises');
 const { fileURLToPath } = require('url');
 const { parseISO, isEqual, isValid } = require('date-fns');
+const { format, toDate, formatInTimeZone } = require('date-fns-tz');
 const chaiAsPromised = require('chai-as-promised');
 const os = require('os');
 const proxyquire = require('proxyquire');
+const { localTimeZone } = require('../utils/constants.js')
 
 chai.use(chaiAsPromised);
 
@@ -89,13 +91,22 @@ describe('VOD', function () {
     })
 
     describe('parseDate', function () {
+        const formatStyle = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+        it('should accept an exotic variety of date from twitter', function () {
+            const d = VOD._parseDate('Sun Apr 04 05:42:39 +0000 2021');
+            chai.expect(d).to.be.an.instanceof(Date);
+            chai.expect(formatInTimeZone(d, 'UTC', formatStyle)).to.equal('2021-04-04T05:42:39.000Z');
+            chai.expect(isValid(d)).to.be.true;
+        })
         it('should accept {String} 2021-10-16 and return a Date', function () {
             const d = VOD._parseDate('2021-10-16');
+            chai.expect(formatInTimeZone(d, 'UTC', formatStyle)).to.equal('2021-10-16T00:00:00.000Z');
             chai.expect(d).to.be.an.instanceof(Date);
             chai.expect(isValid(d)).to.be.true;
         })
         it('should accept 2021-10-16T00:00:00.000Z and return a Date', function () {
             const d = VOD._parseDate('2021-10-16T00:00:00.000Z');
+            chai.expect(formatInTimeZone(d, 'UTC', formatStyle)).to.equal('2021-10-16T00:00:00.000Z');
             chai.expect(d).to.be.an.instanceof(Date);
             chai.expect(isValid(d)).to.be.true;
         })
@@ -114,10 +125,29 @@ describe('VOD', function () {
             const v = new VOD({
                 date: '3031-10-16T00:00:00.000Z'
             })
+            console.log(`${typeof v.date}, ${v.date}`)
             const res = v.getMarkdownFilename();
             chai.expect(typeof res).to.equal('string');
-            chai.expect(res).to.match(/\/futureporn\/website\/vods\/30311016T000000Z\.md/);
+            console.log(res)
+            chai.expect(res).to.equal('/home/chris/Documents/futureporn/website/vods/30311016T000000Z.md')
+            // chai.expect(res).to.match(/\/futureporn\/website\/vods\/30311016T000000Z\.md/);
             chai.expect(path.isAbsolute(res)).to.be.true;
+        })
+    })
+
+    describe('loadMarkdown', function () {
+        it('should load vod data from markdown file on disk', async function () {
+            const v = new VOD({
+                date: '2020-02-07T15:21:48.000Z'
+            })
+
+            await v.loadMarkdown();
+
+            chai.expect(v).to.have.property('video240Hash', 'bafybeiadehyo7tyk527lda5imkkh5lffw7q7t27dqbggpnqca7ltklhccm?filename=projektmelody-chaturbate-20200207T232100Z-240p.mp4');
+            chai.expect(v).to.have.property('date', '2020-02-07T23:21:00.000Z');
+            chai.expect(v).to.have.property('note', 'Day 1');
+            chai.expect(v).to.have.property('layout', 'layouts/vod.njk');
+            chai.expect(v).to.have.property('announceUrl', 'https://twitter.com/ProjektMelody/status/1225922638687752192');
         })
     })
 

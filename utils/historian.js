@@ -17,7 +17,7 @@
 require('dotenv').config();
 const debug = require('debug')('futureporn');
 
-const { projektMelodyTwitterId } = require('./constants.js');
+const { projektMelodyTwitterId, localTimeZone } = require('./constants.js');
 
 const TwitterClient = require('twitter-api-scraper').default;
 // const Twitter = require('twitter-lite');
@@ -26,24 +26,19 @@ const Datastore = require('nedb-promises');
 const os = require('os');
 const path = require('path');
 const { deriveTitle, containsCBInviteLink } = require('./tweetProcess.js');
-const { isBefore, add, formatISO } = require('date-fns')
+const { isBefore, add, formatISO, parseISO } = require('date-fns')
+const { zonedTimeToUtc, utcToZonedTime, format, formatInTimeZone } = require('date-fns-tz')
+const VOD = require('./VOD.js')
 
 const datastore = Datastore.create(path.join(os.tmpdir(), 'projektmelody-tweets.db'));
-const twitterConsumerKey = process.env.TWITTER_API_KEY;
-const twitterConsumerSecret = process.env.TWITTER_API_KEY_SECRET;
-const twitterAccessToken = process.env.TWITTER_ACCESS_TOKEN;
-const twitterAccessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET;
+// const twitterConsumerKey = process.env.TWITTER_API_KEY;
+// const twitterConsumerSecret = process.env.TWITTER_API_KEY_SECRET;
+// const twitterAccessToken = process.env.TWITTER_ACCESS_TOKEN;
+// const twitterAccessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET;
 const timeout = 6*1000; // optional HTTP request timeout to apply to all requests.
 const strictSSL = true;  // optional - requires SSL certificates to be valid.
-const projektMelodyEpoch = new Date('2020-02-06T00:00:00.000Z');
+const projektMelodyEpoch = new Date('2020-02-07T23:21:48.000Z');
 
-
-// const client = new Twitter({
-//   consumer_key: twitterConsumerKey,
-//   consumer_secret: twitterConsumerSecret,
-//   access_token_key: twitterAccessToken,
-//   access_token_secret: twitterAccessTokenSecret
-//});
 
 
 function later(delay, value) {
@@ -53,7 +48,7 @@ function later(delay, value) {
 
 
 /**
- * get dates spaced 5 days apart
+ * get dates spaced a few days apart
  * starting on ProjektMelodyEpoch (2020-02-07)
  */
 const getDateRange = function* () {
@@ -115,9 +110,7 @@ async function query(client, startDate, endDate) {
 }   
 
 
-(async function main () {
-
-
+const getAllTweets = async() => {
     const client = new TwitterClient();
     await client.connect()
 
@@ -130,8 +123,10 @@ async function query(client, startDate, endDate) {
     for await (let [start, end] of getDateRange()) {
         await query(client, start, end);
     }
+};
 
-    const tweets = await datastore.find({}).sort({ id: -1 });
+const filterInviteTweets = async() => {
+    const tweets = await datastore.find({}).sort({ id: 1 });
 
     console.log(`  [*] there are a total of ${tweets.length} tweets.`);
 
@@ -144,7 +139,67 @@ async function query(client, startDate, endDate) {
     }
     console.log(`  There are ${inviteTweets.length} invite tweets`)
 
-    // create markdown files for each invite tweet
+    return inviteTweets;
+};
+
+
+/**
+ * create or update markdown files for each invite tweet
+ */
+const updateMarkdownFiles = async (inviteTweets) => {
+    if (!inviteTweets) throw new Error('there were no inviteTweets passed to updateMarkdownFiles()');
+
+
+
+    
+    for (const tweet of inviteTweets) {
+        if (tweet?.created_at === 'undefined') throw new Error(`  [e] tweet ${tweet.id_str} is missing date (tweet.created_at)`)
+
+        const utcDate = zonedTimeToUtc(new Date(tweet.created_at), localTimeZone);
+        const formattedDate = formatInTimeZone(utcDate, 'Zulu', "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        const safeDate = formatInTimeZone(utcDate, 'Zulu', "yyyyMMdd'T'HHmmss'Z'");
+
+        // console.log(`  [o] utcDate:${utcDate} the formattedDate is ${formattedDate} and the safeDate is ${safeDate}`);
+
+        const announceTitle = deriveTitle(tweet.text || tweet.full_text);
+
+        // find existing VOD (already on disk)
+        try {
+            const vod = new VOD({ date: formattedDate });
+            await vod.loadMarkdown();
+
+
+            vod.mergeProperties({
+                announceTitle: announceTitle,
+                announceUrl: `https://twitter.com/ProjektMelody/status/${tweet.id_str}`,
+                date: formattedDate
+            });
+
+            // console.log(vod);
+
+
+            // @TODO 
+            //  DANGEROUS
+            //  PROCEED WITH CAUTION
+            //  MAKE SURE THE DATA IS RIGHT BEFORE UNCOMMENTING NEXT LINE!!!1
+            //await vod.saveMarkdown()
+
+        } catch (e) {
+            // console.log(e)
+            console.log(`  [✨] [${safeDate}] [https://twitter.com/ProjektMelody/status/${tweet.id_str || tweet.id}] tweet "${announceTitle.substring(0, 80)}"`);
+        }
+
+    }
+}
+
+
+(async function main () {
+
+
+    // await getAllTweets();
+    const inviteTweets = await filterInviteTweets();
+    await updateMarkdownFiles(inviteTweets);
+
 
 
 })()

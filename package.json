@@ -57,6 +57,7 @@
     "prevvy": "^4.0.0",
     "process": "^0.11.10",
     "ramda": "^0.27.1",
+    "remarkable": "^2.0.1",
     "twitter-api-scraper": "^0.0.5",
     "twitter-lite": "^1.1.0",
     "twitter-v2": "^1.1.0"
