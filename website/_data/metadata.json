@@ -20,5 +20,8 @@
   "patrons": [
     "Shock",
     "catboxL"
+  ],
+  "contributors": [
+    { "name": "Zipdox", "link": "https://www.reddit.com/user/Zipdox/" }
   ]
 }

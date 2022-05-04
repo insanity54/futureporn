@@ -44,7 +44,8 @@
               </div>
               <div class="media-content">
                 <p class="title is-4">Looking for VOCALOID trading cards?</p>
-                <p class="subtitle is-6">Check out Sakura Blossom Trading Post<span class="icon"><i class="fas fa-external-link-alt"></i></span></p>
+                <p class="subtitle is-6">Check out Sakura Blossom Trading Post<span class="icon"><i class="fas fa-external-link-alt"></i></span> (Purchases directly support CJ_Clippy who runs this site)</p>
+
               </div>
             </div>
           </div>
@@ -53,9 +54,10 @@
 
 
       <div class="news notification is-primary">
-        <p>Archive Progress: <mark>{% ipfsProgressPercentage collections.vods %}</mark></p>
+        <p>ProjektMelody Chaturbate Archive Progress: <mark>{% ipfsProgressPercentage collections.vods %}</mark></p>
         <p>100% <strong>PUSH</strong> is in progress!</p>
-        <p>Got missing VODs? Please E-Mail <a href="mailto:cj@sbtp.xyz">cj@sbtp.xyz</a> or tweet <a target="_blank" href="https://twitter.com/CJ_Clippy">@CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+        <p>Do you have VODs saved which Futureporn is missing? Please E-Mail <a href="mailto:cj@sbtp.xyz">cj@sbtp.xyz</a> or tweet <a target="_blank" href="https://twitter.com/CJ_Clippy">@CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+        <p>All VOD contributors get their name listed on the site.</p>
       </div>
 
     {{ content | safe }}
@@ -72,6 +74,12 @@
               <div class="column is-6">
                 <p class="mt-4">
                   Futureporn.net is made with ❤️ by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+                </p>
+                <p>
+                  VOD contributions by 
+                    {%- for c in metadata.contributors %}
+                      <a target="_blank" href="{{ c.link }}">{{ c.name }} <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></span>
+                    {% endfor %}
                 </p>
                 <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
                 <p><a 
