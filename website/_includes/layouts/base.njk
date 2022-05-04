@@ -78,7 +78,7 @@
                 <p>
                   VOD contributions by 
                     {%- for c in metadata.contributors %}
-                      <a target="_blank" href="{{ c.link }}">{{ c.name }} <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></span>
+                      <a target="_blank" href="{{ c.link }}">{{ c.name }} <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></span>{% if loop.index === metadata.contributors.length %} {% else %}, {% endif %}
                     {% endfor %}
                 </p>
                 <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
