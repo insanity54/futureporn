@@ -2,12 +2,12 @@
 
 - hosts: localhost
   tasks:
-  - name: Ensure VPS 1 is spun down
+  - name: Ensure futureporn-capture is spun down
     ngine_io.vultr.vultr_server:
-      name: "capture-1"
+      name: futureporn-capture
       state: absent
 
-  - name: Ensure VPS 2 is spun down
+  - name: Ensure futureporn-manager is spun down
     ngine_io.vultr.vultr_server:
-      name: "capture-2"
+      name: futureporn-manager
       state: absent

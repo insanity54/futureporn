@@ -1,20 +1,29 @@
 ---
 
+
+## spinup is kinda broken.
+## the BEST WAY to move forward on this is to FIX THE VULTR ANSIBLE MODULE
+##
+## https://github.com/ngine-io/ansible-collection-vultr/issues/17
+## It's broken because it uses Vultr API v1. I think Vultr API v2 is needed to spin up newer instance types
+
 - hosts: localhost
   gather_facts: no
   vars:
+    - vps_hostname: "futureporn-capture"
     - vps_plan: vc2-2c-4gb
-    - vps_hostname: futureporn-capture
     - vps_region: dfw
   roles:
     - role: spinup
+      retries: 5
+      until: not vps_check.json.instances[0].main_ip == "0.0.0.0" 
+      delay: 5
 
 - hosts: futureporn-capture
   gather_facts: no
   vars:
     - ansible_user: root
   roles:
-    - role: spinup
     - role: base
     - role: geerlingguy.nodejs
     - role: capture

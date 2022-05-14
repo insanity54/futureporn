@@ -1,71 +1,77 @@
 ---
 
+## this is a rather ugly way of spinning up a VPS.
+## it has no error catching.
+## it is not declarative.
+## it might not be idempotent.
+## it does not conform to the, "ansible way"
+## 
+## The better solution is to use https://github.com/ngine-io/ansible-collection-vultr to do this
+## However, I've run into problems lately as Vultr updates to their api V2.
+## ansible-collection-vultr does not support that API version.
+## 
+## The better fix is available once the following issue is closed
+## https://github.com/ngine-io/ansible-collection-vultr/issues/17
 
-- name: Check, maybe spinup, wait until spun up
-  block:
+- name: Determine if host VPS is up
+  uri:
+    method: GET
+    url: "https://api.vultr.com/v2/instances?label={{ vps_hostname }}"
+    headers:
+      Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
+  register: vps_check
 
-    - name: Set the retry count
-      set_fact:
-        retry_count: "{{ 0 if retry_count is undefined else retry_count|int + 1 }}"
-
-    - name: wait a bit for IP allocation
-      pause:
-        seconds: 15
-      when: spin_result is defined
-
-    - name: Determine if host VPS is up
-      uri:
-        method: GET
-        url: "https://api.vultr.com/v2/instances?label={{ vps_hostname }}"
-        headers:
-          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
-      register: vps_check
-
-
-    - name: Spin up VPS
-      uri:
-        status_code:
-          - 200
-          - 202 # Vultr returns status 202 so we gotta tell ansible that that is acceptible
-        method: POST
-        url: "https://api.vultr.com/v2/instances"
-        body_format: json
-        body:
-          os_id: 387 # Ubuntu 20.04 LTS x64
-          region: "{{ vps_region }}"
-          plan: "{{ vps_plan }}"
-          sshkey_id: 
-            - 30abb7c0-0361-4e6f-8168-e9ac464b2ba3
-          tag: futureporn
-          label: "{{ vps_hostname }}"
-        headers:
-          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
-      when: (vps_check.json.meta.total | int == 0)
-      register: spin_result
+- debug: var=vps_check
 
 
-      # this can also fail when vps_check.json.instances doesnt have members.. 
-      # that's okay, the block/rescue will catch and the provision process
-      # will be retried
-    - name: Verify VPS upness
-      debug: var=vps_check
-      when: vps_check is defined
-      failed_when: vps_check.json.instances[0].main_ip == "0.0.0.0" 
+- name: Spin up VPS
+  uri:
+    status_code:
+      - 200
+      - 202 # Vultr returns status 202 so we gotta tell ansible that that is acceptible
+    method: POST
+    url: "https://api.vultr.com/v2/instances"
+    body_format: json
+    body:
+      os_id: 387 # Ubuntu 20.04 LTS x64
+      region: "{{ vps_region }}"
+      plan: "{{ vps_plan }}"
+      sshkey_id: 
+        - 30abb7c0-0361-4e6f-8168-e9ac464b2ba3
+      tag: futureporn
+      label: "{{ vps_hostname }}"
+    headers:
+      Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
+  when: (vps_check.json.meta.total | int == 0)
+  register: spin
+
+- debug: var=spin
 
 
+  ## This is a quick and dirty solution to a problem that 
+  ## can and will and has many times
+  ## occured if the ansible inventory is refreshed before the VPS has been
+  ## assigned with an IP address.
+  ## 
+  ## we simply wait until the IP address is probably assigned.
+  ## we wait even if the VPS is already up. Not because we need to, but because
+  ## adding aditional logic is against the ansible way of being declarative and idempotent.
+  ## Also, it's scuffed as fuck to handle all the corner cases and error checking inside ansible.
+  ## This logic is better suited in a module which does exist, but is outdated.
+  ## 
+  ## https://github.com/ngine-io/ansible-collection-vultr/issues/17
+  ## 
+  ## Blessed be the FOSS developers.
+  ## May our dear servants be paid for their time.
+  ## May the bevs of their choice be consumed with glee.
+  ## May our modules be up-to-date in our lifetime.
+  ##
+- name: wait a bit for IP allocation
+  pause:
+    seconds: 60
 
-  rescue:
-    - fail:
-        msg: Ended after 5 retries
-      when: retry_count|int == 5
 
-    - debug:
-        msg: "Failed to connect - Retrying..."
-
-    - include_tasks: main.yml
-
-
-
-
+  ## note: refresh_inventory does not support "when:"
 - name: Refresh ansible inventory once an IP is allocated
   meta: refresh_inventory
+ 
