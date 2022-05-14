@@ -1,0 +1,24 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  vars:
+    - vps_plan: vc2-6c-16gb
+    - vps_region: sea
+    - vps_hostname: futureporn-manager
+  roles:
+    - role: spinup
+
+
+- hosts: futureporn-manager
+  gather_facts: no
+  vars:
+    - ansible_user: root
+    - ipfs_version: v0.12.2
+    - ipfs_private_key: "{{ lookup('env', 'IPFS_PRIVATE_KEY') }}"
+    - ipfs_peer_id: "{{ lookup('env', 'IPFS_PEER_ID') }}"
+  roles:
+    - role: base
+    - role: geerlingguy.nodejs
+    - role: capture
+    - role: jeffbr13.ipfs

@@ -22,8 +22,7 @@
     "test": "mocha",
     "down": "ansible-playbook -i ./vultr.yml destroy.yml",
     "capture": "./ansible-playbook.sh -i vultr.yml capture.yml",
-    "manager": "./ansible-playbook.sh -i vultr.yml -e \"manager=1\" capture.yml",
-    "bigup": "ansible-playbook -i vultr.yml -e \"instances=3\" site.yml",
+    "manager": "./ansible-playbook.sh -i vultr.yml manager.yml",
     "gateway": "./ansible-playbook.sh -i vultr.yml gateway.yml",
     "start": "node futureporn.mjs"
   },

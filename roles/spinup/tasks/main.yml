@@ -1,0 +1,71 @@
+---
+
+
+- name: Check, maybe spinup, wait until spun up
+  block:
+
+    - name: Set the retry count
+      set_fact:
+        retry_count: "{{ 0 if retry_count is undefined else retry_count|int + 1 }}"
+
+    - name: wait a bit for IP allocation
+      pause:
+        seconds: 15
+      when: spin_result is defined
+
+    - name: Determine if host VPS is up
+      uri:
+        method: GET
+        url: "https://api.vultr.com/v2/instances?label={{ vps_hostname }}"
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
+      register: vps_check
+
+
+    - name: Spin up VPS
+      uri:
+        status_code:
+          - 200
+          - 202 # Vultr returns status 202 so we gotta tell ansible that that is acceptible
+        method: POST
+        url: "https://api.vultr.com/v2/instances"
+        body_format: json
+        body:
+          os_id: 387 # Ubuntu 20.04 LTS x64
+          region: "{{ vps_region }}"
+          plan: "{{ vps_plan }}"
+          sshkey_id: 
+            - 30abb7c0-0361-4e6f-8168-e9ac464b2ba3
+          tag: futureporn
+          label: "{{ vps_hostname }}"
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
+      when: (vps_check.json.meta.total | int == 0)
+      register: spin_result
+
+
+      # this can also fail when vps_check.json.instances doesnt have members.. 
+      # that's okay, the block/rescue will catch and the provision process
+      # will be retried
+    - name: Verify VPS upness
+      debug: var=vps_check
+      when: vps_check is defined
+      failed_when: vps_check.json.instances[0].main_ip == "0.0.0.0" 
+
+
+
+  rescue:
+    - fail:
+        msg: Ended after 5 retries
+      when: retry_count|int == 5
+
+    - debug:
+        msg: "Failed to connect - Retrying..."
+
+    - include_tasks: main.yml
+
+
+
+
+- name: Refresh ansible inventory once an IP is allocated
+  meta: refresh_inventory

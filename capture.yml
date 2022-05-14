@@ -1,96 +1,21 @@
 ---
 
 - hosts: localhost
-  tasks:
+  gather_facts: no
+  vars:
+    - vps_plan: vc2-2c-4gb
+    - vps_hostname: futureporn-capture
+    - vps_region: dfw
+  roles:
+    - role: spinup
 
-    - name: Determine if capture-1 is up
-      uri:
-        method: GET
-        url: "https://api.vultr.com/v2/instances?label=capture-1"
-        headers:
-          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
-      register: capture1_check
-
-
-    - name: Spin up low-end box capture-1 in Atlanta
-      when: (capture1_check.json.meta.total | int == 0)
-      uri:
-        status_code:
-          - 200
-          - 202 # Vultr returns status 202 so we gotta tell ansible that that is acceptible
-        method: POST
-        url: "https://api.vultr.com/v2/instances"
-        body_format: json
-        body:
-          os_id: 387 # Ubuntu 20.04 LTS x64
-          region: atl
-          plan: vc2-1c-1gb
-          sshkey_id: 
-            - 30abb7c0-0361-4e6f-8168-e9ac464b2ba3
-          tag: futureporn
-          label: capture-1
-        headers:
-          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
-      register: spin_capture_1
-
-    - name: wait for VPS to ge up
-      pause:
-        seconds: 30
-      when: spin_capture_1.changed
-
-    - name: Determine if manager is up
-      uri:
-        method: GET
-        url: "https://api.vultr.com/v2/instances?label=capture-2"
-        headers:
-          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
-      register: manager_check
-
-
-    - name: Spin up a STRONK VPS to handle ul/dl file tasks
-      when: (manager is defined and (manager | bool)) and (manager_check.json.meta.total | int == 0)
-      uri:
-        status_code:
-          - 200
-          - 202 # Vultr returns status 202 so we gotta tell ansible that that is acceptible
-        method: POST
-        url: "https://api.vultr.com/v2/instances"
-        body_format: json
-        body:
-          os_id: 387 # Ubuntu 20.04 LTS x64
-          region: dfw
-          plan: vc2-4c-8gb
-          sshkey_id: 
-            - 30abb7c0-0361-4e6f-8168-e9ac464b2ba3
-          tag: futureporn
-          label: capture-2
-        headers:
-          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
-      register: spin_capture_2
-
-
-    - name: wait for VPS to be up
-      pause:
-        seconds: 30
-      when: spin_capture_2.changed
-
-
-    - name: Refresh Inventory
-      meta: refresh_inventory
-
-
-- hosts: capture-*
+- hosts: futureporn-capture
   gather_facts: no
   vars:
     - ansible_user: root
-    - ipfs_version: v0.12.2
-    - ipfs_private_key: "{{ lookup('env', 'IPFS_PRIVATE_KEY') }}"
-    - ipfs_peer_id: "{{ lookup('env', 'IPFS_PEER_ID') }}"
   roles:
+    - role: spinup
     - role: base
     - role: geerlingguy.nodejs
     - role: capture
     - role: scout
-      when: inventory_hostname == 'capture-1'
-    # - role: jeffbr13.ipfs 
-    #   when: (manager | default(false) | bool)
