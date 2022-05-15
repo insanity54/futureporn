@@ -575,7 +575,7 @@ module.exports = class VOD {
 	 * so we use date-fns-tz and format with timezone GMT
 	 */
 	getDatestamp () {
-		const date = zonedTimeToUtc(this.date, 'UTC');
+		const date = utcToZonedTime(this.date, 'UTC');
 		const formattedDate = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", { timezone: 'UTC' });
 		return formattedDate;
 	}
@@ -648,6 +648,7 @@ module.exports = class VOD {
 			`layout: ${VOD.eleventyLayout}\n`+
 			'---\n';
 
+		console.log(`  [>] safe datestamp:${this.getDatestamp()}`);
 		const filename = this.getMarkdownFilename();
 		await fsp.writeFile(filename, data, { encoding: 'utf-8' });
 		return this;
