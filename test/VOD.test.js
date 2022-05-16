@@ -185,6 +185,7 @@ describe('VOD', function () {
             chai.expect(m.data).to.have.property('video240TmpFilePath');
             chai.expect(m.data).to.have.property('tmpFilePath');
             chai.expect(m.data.date).to.be.an.instanceof(Date);
+            // chai.expect(m.data.date).to.equal(parseISO(date))
             chai.expect(isEqual(m.data.date, parseISO(date))).to.be.true;
         })
     })

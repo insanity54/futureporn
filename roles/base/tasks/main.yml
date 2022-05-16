@@ -17,9 +17,9 @@
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
 
-- name: Wait up to 300 seconds for SSH to be up
+- name: Wait up to 600 seconds for SSH to be up
   wait_for_connection:
-    timeout: 300
+    timeout: 600
 
 - name: wait for boot-finished file to exist
   raw: test -f /var/lib/cloud/instance/boot-finished
