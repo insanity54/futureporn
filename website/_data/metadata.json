@@ -19,9 +19,13 @@
   },
   "patrons": [
     "Shock",
-    "catboxL"
+    "catboxL",
+    "Chio"
   ],
   "contributors": [
-    { "name": "Zipdox", "link": "https://www.reddit.com/user/Zipdox/" }
+    {
+      "name": "Zipdox",
+      "link": "https://www.reddit.com/user/Zipdox/"
+    }
   ]
 }
