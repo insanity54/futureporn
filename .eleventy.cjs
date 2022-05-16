@@ -29,6 +29,7 @@ const filterB2Completed = (vods) => {
 }
 
 module.exports = function(eleventyConfig) {
+
   eleventyConfig.addPassthroughCopy({ "website/img": "img" });
 
   eleventyConfig.addPlugin(faviconPlugin);

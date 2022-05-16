@@ -21,4 +21,5 @@
     - role: base
     - role: geerlingguy.nodejs
     - role: capture
+    - role: manager
     - role: jeffbr13.ipfs

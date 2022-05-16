@@ -194,7 +194,7 @@ const updateMarkdownFiles = async (inviteTweets) => {
 (async function main () {
 
 
-    // await getAllTweets();
+    await getAllTweets();
     const inviteTweets = await filterInviteTweets();
     await updateMarkdownFiles(inviteTweets);
 

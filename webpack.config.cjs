@@ -8,12 +8,14 @@ const baseFilename = isDev ? "index" : "index.[contenthash]";
 
 module.exports = {
   mode: isDev ? "development" : "production",
-  entry: [
-    path.resolve(__dirname, "website", "js", "index.js")
-  ],
+  entry: {
+    'base': path.resolve(__dirname, "website", "js", "base.js"),
+    'player': path.resolve(__dirname, "website", "js", "player.js"),
+    'upload': path.resolve(__dirname, "website", "js", "upload.js"),
+  },
   output: {
     path: path.resolve(__dirname, "_site", "assets"),
-    filename: `${baseFilename}.js`,
+    filename: '[name].js',
   },
   module: {
     rules: [
@@ -49,7 +51,7 @@ module.exports = {
   },
   devtool: isDev ? "eval" : "source-map",
   plugins: [
-    new MiniCssExtractPlugin({ filename: `${baseFilename}.css` }),
+    new MiniCssExtractPlugin({ filename: '[name].css' }),
     new WebpackManifestPlugin({ publicPath: "/assets/" }),
   ],
 };

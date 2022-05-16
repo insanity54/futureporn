@@ -12,7 +12,7 @@
     <meta property="og:image" content="{{ metadata.url }}favicon.ico" />
     <meta property="og:description" content="{{ metadata.description }}" />
     <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
-    <link rel="stylesheet" href="{% webpackAsset 'main.css' %}">
+    <link rel="stylesheet" href="{% webpackAsset 'base.css' %}">
     <link rel="canonical" href="{{ metadata.url }}">
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
     <title>{{ metadata.title }}</title>
@@ -107,6 +107,6 @@
     </footer>
 
   </div>
-    <script src="{% webpackAsset 'main.js' %}"></script>
+    <script src="{% webpackAsset 'base.js' %}"></script>
   </body>
 </html>
