@@ -1,0 +1,42 @@
+---
+layout: layouts/base.njk
+eleventyNavigation:
+  key: Upload
+  order: 5
+---
+
+
+<div class="content">
+  <link rel="stylesheet" href="{% webpackAsset 'upload.css' %}">
+  <div class="box">
+    <p class="title">Upload your VODs</p>
+    <p>Got a VOD that futureporn is missing? Upload them here. All contributors get their name displayed in the website footer.</p>
+    <form id="attribution-form">
+      <div class="field">
+        <label class="label">Attribution Name (optional)</label>
+        <div class="control has-icons-left">
+          <input class="input" type="text" placeholder="Anonymous">
+          <span class="icon is-small is-left">
+            <i class="fas fa-user"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Attribution Link (optional)</label>
+        <div class="control has-icons-left has-icons-right">
+          <input class="input" type="text" placeholder="https://reddit.com/u/anonymous">
+          <span class="icon is-small is-left">
+            <i class="fas fa-link"></i>
+          </span>
+        </div>
+      </div>
+
+    </form>
+    <div class="mb-5"></div>  
+
+    <div id="upload-widget"></div>
+  </div>
+
+  <script src="{% webpackAsset 'upload.js' %}"></script>
+</div>
