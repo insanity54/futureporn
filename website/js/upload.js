@@ -1,17 +1,19 @@
 // Import the plugins
-import Uppy from '@uppy/core'
-import XHRUpload from '@uppy/xhr-upload'
-import Dashboard from '@uppy/dashboard'
-import Form from '@uppy/form'
-import GoogleDrive from '@uppy/google-drive'
-import Dropbox from '@uppy/dropbox'
-import AwsS3Multipart from '@uppy/aws-s3-multipart'
+import Uppy from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
+import Dashboard from '@uppy/dashboard';
+import Form from '@uppy/form';
+import GoogleDrive from '@uppy/google-drive';
+import Dropbox from '@uppy/dropbox';
+import AwsS3Multipart from '@uppy/aws-s3-multipart';
+import Url from '@uppy/url';
 
 // And their styles (for UI plugins)
 // With webpack and `style-loader`, you can import them like this:
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
 
+const companionUrl = 'https://uppy.futureporn.net';
 
 const uppy = new Uppy()
     .use(Form, {
@@ -46,15 +48,17 @@ const uppy = new Uppy()
         autoOpenFileEditor: false,
         disableLocalFiles: false,
     })
-    .use(GoogleDrive, { target: Dashboard, companionUrl: 'https://uppy.futureporn.net' })
-    .use(Dropbox, { target: Dashboard, companionUrl: 'https://uppy.futureporn.net' })
+    .use(GoogleDrive, { target: Dashboard, companionUrl })
+    .use(Dropbox, { target: Dashboard, companionUrl })
     .use(AwsS3Multipart, {
       limit: 4,
-      companionUrl: 'https://uppy-companion.myapp.net/',
+      companionUrl,
+    })
+    .use(Url, {
+      target: Dashboard,
+      companionUrl,
     })
 
-
-    // .use(XHRUpload, { endpoint: 'https://api2.transloadit.com' })
 
 uppy.on('complete', (result) => {
     console.log('Upload complete! We’ve uploaded these files:', result.successful)
