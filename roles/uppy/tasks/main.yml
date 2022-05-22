@@ -1,0 +1,8 @@
+---
+
+- include_tasks: ./firewall.yml
+- include_tasks: ./user.yml
+- include_tasks: ./redis.yml
+- include_tasks: ./dns.yml
+- include_tasks: ./caddy.yml
+- include_tasks: ./companion.yml

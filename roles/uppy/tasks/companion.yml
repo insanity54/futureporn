@@ -1,0 +1,56 @@
+---
+
+
+
+- name: ensure yarn is installed
+  community.general.npm:
+    name: yarn
+    global: yes
+  become: yes
+  become_user: uppy
+
+- name: Create data directory for uppy companion
+  file:
+    path: /home/uppy/companion
+    state: directory
+    owner: uppy
+    group: uppy
+    mode: 0755
+
+- name: Create data directory for uppy companion data
+  file:
+    path: /home/uppy/data
+    state: directory
+    owner: uppy
+    group: uppy
+    mode: 0755
+
+- name: Install uppy companion via npm
+  community.general.yarn:
+    name: '@uppy/companion'
+    global: yes
+    state: present
+  become: yes
+  become_user: uppy
+  notify:
+    - restart companion
+
+
+- name: Install companion system service
+  ansible.builtin.template:
+    src: templates/companion.service.j2
+    dest: /etc/systemd/system/companion.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart companion
+
+- name: Enable companion system service
+  systemd:
+    name: companion
+    daemon_reload: yes
+    enabled: yes
+  notify:
+    - restart companion
+

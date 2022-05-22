@@ -1,0 +1,32 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=Uppy Companion for Futureporn
+After=network.target
+
+[Service]
+ExecStart=/home/uppy/.npm/bin/companion
+WorkingDirectory=/home/uppy/companion
+Restart=always
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+Environment=DEBUG=uppy
+Environment=COMPANION_GOOGLE_KEY={{ lookup('env', 'COMPANION_GOOGLE_KEY') }}
+Environment=COMPANION_GOOGLE_SECRET={{ lookup('env', 'COMPANION_GOOGLE_SECRET') }}
+Environment=COMPANION_SECRET={{ lookup('env', 'COMPANION_SECRET') }}
+Environment=COMPANION_DOMAIN={{ lookup('env', 'COMPANION_DOMAIN') }}
+Environment=COMPANION_DATADIR={{ lookup('env', 'COMPANION_DATADIR') }}
+Environment=COMPANION_PROTOCOL={{ lookup('env', 'COMPANION_PROTOCOL') }}
+Environment=COMPANION_PORT={{ lookup('env', 'COMPANION_PORT') }}
+Environment=COMPANION_PATH={{ lookup('env', 'COMPANION_PATH') }}
+Environment=COMPANION_HIDE_WELCOME={{ lookup('env', 'COMPANION_HIDE_WELCOME') }}
+Environment=COMPANION_HIDE_METRICS={{ lookup('env', 'COMPANION_HIDE_METRICS') }}
+Environment=COMPANION_IMPLICIT_PATH={{ lookup('env', 'COMPANION_IMPLICIT_PATH') }}
+Environment=COMPANION_CLIENT_ORIGINS={{ lookup('env', 'COMPANION_CLIENT_ORIGINS') }}
+Environment=COMPANION_REDIS_URL={{ lookup('env', 'COMPANION_REDIS_URL') }}
+Environment=COMPANION_DROPBOX_KEY={{ lookup('env', 'COMPANION_DROPBOX_KEY') }}
+Environment=COMPANION_DROPBOX_SECRET={{ lookup('env', 'COMPANION_DROPBOX_SECRET') }}
+Environment=COMPANION_DROPBOX_SECRET_FILE={{ lookup('env', 'COMPANION_DROPBOX_SECRET_FILE') }}
+Type=simple
+

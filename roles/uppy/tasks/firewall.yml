@@ -1,0 +1,13 @@
+---
+
+- name: create ufw exception for http
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+- name: create ufw exception for https
+  community.general.ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
