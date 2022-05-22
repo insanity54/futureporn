@@ -40,6 +40,7 @@
     "@grimtech/envimport": "^0.0.1",
     "@uppy/core": "^2.2.0",
     "@uppy/dashboard": "^2.2.0",
+    "@uppy/dropbox": "^2.0.6",
     "@uppy/google-drive": "^2.1.0",
     "@uppy/xhr-upload": "^2.1.0",
     "argv": "^0.0.2",

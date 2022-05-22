@@ -4,6 +4,8 @@ import XHRUpload from '@uppy/xhr-upload'
 import Dashboard from '@uppy/dashboard'
 import Form from '@uppy/form'
 import GoogleDrive from '@uppy/google-drive'
+import Dropbox from '@uppy/dropbox'
+import AwsS3Multipart from '@uppy/aws-s3-multipart'
 
 // And their styles (for UI plugins)
 // With webpack and `style-loader`, you can import them like this:
@@ -45,10 +47,17 @@ const uppy = new Uppy()
         disableLocalFiles: false,
     })
     .use(GoogleDrive, { target: Dashboard, companionUrl: 'https://uppy.futureporn.net' })
+    .use(Dropbox, { target: Dashboard, companionUrl: 'https://uppy.futureporn.net' })
+    .use(AwsS3Multipart, {
+      limit: 4,
+      companionUrl: 'https://uppy-companion.myapp.net/',
+    })
+
 
     // .use(XHRUpload, { endpoint: 'https://api2.transloadit.com' })
 
 uppy.on('complete', (result) => {
     console.log('Upload complete! We’ve uploaded these files:', result.successful)
 })
+
 

@@ -10,10 +10,11 @@ eleventyNavigation:
   <link rel="stylesheet" href="{% webpackAsset 'upload.css' %}">
   <div class="box">
     <p class="title">Upload your VODs</p>
-    <p>Got a VOD that futureporn is missing? Upload them here. All contributors get their name displayed in the website footer.</p>
+    <p>Got a ProjektMelody VOD that Futureporn is missing? Upload them here. Contributors get their name displayed in the website footer.</p>
+    <p>All text fields are optional.</p>
     <form id="attribution-form">
       <div class="field">
-        <label class="label">Attribution Name (optional)</label>
+        <label class="label">Attribution Name</label>
         <div class="control has-icons-left">
           <input class="input" type="text" placeholder="Anonymous">
           <span class="icon is-small is-left">
@@ -23,13 +24,19 @@ eleventyNavigation:
       </div>
 
       <div class="field">
-        <label class="label">Attribution Link (optional)</label>
+        <label class="label">Attribution Link</label>
         <div class="control has-icons-left has-icons-right">
-          <input class="input" type="text" placeholder="https://reddit.com/u/anonymous">
+          <input class="input" type="text" placeholder="https://reddit.com/u/your_name_here">
           <span class="icon is-small is-left">
             <i class="fas fa-link"></i>
           </span>
         </div>
+      </div>
+
+
+      <div class="field">
+        <label class="label">Comment</label>
+        <textarea class="textarea" placeholder="This VOD is from [date]" rows=3></textarea>
       </div>
 
     </form>

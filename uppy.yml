@@ -1,0 +1,32 @@
+---
+
+
+## spinup is kinda broken.
+## the BEST WAY to move forward on this is to FIX THE VULTR ANSIBLE MODULE
+##
+## https://github.com/ngine-io/ansible-collection-vultr/issues/17
+## It's broken because it uses Vultr API v1. I think Vultr API v2 is needed to spin up newer instance types
+
+- hosts: localhost
+  gather_facts: no
+  vars:
+    - vps_hostname: "futureporn-uppy"
+    - vps_plan: vc2-1c-1gb
+    - vps_region: dfw
+  roles:
+    - role: spinup
+
+
+
+- hosts: futureporn-uppy
+  gather_facts: no
+  vars:
+    - ansible_user: root
+  roles:
+    - role: base
+    - role: nvjacobo.caddy
+    - role: geerlingguy.nodejs
+    - role: uppy
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/home/uppy/.npm/bin/"
+    NPM_CONFIG_PREFIX: /home/uppy/.npm
