@@ -12,11 +12,11 @@ eleventyNavigation:
     <p class="title">Upload your VODs</p>
     <p>Got a ProjektMelody VOD that Futureporn is missing? Upload them here. Contributors get their name displayed in the website footnotes.</p>
     <p>All text fields are optional.</p>
-    <form id="attribution-form">
+    <form id="metadata-form">
       <div class="field">
         <label class="label">Attribution Name</label>
         <div class="control has-icons-left">
-          <input class="input" type="text" placeholder="Anonymous">
+          <input name="name" class="input" type="text" placeholder="Anonymous">
           <span class="icon is-small is-left">
             <i class="fas fa-user"></i>
           </span>
@@ -26,7 +26,7 @@ eleventyNavigation:
       <div class="field">
         <label class="label">Attribution Link</label>
         <div class="control has-icons-left has-icons-right">
-          <input class="input" type="text" placeholder="https://reddit.com/u/your_name_here">
+          <input name="link" class="input" type="text" placeholder="https://reddit.com/u/your_name_here">
           <span class="icon is-small is-left">
             <i class="fas fa-link"></i>
           </span>
@@ -35,7 +35,7 @@ eleventyNavigation:
 
 
       <div class="field">
-        <label class="label">Comment</label>
+        <label name="comment" class="label">Comment</label>
         <textarea class="textarea" placeholder="This VOD is from [date]" rows=3></textarea>
       </div>
 
