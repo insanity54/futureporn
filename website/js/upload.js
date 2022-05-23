@@ -6,6 +6,7 @@ import GoogleDrive from '@uppy/google-drive';
 import Dropbox from '@uppy/dropbox';
 import AwsS3Multipart from '@uppy/aws-s3-multipart';
 import Url from '@uppy/url';
+import GoldenRetriever from '@uppy/golden-retriever'
 
 // And their styles (for UI plugins)
 // With webpack and `style-loader`, you can import them like this:
@@ -62,6 +63,8 @@ const uppy = new Uppy()
       target: Dashboard,
       companionUrl,
     })
+    .use(GoldenRetriever, { serviceWorker: true })
+
 
 
 uppy.on('complete', (result) => {
@@ -69,3 +72,14 @@ uppy.on('complete', (result) => {
 })
 
 
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('/sw.js') // path to your bundled service worker with GoldenRetriever service worker
+    .then((registration) => {
+      console.log('ServiceWorker registration successful with scope: ', registration.scope)
+    })
+    .catch((error) => {
+      console.log(`Registration failed with ${error}`)
+    })
+}

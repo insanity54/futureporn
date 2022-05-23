@@ -1429,6 +1429,15 @@
     "@uppy/utils" "^4.0.7"
     get-form-data "^2.0.0"
 
+"@uppy/golden-retriever@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@uppy/golden-retriever/-/golden-retriever-2.0.6.tgz#dba023a33c4c78da8c4eb1d1bda3a477e2ca8d55"
+  integrity sha512-TLFiN7SALaeBk/uG5lGWvVr1U/SBVmdK2lfmDsciI5KLiary7bySMQJEMqxzEGWTjy5QzM7JtnVHC6Zv6RdF9g==
+  dependencies:
+    "@transloadit/prettier-bytes" "0.0.7"
+    "@uppy/utils" "^4.0.4"
+    lodash.throttle "^4.1.1"
+
 "@uppy/google-drive@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@uppy/google-drive/-/google-drive-2.1.0.tgz#632396b50bf816440cc522fd6b83fcfe6cb054cb"
