@@ -81,7 +81,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@uppy/aws-s3-multipart": "^2.3.0",
     "@uppy/form": "^2.0.5",
-    "@uppy/golden-retriever": "^2.0.6",
     "@uppy/url": "^2.1.0",
     "babel-loader": "^8.2.2",
     "babel-polyfill": "^6.26.0",
