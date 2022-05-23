@@ -1,6 +1,5 @@
 // Import the plugins
 import Uppy from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
 import Dashboard from '@uppy/dashboard';
 import Form from '@uppy/form';
 import GoogleDrive from '@uppy/google-drive';
@@ -17,7 +16,12 @@ const companionUrl = 'https://uppy.futureporn.net';
 
 const uppy = new Uppy()
     .use(Form, {
-        target: '#attribution-form'
+        target: '#attribution-form',
+        resultName: 'uppyResult',
+        getMetaFromForm: true,
+        addResultToForm: true,
+        submitOnSuccess: false,
+        triggerUploadOnSubmit: false,
     })
     .use(Dashboard, {
         target: '#upload-widget',
