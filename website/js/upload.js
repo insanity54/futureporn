@@ -17,7 +17,7 @@ const companionUrl = 'https://uppy.futureporn.net';
 
 const uppy = new Uppy()
     .use(Form, {
-        target: '#metadata-form',
+        target: '#deets',
         resultName: 'uppyResult',
         getMetaFromForm: true,
         addResultToForm: true,
