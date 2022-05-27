@@ -1,3 +1,5 @@
+
+{% block start %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -65,9 +67,14 @@
         <p>All VOD contributors get their name listed on the site.</p>
       </div>
        #}
+{% endblock %}
 
+
+{% block content %}
     {{ content | safe }}
+{% endblock %}
 
+{% block footer %}
 
     <div class="column is-12">
       <div class="card">
@@ -130,8 +137,14 @@
 
         </div>
     </footer>
-
   </div>
+  {% endblock %}
+
+    {% block scripts %}
     <script src="{% webpackAsset 'base.js' %}"></script>
+    {% endblock %}
+
+{% block end %}
   </body>
 </html>
+{% endblock %}
