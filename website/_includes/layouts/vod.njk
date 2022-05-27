@@ -1,4 +1,12 @@
-<div class="container vod">
+{% extends "layouts/base.njk" %}
+
+{% block start %}
+  {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
 
   <div class="block">
     <div class="box">
@@ -98,3 +106,18 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block footer %}
+  {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="{% webpackAsset 'player.js' %}"></script>
+{% endblock %}
+
+
+{% block end %}
+  {{ super() }}
+{% endblock %}
