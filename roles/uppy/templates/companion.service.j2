@@ -4,35 +4,20 @@ WantedBy=multi-user.target
 [Unit]
 Description=Uppy Companion for Futureporn
 After=network.target
+StartLimitIntervalSec=0
 
 [Service]
-ExecStart=/home/uppy/.npm/bin/companion
+User=uppy
+Group=uppy
+ExecStart=/home/uppy/companion/companion.js
 WorkingDirectory=/home/uppy/companion
 Restart=always
+RestartSec=3
 Environment=PATH=/usr/bin:/usr/local/bin
 Environment=NODE_ENV=production
 Environment=DEBUG=uppy
-Environment=COMPANION_GOOGLE_KEY={{ lookup('env', 'COMPANION_GOOGLE_KEY') }}
-Environment=COMPANION_GOOGLE_SECRET={{ lookup('env', 'COMPANION_GOOGLE_SECRET') }}
-Environment=COMPANION_SECRET={{ lookup('env', 'COMPANION_SECRET') }}
-Environment=COMPANION_DOMAIN={{ lookup('env', 'COMPANION_DOMAIN') }}
-Environment=COMPANION_DATADIR={{ lookup('env', 'COMPANION_DATADIR') }}
-Environment=COMPANION_PROTOCOL={{ lookup('env', 'COMPANION_PROTOCOL') }}
-Environment=COMPANION_PORT={{ lookup('env', 'COMPANION_PORT') }}
-Environment=COMPANION_PATH={{ lookup('env', 'COMPANION_PATH') }}
-Environment=COMPANION_HIDE_WELCOME={{ lookup('env', 'COMPANION_HIDE_WELCOME') }}
-Environment=COMPANION_HIDE_METRICS={{ lookup('env', 'COMPANION_HIDE_METRICS') }}
-Environment=COMPANION_IMPLICIT_PATH={{ lookup('env', 'COMPANION_IMPLICIT_PATH') }}
-Environment=COMPANION_CLIENT_ORIGINS={{ lookup('env', 'COMPANION_CLIENT_ORIGINS') }}
-Environment=COMPANION_REDIS_URL={{ lookup('env', 'COMPANION_REDIS_URL') }}
-Environment=COMPANION_DROPBOX_KEY={{ lookup('env', 'COMPANION_DROPBOX_KEY') }}
-Environment=COMPANION_DROPBOX_SECRET={{ lookup('env', 'COMPANION_DROPBOX_SECRET') }}
-Environment=COMPANION_DROPBOX_SECRET_FILE={{ lookup('env', 'COMPANION_DROPBOX_SECRET_FILE') }}
-Environment=COMPANION_DROPBOX_SECRET_FILE={{ lookup('env', 'COMPANION_DROPBOX_SECRET_FILE') }}
-Environment=COMPANION_AWS_ENDPOINT={{ lookup('env', 'COMPANION_AWS_ENDPOINT') }}
-Environment=COMPANION_AWS_BUCKET={{ lookup('env', 'COMPANION_AWS_BUCKET') }}
-Environment=COMPANION_AWS_KEY={{ lookup('env', 'COMPANION_AWS_KEY') }}
-Environment=COMPANION_AWS_SECRET={{ lookup('env', 'COMPANION_AWS_SECRET') }}
-
+Environment=SMTP_USER={{ lookup('env', 'SMTP_USER') }}
+Environment=SMTP_PASSWORD={{ lookup('env', 'SMTP_PASSWORD') }}
+Environment=SMTP_HOST={{ lookup('env', 'SMTP_HOST') }}
+Environment=SESSION_SECRET={{ lookup('env', 'SESSION_SECRET') }}
 Type=simple
-

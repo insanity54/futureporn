@@ -64,11 +64,12 @@
   ## Blessed be the FOSS developers.
   ## May our dear servants be paid for their time.
   ## May the bevs of their choice be consumed with glee.
-  ## May our modules be up-to-date in our lifetime.
+  ## May our modules be up-to-date and securely fine.
   ##
 - name: wait a bit for IP allocation
   pause:
     seconds: 60
+  when: spin is not skipped
 
 
   ## note: refresh_inventory does not support "when:"

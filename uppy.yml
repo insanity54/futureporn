@@ -19,13 +19,13 @@
 
 
 - hosts: futureporn-uppy
-  gather_facts: no
+  # gather_facts: no
   vars:
     - ansible_user: root
   roles:
-    - role: base
-    - role: nvjacobo.caddy
-    - role: geerlingguy.nodejs
+    # - role: base
+    # - role: nvjacobo.caddy
+    # - role: geerlingguy.nodejs
     - role: uppy
   environment:
     PATH: "{{ ansible_env.PATH }}:/home/uppy/.npm/bin/"
