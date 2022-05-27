@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     {% favicon './website/favicon.png' %}
@@ -30,9 +30,46 @@
       <a class="navbar-item" href="/patrons">Patrons</a>
       {# <a class="navbar-item" href="/feedback">Feedback</a> COMING SOMEDAY #}
 
+      {# 
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <p class="control">
+            <a class="button is-primary" href="/upload">
+              <span class="icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span>Upload</span>
+            </a>
+          </p>
+        </div>
+      </div>
+       #}
+
     </nav>
     <div class="container">
 
+      <div class="block">
+
+        <section class="hero is-primary">
+          <div class="hero-body">
+            <p class="title">{{ metadata.title }}</p>
+            <p class="subtitle">Unofficial <a target="_blank" href="https://twitter.com/ProjektMelody">ProjektMelody <span class="icon"><i class="fas fa-external-link-alt"></i></span></a> Chaturbate VOD Archive. For Adults Only.</p>
+          </div>
+        </section>
+      </div>
+
+      {# 
+      <div class="news notification">
+        <p>Any clippers? <span class="icon"><i class="fas fa-paperclip"></i></span><span class="icon"><i class="fas fa-paperclip"></i></span> Futureporn needs your help completing it's ProjektMelody VOD archive. {% ipfsProgressPercentage collections.vods %}</p>
+        <p>If you have any ProjektMelody Chaturbate VODs that Futureporn is missing, please <a href="/upload">upload</a> them!</p>
+        <p>All VOD contributors get their name listed on the site.</p>
+      </div>
+       #}
+
+    {{ content | safe }}
+
+
+    <div class="column is-12">
       <div class="card">
         <a target="_blank" href="https://www.ebay.com/str/sakurablossomtradingpost?mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=5338923381&customid=&toolid=10001&mkevt=1">
           <div class="card-content">
@@ -51,19 +88,7 @@
           </div>
         </a>
       </div>
-
-
-      <div class="news notification is-primary">
-        <p>ProjektMelody Chaturbate Archive Progress: <mark>{% ipfsProgressPercentage collections.vods %}</mark></p>
-        <p>100% <strong>PUSH</strong> is in progress!</p>
-        <p>Do you have VODs saved which Futureporn is missing? Please E-Mail <a href="mailto:cj@sbtp.xyz">cj@sbtp.xyz</a> or tweet <a target="_blank" href="https://twitter.com/CJ_Clippy">@CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
-        <p>All VOD contributors get their name listed on the site.</p>
-      </div>
-
-    {{ content | safe }}
-
-
-
+    </div>
 
     <footer class="footer">
         

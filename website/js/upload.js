@@ -50,7 +50,7 @@ const uppy = new Uppy()
         showRemoveButtonAfterComplete: false,
         browserBackButtonClose: false,
         autoOpenFileEditor: false,
-        disableLocalFiles: false,
+        disableLocalFiles: false
     })
     .use(GoogleDrive, { target: Dashboard, companionUrl })
     .use(Dropbox, { target: Dashboard, companionUrl })

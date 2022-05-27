@@ -15,7 +15,7 @@
     state: directory
     owner: uppy
     group: uppy
-    mode: 0755
+    mode: '0755'
 
 - name: Create data directory for uppy companion data
   file:
@@ -23,13 +23,34 @@
     state: directory
     owner: uppy
     group: uppy
-    mode: 0755
+    mode: '0755'
 
-- name: Install uppy companion via npm
+- name: create companion config file
+  ansible.builtin.template:
+    src: templates/config.js.j2
+    dest: /home/uppy/companion/config.js
+    owner: uppy
+    group: uppy
+  notify:
+    - restart companion
+
+- name: Install companion app
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/home/uppy/companion/{{ item }}"
+    owner: uppy
+    group: uppy
+    mode: '0755'
+  notify:
+    - restart companion
+  loop:
+    - companion.js
+    - package.json
+    - yarn.lock
+
+- name: Install node packages
   community.general.yarn:
-    name: '@uppy/companion'
-    global: yes
-    state: present
+    path: /home/uppy/companion
   become: yes
   become_user: uppy
   notify:
