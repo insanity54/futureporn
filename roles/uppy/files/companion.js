@@ -54,35 +54,41 @@ const smtp = new SMTPClient({
 // add a dynamic getKey
 // and also send an e-mail alert when a key is generated
 
-config.providerOptions = {
-    s3: {
-      getKey: (req, filename, metadata) => {
-        smtp.send(
-          {
-            text: `New upload via https://futureporn.net/upload: ${JSON.stringify(metadata)}`,
-            from: `Futureporn <${process.env.SMTP_USER}>`,
-            to: 'CJ_Clippy <cj@sbtp.xyz>',
-            subject: 'Futureporn Upload Notification',
-          },
-          (err, message) => {
-            if (err) {
-              console.error(err);
-            } else {
-              console.log(`  [*] e-mail sent.`);
-              console.log(message)
-            }
-          }
-        );
-        console.log(`  [*] Getting s3 key function has executed. metadata is ${JSON.stringify(metadata)}`);
-        return `${filename}`;
+config.providerOptions.s3.getKey = (req, filename, metadata) => {
+  try {
+    smtp.send(
+      {
+        text: `New upload via https://futureporn.net/upload\n\nmetadata:${JSON.stringify(metadata, 0, 2)}\n\nfilename:${filename}\n\nurl:https://f000.backblazeb2.com/file/futureporn-uppy/${filename}`,
+        from: `Futureporn <${process.env.SMTP_USER}>`,
+        to: 'CJ_Clippy <cj@futureporn.net>',
+        subject: 'Futureporn Upload Notification',
       },
-    },
-  };
+      (err, message) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log(`  [*] e-mail sent.`);
+          console.log(message)
+        }
+      }
+    );
+    console.log(`  [*] Getting s3 key function has executed. metadata is ${JSON.stringify(metadata)}`);
+  } catch (e) {
+    console.error('  [e] problem while sending e-mail.')
+    console.error(e)
+  }
+  return `${filename}`;
+}
 
-console.log(config)
-app.use('/', companion.app(config))
+console.log(config);
+console.log('and1 the JHSONSTIRINGINFY config:')
+console.log(JSON.stringify(config, 0, 2))
+app.use('/', companion.app(config));
 
 const port = process.env.PORT || 3000
 const server = app.listen(port)
 
 companion.socket(server)
+
+
+console.log(app)
