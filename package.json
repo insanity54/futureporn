@@ -24,6 +24,7 @@
     "capture": "./ansible-playbook.sh -i vultr.yml capture.yml",
     "manager": "./ansible-playbook.sh -i vultr.yml manager.yml",
     "gateway": "./ansible-playbook.sh -i vultr.yml gateway.yml",
+    "uppy": "./ansible-playbook.sh -i vultr.yml uppy.yml",
     "start": "node futureporn.mjs"
   },
   "repository": {
