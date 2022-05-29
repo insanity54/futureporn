@@ -58,20 +58,20 @@ console.log(`
 //			vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
 			vod.ensureVideoSrc,
-			(vod) => console.log(vod.date),
+			function () { console.log(this.date) },
 			vod.saveMarkdown,
-			(vod) => console.log(vod.date),
-			vod.ensureVideoSrcHash,
-			(vod) => console.log(vod.date),
-			vod.saveMarkdown,
-			(vod) => console.log(vod.date),
-			vod.ensureVideo240Hash,
-			// vod.ensureVideo480Hash, // coming soon (TM)
-			vod.ensureThiccHash,
-			(vod) => console.log(vod.date),
-			vod.ensureTextFormatting,
-			(vod) => console.log(vod.date),
-			vod.saveMarkdown,
+			// function () { console.log(this.date) },
+			// vod.ensureVideoSrcHash,
+			// function () { console.log(this.date) },
+			// vod.saveMarkdown,
+			// function () { console.log(this.date) },
+			// vod.ensureVideo240Hash,
+			// // vod.ensureVideo480Hash, // coming soon (TM)
+			// vod.ensureThiccHash,
+			// function () { console.log(this.date) },
+			// vod.ensureTextFormatting,
+			// function () { console.log(this.date) },
+			// vod.saveMarkdown,
 		];
 
 
@@ -86,7 +86,7 @@ console.log(`
 		console.log(`vod:${vod.getDatestamp()} complete`)
 
 
-		process.exit()
+		// process.exit()
 	}
 
 })()

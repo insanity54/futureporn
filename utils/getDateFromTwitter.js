@@ -8,8 +8,9 @@ const options = {
     type: 'string',
     description: 'The URL to a tweet',
 };
+const { localTimeZone } = require('./constants');
+const { utcToZonedTime, format } = require('date-fns-tz');
 const args = argv.option( options ).run();
-
 
 (async () => {
     if (typeof args.options.announceUrl === 'undefined') throw new Error('--announceUrl was undefined but it must be defined.');
@@ -18,7 +19,9 @@ const args = argv.option( options ).run();
         announceUrl: args.options.announceUrl
     });
 
-    const date = await v.getDateFromTwitter();
+    const vv = await v.getDateFromTwitter();
 
-    console.log(date);
-})()
+    console.log('date is as follows');
+    console.log(vv.date);
+    console.log(`  [d] getDatestamp result: ${v.getDatestamp()}`);
+})();

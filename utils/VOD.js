@@ -628,6 +628,8 @@ module.exports = class VOD {
 	}
 
 	async saveMarkdown () {
+		const outputDate = this.getDatestamp();
+		console.log(`  lets ssave some markdown. input date is ${this.date} and we are going to transform taht to ${outputDate}`)
 		const data = '---\n'+
 			`title: "${VOD._getSafeText(this.title)}"\n`+
 			`videoSrc: ${this.videoSrc}\n`+
@@ -640,7 +642,7 @@ module.exports = class VOD {
 			`thiccHash: ${this.thiccHash}\n`+
 			`announceTitle: "${VOD._getSafeText(this.announceTitle)}"\n`+
 			`announceUrl: ${this.announceUrl}\n`+
-			`date: ${this.getDatestamp()}\n`+
+			`date: ${outputDate}\n`+
 			`note: ${this.note}\n`+
 			`video240TmpFilePath: ${this.video240TmpFilePath}\n`+
 			`tmpFilePath: ${this.tmpFilePath}\n`+
@@ -649,6 +651,7 @@ module.exports = class VOD {
 
 		console.log(`  [>] safe datestamp:${this.getDatestamp()}`);
 		const filename = this.getMarkdownFilename();
+		console.log(`  [.] markdown filename is ${filename}`);
 		await fsp.writeFile(filename, data, { encoding: 'utf-8' });
 		return this;
 	}
