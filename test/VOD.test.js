@@ -11,7 +11,8 @@ const { format, toDate, formatInTimeZone } = require('date-fns-tz');
 const chaiAsPromised = require('chai-as-promised');
 const os = require('os');
 const proxyquire = require('proxyquire');
-const { localTimeZone } = require('../utils/constants.js')
+const { localTimeZone, projektMelodyEpoch } = require('../utils/constants.js')
+
 
 chai.use(chaiAsPromised);
 
@@ -38,15 +39,6 @@ const notEncodedText = "Salutation my bruddas. Gonna be along fun day, starting 
 
 
 describe('VOD', function () {
-
-    after(async function () {
-        const testVodMd = path.join(__dirname, '..', 'website', 'vods', '3021-10-16T000000Z.md');
-        try {
-            await fsp.unlink(testVodMd)
-        } catch (e) {
-            //console.log('testVodMd not exists but thats okay')
-        }
-    })
 
     describe('instance', function () {
         it('should have a tmpFilePath property', function () {
@@ -138,13 +130,15 @@ describe('VOD', function () {
     describe('loadMarkdown', function () {
         it('should load vod data from markdown file on disk', async function () {
             const v = new VOD({
-                date: '2020-02-07T15:21:48.000Z'
+                date: projektMelodyEpoch
             })
 
             await v.loadMarkdown();
 
             chai.expect(v).to.have.property('video240Hash', 'bafybeiadehyo7tyk527lda5imkkh5lffw7q7t27dqbggpnqca7ltklhccm?filename=projektmelody-chaturbate-20200207T232100Z-240p.mp4');
-            chai.expect(v).to.have.property('date', '2020-02-07T23:21:00.000Z');
+            chai.expect(v).to.have.property('date');
+            chai.expect(v.date).to.be.an.instanceof(Date);
+            chai.expect(isEqual(v.date, projektMelodyEpoch)).to.be.true;
             chai.expect(v).to.have.property('note', 'Day 1');
             chai.expect(v).to.have.property('layout', 'layouts/vod.njk');
             chai.expect(v).to.have.property('announceUrl', 'https://twitter.com/ProjektMelody/status/1225922638687752192');
@@ -152,25 +146,36 @@ describe('VOD', function () {
     })
 
     describe('saveMarkdown', function () {
+
+
         const date = '3021-10-16T00:30:00Z';
         const safeDate = '30211016T003000Z';
         after(async function () {
-            await fsp.unlink(path.join(__dirname, '..', 'website', 'vods', `${safeDate}.md`))
+            const testVodMd = path.join(__dirname, '..', 'website', 'vods', `${safeDate}.md`);
+            let deleted = false;
+            try {
+                await fsp.unlink(testVodMd)
+                deleted = true
+            } catch (e) {
+                console.log('testVodMd not exists')
+            }
+            if (!deleted) throw new Error('testVodMd was not deleted, which is a problem because saveMarkdown is supposed to create it.')
         })
+
         it('should save the vod data to disk as markdown', async function () {
             const note = 'This is not an actual VOD. This is only a test.';
             const v = new VOD({
                 date: date,
                 videoSrcHash: videoSrcFixture,
                 note: note
-            })
+            });
             const res = await v.saveMarkdown();
             chai.expect(res).to.be.an.instanceof(VOD);
             const filePath = path.join(
                 __dirname, 
-                '..', 
-                'website', 
-                'vods', 
+                '..',
+                'website',
+                'vods',
                 `${safeDate}.md`
             );
             const md = await fsp.readFile(
@@ -178,6 +183,7 @@ describe('VOD', function () {
                 { encoding: 'utf-8' }
             );
             const m = matter(md);
+            console.log(md)
             chai.expect(m.data).to.have.property('videoSrcHash', videoSrcFixture);
             chai.expect(m.data).to.have.property('note', note);
             chai.expect(m.data).to.have.property('date');
@@ -185,9 +191,10 @@ describe('VOD', function () {
             chai.expect(m.data).to.have.property('video240TmpFilePath');
             chai.expect(m.data).to.have.property('tmpFilePath');
             chai.expect(m.data.date).to.be.an.instanceof(Date);
-            // chai.expect(m.data.date).to.equal(parseISO(date))
             chai.expect(isEqual(m.data.date, parseISO(date))).to.be.true;
         })
+
+
     })
 
     describe('downloadFrom', function () {
