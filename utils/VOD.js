@@ -616,13 +616,12 @@ module.exports = class VOD {
 
 	async loadMarkdown () {
 		const filename = this.getMarkdownFilename();
-		// console.log(`  [l] loading ${filename}`)
 		const rawData = await fsp.readFile(filename, { encoding: 'utf-8' });
 		const { data } = matter(rawData);
 
 		// prevent overwriting any existing k/v
 		Object.keys(this).forEach((key) => {
-			if (key !== 'date' && this[key] !== '') throw new Error(`  [d] loadMarkdown detected that this vod already has a key/value ${key}/${this[key]} which means loadMarkdown would overwrite the value. This is unsupported. Please make a VOD instance with only a date, then loadMarkdown. (or code new behavior)`)
+			if (key !== 'date' && this[key] !== '') throw new Error(`  [d] loadMarkdown detected that this vod already has a key/value ${key}/${this[key]} which means loadMarkdown would overwrite the value. This is unsupported. Please make a VOD instance with only a date, then run loadMarkdown(). (or code new behavior)`)
 		});
 
 		this.mergeProperties(data);

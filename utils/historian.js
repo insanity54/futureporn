@@ -17,7 +17,7 @@
 require('dotenv').config();
 const debug = require('debug')('futureporn');
 
-const { projektMelodyTwitterId, localTimeZone } = require('./constants.js');
+const { projektMelodyTwitterId, localTimeZone, projektMelodyEpoch } = require('./constants.js');
 
 const TwitterClient = require('twitter-api-scraper').default;
 // const Twitter = require('twitter-lite');
@@ -38,7 +38,6 @@ const datastore = Datastore.create(path.join(os.tmpdir(), 'projektmelody-tweets.
 // const twitterAccessTokenSecret = process.env.TWITTER_ACCESS_TOKEN_SECRET;
 const timeout = 6*1000; // optional HTTP request timeout to apply to all requests.
 const strictSSL = true;  // optional - requires SSL certificates to be valid.
-const projektMelodyEpoch = new Date('2020-02-07T23:21:48.000Z');
 
 
 function later(delay, value) {
