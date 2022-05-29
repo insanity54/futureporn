@@ -629,8 +629,7 @@ module.exports = class VOD {
 
 	async saveMarkdown () {
 		const tvod = await this.getDateFromTwitter();
-		const outputDate = tvod.date;
-		console.log(`  lets ssave some markdown. input date is ${this.date} and we are going to transform taht to ${outputDate}`)
+		this.date = tvod.date;
 		const data = '---\n'+
 			`title: "${VOD._getSafeText(this.title)}"\n`+
 			`videoSrc: ${this.videoSrc}\n`+
@@ -643,7 +642,7 @@ module.exports = class VOD {
 			`thiccHash: ${this.thiccHash}\n`+
 			`announceTitle: "${VOD._getSafeText(this.announceTitle)}"\n`+
 			`announceUrl: ${this.announceUrl}\n`+
-			`date: ${outputDate}\n`+
+			`date: ${this.getDatestamp()}\n`+
 			`note: ${this.note}\n`+
 			`video240TmpFilePath: ${this.video240TmpFilePath}\n`+
 			`tmpFilePath: ${this.tmpFilePath}\n`+
