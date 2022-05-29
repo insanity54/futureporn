@@ -628,7 +628,8 @@ module.exports = class VOD {
 	}
 
 	async saveMarkdown () {
-		const outputDate = this.getDatestamp();
+		const tvod = await this.getDateFromTwitter();
+		const outputDate = tvod.date;
 		console.log(`  lets ssave some markdown. input date is ${this.date} and we are going to transform taht to ${outputDate}`)
 		const data = '---\n'+
 			`title: "${VOD._getSafeText(this.title)}"\n`+
