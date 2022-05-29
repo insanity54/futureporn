@@ -58,13 +58,19 @@ console.log(`
 //			vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
 			vod.ensureVideoSrc,
+			(vod) => console.log(vod.date),
 			vod.saveMarkdown,
+			(vod) => console.log(vod.date),
 			vod.ensureVideoSrcHash,
+			(vod) => console.log(vod.date),
 			vod.saveMarkdown,
+			(vod) => console.log(vod.date),
 			vod.ensureVideo240Hash,
 			// vod.ensureVideo480Hash, // coming soon (TM)
 			vod.ensureThiccHash,
+			(vod) => console.log(vod.date),
 			vod.ensureTextFormatting,
+			(vod) => console.log(vod.date),
 			vod.saveMarkdown,
 		];
 
@@ -78,6 +84,9 @@ console.log(`
 		}
 
 		console.log(`vod:${vod.getDatestamp()} complete`)
+
+
+		process.exit()
 	}
 
 })()
