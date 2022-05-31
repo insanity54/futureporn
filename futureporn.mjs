@@ -57,15 +57,15 @@ console.log(`
 			// vod.ensureAnnounceTitle, // idk why I commented this out
 			vod.ensureDate,             // get the date from twitter
 			//vod.ensureAudioOnly,      // feature creep
-			vod.ensureVideoSrc,
-			vod.saveMarkdown,           // why is saveMarkdown after every ensure function? I forget why I did this but I think it might be important
-			vod.ensureVideoSrcHash,
-			vod.saveMarkdown,
-			vod.ensureVideo240Hash,
+			vod.ensureVideoSrc,         // make sure the VOD is uploaded to B2
+			vod.saveMarkdown,           // why is saveMarkdown run after every ensure function? I forget why I did this but I think it might be important
+			vod.ensureVideoSrcHash,     // make sure the VOD is uploaded to IPFS
+			vod.saveMarkdown,           //
+			vod.ensureVideo240Hash,     // encode a 240p version of the VOD
 			// vod.ensureVideo480Hash,  // coming soon (TM)
-			vod.ensureThiccHash,
-			vod.ensureTextFormatting,
-			vod.saveMarkdown,
+			vod.ensureThiccHash,        // create a thumbnail
+			vod.ensureTextFormatting,   // fix any erroneus text
+			vod.saveMarkdown,           //
 		];
 
 
