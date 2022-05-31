@@ -676,6 +676,7 @@ module.exports = class VOD {
 		const delayRequired = 5000
 		const nextRunAt = (lastRunAt + delayRequired);
 		const msTillNextRun = (now > nextRunAt) ? 0 : (now - nextRunAt);
+		console.log(`  [TTTTT] Waiting ${msTillNextRun} ms until next run.`);
 	    await later(msTillNextRun, null); // throttle
 
 		const tweetId = this.getTweetIdFromAnnounceUrl();
