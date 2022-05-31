@@ -53,25 +53,19 @@ console.log(`
 		console.log(`vod:${vod.getDatestamp()} processing begin`);
 
 		const ensuranceFunctions = [
-//			vod.ensureAnnounceUrl,
-//			vod.ensureAnnounceTitle,
-//			vod.ensureDate,
+			// vod.ensureAnnounceUrl,
+			// vod.ensureAnnounceTitle,
+			// vod.ensureDate,
 			//vod.ensureAudioOnly, // feature creep
 			vod.ensureVideoSrc,
-			function () { console.log(this.date) },
 			vod.saveMarkdown,
-			// function () { console.log(this.date) },
-			// vod.ensureVideoSrcHash,
-			// function () { console.log(this.date) },
-			// vod.saveMarkdown,
-			// function () { console.log(this.date) },
-			// vod.ensureVideo240Hash,
-			// // vod.ensureVideo480Hash, // coming soon (TM)
-			// vod.ensureThiccHash,
-			// function () { console.log(this.date) },
-			// vod.ensureTextFormatting,
-			// function () { console.log(this.date) },
-			// vod.saveMarkdown,
+			vod.ensureVideoSrcHash,
+			vod.saveMarkdown,
+			vod.ensureVideo240Hash,
+			// vod.ensureVideo480Hash, // coming soon (TM)
+			vod.ensureThiccHash,
+			vod.ensureTextFormatting,
+			vod.saveMarkdown,
 		];
 
 
