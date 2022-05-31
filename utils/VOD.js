@@ -695,10 +695,9 @@ module.exports = class VOD {
 
 	async downloadFromB2 () {
 		const localFilePath = VOD._getTmpDownloadPath(this._getVideoBasename());
-		const remoteVideoBasename = path.basename(this.videoSrc);
 		console.log(`downloading ${remoteVideoBasename} from B2 => ${localFilePath}`);
 		// const { killed, exitCode } = await execa('rclone', ['copyto', `${VOD.rcloneDestination}:${VOD.B2BucketName}/${remoteVideoBasename}`, localFilePath ], { stdio: 'inherit' });
-		const { killed, exitCode } = await execa('wget', ['-O', localFilePath ]);
+		const { killed, exitCode } = await execa('wget', ['-O', localFilePath, this.videoSrc ]);
 		console.log(`killed:${killed}, exitCode:${exitCode}`);
 		this.tmpFilePath = localFilePath;
 		return this;
