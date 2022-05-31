@@ -17,7 +17,7 @@
 require('dotenv').config();
 const debug = require('debug')('futureporn');
 
-const { projektMelodyTwitterId, localTimeZone, projektMelodyEpoch } = require('./constants.js');
+const { projektMelodyTwitterId, localTimeZone, projektMelodyEpoch, later } = require('./constants.js');
 
 const TwitterClient = require('twitter-api-scraper').default;
 // const Twitter = require('twitter-lite');
@@ -40,9 +40,6 @@ const timeout = 6*1000; // optional HTTP request timeout to apply to all request
 const strictSSL = true;  // optional - requires SSL certificates to be valid.
 
 
-function later(delay, value) {
-    return new Promise(resolve => setTimeout(resolve, delay, value));
-}
 
 
 

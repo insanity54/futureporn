@@ -53,16 +53,16 @@ console.log(`
 		console.log(`vod:${vod.getDatestamp()} processing begin`);
 
 		const ensuranceFunctions = [
-			// vod.ensureAnnounceUrl,
-			// vod.ensureAnnounceTitle,
-			// vod.ensureDate,
-			//vod.ensureAudioOnly, // feature creep
+			// vod.ensureAnnounceUrl,   // idk why I commented this out
+			// vod.ensureAnnounceTitle, // idk why I commented this out
+			vod.ensureDate,             // get the date from twitter
+			//vod.ensureAudioOnly,      // feature creep
 			vod.ensureVideoSrc,
-			vod.saveMarkdown,
+			vod.saveMarkdown,           // why is saveMarkdown after every ensure function? I forget why I did this but I think it might be important
 			vod.ensureVideoSrcHash,
 			vod.saveMarkdown,
 			vod.ensureVideo240Hash,
-			// vod.ensureVideo480Hash, // coming soon (TM)
+			// vod.ensureVideo480Hash,  // coming soon (TM)
 			vod.ensureThiccHash,
 			vod.ensureTextFormatting,
 			vod.saveMarkdown,

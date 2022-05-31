@@ -98,6 +98,7 @@ module.exports = class VOD {
 		this.layout = VOD.default(data.layout);
 		this.tmpFilePath = VOD.default(data.tmpFilePath);
 		this.video240TmpFilePath = VOD.default(data.video240TmpFilePath);
+		this.twitterThrottleTimer = new Date();
 	}
 
 	static B2BucketName = 'futureporn';
@@ -240,6 +241,10 @@ module.exports = class VOD {
 		if (fault) console.warn('neither b2 nor ipfs link exists on this VOD, which is unsupported.');
 	}
 
+	/**
+	 * The only method for obtaining the date is by the announceUrl datestamp
+	 * (directly from Twitter)
+	 */
 	getMethodToEnsureDate () {
 		const isActionRequired = this.isMissingZuluDate();
 		return isActionRequired ? this.getDateFromTwitter : null;
@@ -348,6 +353,9 @@ module.exports = class VOD {
 	}
 
 
+	/**
+	 * Ensure that the VOD has a date.
+	 */
 	async ensureDate () {
 		const action = this.getMethodToEnsureDate();
 		if (action === null) return;
@@ -628,8 +636,6 @@ module.exports = class VOD {
 	}
 
 	async saveMarkdown () {
-		const tvod = await this.getDateFromTwitter();
-		this.date = tvod.date;
 		const data = '---\n'+
 			`title: "${VOD._getSafeText(this.title)}"\n`+
 			`videoSrc: ${this.videoSrc}\n`+
@@ -656,7 +662,22 @@ module.exports = class VOD {
 		return this;
 	}
 
+
+	/**
+	 * It's possible to call this function too quickly
+	 * to the point where twitter drops the requests,
+	 * so we put a throttle in here. Only one request to twitter per 5 seconds.
+	 * we put a timestamp in this.twitterThrottleTimer
+	 * and only make the next request if right now is 
+	 */
 	async getDateFromTwitter () {
+		const lastRunAt = this.twitterThrottleTimer
+		const now = Date.now();
+		const delayRequired = 5000
+		const nextRunAt = (lastRunAt + delayRequired);
+		const msTillNextRun = (now > nextRunAt) ? 0 : (now - nextRunAt);
+	    await later(msTillNextRun, null); // throttle
+
 		const tweetId = this.getTweetIdFromAnnounceUrl();
 		const { data } = await VOD.twitter.get('tweets', { 
 			ids: tweetId,
