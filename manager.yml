@@ -4,7 +4,7 @@
   gather_facts: no
   vars:
     - vps_plan: vc2-6c-16gb
-    - vps_region: sea
+    - vps_region: atl
     - vps_hostname: futureporn-manager
   roles:
     - role: spinup
