@@ -9,20 +9,6 @@
 <div class="container">
 
   <div class="block">
-    <div class="box">
-      <h2 class="subtitle">
-        {%- if announceTitle %}
-        {{ announceTitle | urlDecode }}
-        {% elif title %}
-        {{ title | urlDecode }}
-        {% elif date %}
-        {{ date }}
-        {% endif %}
-      </h2>
-    </div>
-  </div>
-
-  <div class="block">
     <video id="player" style="--plyr-color-main:#353fff;" controls data-poster="{% buildIpfsUrl thiccHash if thiccHash else '' %}">
       {# we originally called it videoHash, but then we switched to videoSrcHash #}
       {%- if videoSrcHash %}
@@ -51,7 +37,18 @@
 
 
   <div class="block">
+
     <div class="box">
+      <h2 class="subtitle">
+        {%- if announceTitle %}
+        {{ announceTitle | urlDecode }}
+        {% elif title %}
+        {{ title | urlDecode }}
+        {% elif date %}
+        {{ date }}
+        {% endif %}
+      </h2>
+
       <h2 class="heading">IPFS Hashes</h2>
 
       <ul>
