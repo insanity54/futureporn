@@ -51,6 +51,23 @@
   notify: 
     - restart systemd-journald
 
+- name: setup bash aliases file
+  ansible.builtin.file:
+    path: /root/.bash_aliases
+    state: touch
+    owner: root
+    group: root
+    mode: 0664
+
+- name: set up magic-wormhole aliases
+  ansible.builtin.lineinfile:
+    path: /root/.bash_aliases
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "alias whs='wormhole send'"
+    - "alias whr='wormhole receive --accept-file'"
+
 - name: create ufw exception for mosh
   community.general.ufw:
     rule: allow
@@ -79,3 +96,5 @@
     group: root
     mode: '0755'
     state: directory
+
+
