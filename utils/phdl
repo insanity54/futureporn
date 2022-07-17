@@ -1,0 +1,5 @@
+#!/bin/bash
+
+youtube-dl -r 1M --abort-on-unavailable-fragment "${1}"
+
+
