@@ -19,16 +19,25 @@
   },
   "patrons": [
     "Shock",
-    "catboxL"
+    "catboxL",
+    "Molotover"
   ],
   "contributors": [
     {
       "name": "Zipdox",
       "link": "https://www.reddit.com/user/Zipdox/"
     },
-    { "name": "SamuraiZergling" },
-    { "name": "BHelp" },
-    { "name": "anonymous" },
-    { "name": "NiuIntern" }
+    {
+      "name": "SamuraiZergling"
+    },
+    {
+      "name": "BHelp"
+    },
+    {
+      "name": "anonymous"
+    },
+    {
+      "name": "NiuIntern"
+    }
   ]
 }
