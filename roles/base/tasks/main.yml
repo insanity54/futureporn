@@ -74,6 +74,10 @@
     port: 60000:61000
     proto: udp
 
+- name: Allow release-info to change for APT repositories
+  command: apt-get update -y --allow-releaseinfo-change
+
+
 - name: Install dependencies
   become: yes
   apt:
@@ -87,6 +91,7 @@
       - mosh
     state: present
     update_cache: yes
+    allow_change_held_packages: yes
 
 
 - name: Create tmp dir
