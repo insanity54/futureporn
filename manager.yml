@@ -17,6 +17,7 @@
     - ipfs_version: v0.12.2
     - ipfs_private_key: "{{ lookup('env', 'IPFS_PRIVATE_KEY') }}"
     - ipfs_peer_id: "{{ lookup('env', 'IPFS_PEER_ID') }}"
+    - nodejs_version: "16.x"
   roles:
     - role: base
     - role: geerlingguy.nodejs
