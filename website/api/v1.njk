@@ -1,0 +1,26 @@
+---
+permalink: '/api/v1.json'
+---
+
+{
+  "vods": [
+    {% for vod in collections.vods %}
+      {
+        "title": "{{ vod.data.title }}",
+        "videoSrc": "{{ vod.data.videoSrc }}",
+        "videoSrcHash": "{{ vod.data.videoSrcHash }}",
+        "video720Hash": "{{ vod.data.video720Hash }}",
+        "video480Hash": "{{ vod.data.video480Hash }}",
+        "video360Hash": "{{ vod.data.video360Hash }}",
+        "video240Hash": "{{ vod.data.video240Hash }}",
+        "thinHash": "{{ vod.data.thinHash }}",
+        "thinHash": "{{ vod.data.thinHash }}",
+      	"announceTitle": "{{ vod.data.announceTitle }}",
+      	"announceUrl": "{{ vod.data.announceUrl }}",
+        "date": "{{ vod.data.date }}",
+        "note": "{{ vod.data.note }}",
+        "url": "{{ vod.url }}"
+      }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
