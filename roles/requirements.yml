@@ -3,6 +3,7 @@
 roles:
   - geerlingguy.nodejs
   - nvjacobo.caddy
+  - jeffbr13.ipfs
 
 collections:
   - ngine_io.vultr
