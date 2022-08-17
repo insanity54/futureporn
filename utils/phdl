@@ -1,5 +1,63 @@
+q
 #!/bin/bash
 
-youtube-dl -r 1M --abort-on-unavailable-fragment "${1}"
 
 
+## CONFIG
+init_delay=10          # The starting retry delay (in seconds.)
+max_delay=$((60*10))   # The maximum amount of time to delay beteween checking for a live stream.
+delay="${init_delay}"  # Ongoing delay counter. Doubles itself if there is no live stream.
+
+
+
+
+## VARIABLES
+url="${1}"
+
+## FUNCTIONS
+ekko () {
+  echo "[$(date)] - ${1}"
+}
+
+init () {
+
+  if [ -z ${url} ]; then
+    ekko "First param must be a URL, but the first param was empty."
+    exit 6
+  fi
+
+  ekko "Attempting to download video at URL ${url}... Press Ctrl+C to quit."
+}
+
+
+main () {
+  while :; do
+
+    # Attempt to download the video.
+    # We use the name parameter sent to this script to look up the stream url in `ref.json`.
+    youtube-dl --abort-on-unavailable-fragment --limit-rate 1M "${url}"
+
+    # we are done if youtube-dl exited with 0 error code
+    if [ $? -eq 0 ]; then
+      ekko "omg teh exit code was zero, yay!"
+      exit 0
+    fi
+
+    # Slowly increase the delay time between retries.
+    # This is done to be polite to the streaming platform.
+    # We wait longer and longer between tries, eventually maxing out at ${max_delay} seconds
+    if [ $(($delay*2)) -ge $max_delay ];
+      then delay=$max_delay
+      else delay=$(($delay*2));
+    fi
+
+
+    ekko "Retrying in ${delay} seconds..."
+    sleep "${delay}"
+
+  done
+}
+
+
+init
+main
