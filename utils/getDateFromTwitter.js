@@ -8,7 +8,7 @@ const options = {
     type: 'string',
     description: 'The URL to a tweet',
 };
-const { localTimeZone } = require('./constants');
+const { later, localTimeZone } = require('./constants');
 const { utcToZonedTime, format } = require('date-fns-tz');
 const args = argv.option( options ).run();
 
