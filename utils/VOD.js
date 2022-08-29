@@ -713,7 +713,7 @@ module.exports = class VOD {
 		const localFilePath = VOD._getTmpDownloadPath(this._getVideoBasename());
 		const url = this.getIpfsUrl();
 		const remoteVideoBasename = path.basename(url);
-		console.log(`downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
+		console.log(`  [*] downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
 		//await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
 		await execa('ipfs', ['get', '-o', localFilePath, hash])
 		this.tmpFilePath = localFilePath;
