@@ -5,3 +5,32 @@
     name: yarn
     global: yes
     state: present
+
+- name: install ssh config
+  become: yes
+  ansible.builtin.template:
+    src: sshConfig.j2
+    dest: ~/.ssh/config
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: install deploy SSH pubkey
+  become: yes
+  ansible.builtin.copy:
+    src: ~/.ssh/futureporn.pub
+    dest: ~/.ssh/futureporn.pub
+    owner: root
+    group: root
+    mode: "0644"
+
+
+- name: install deploy SSH privkey
+  become: yes
+  ansible.builtin.copy:
+    src: ~/.ssh/futureporn
+    dest: ~/.ssh/futureporn
+    owner: root
+    group: root
+    mode: "0600"
+    
