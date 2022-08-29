@@ -149,10 +149,9 @@ module.exports = class VOD {
 
 
 	async ensureThiccHash () {
-		debug(this)
 		if (this.thiccHash !== '') return;
 		if (this.tmpFilePath === '') {
-			debug('video is missing so im gonna throw')
+			debug('  local video (tmpFilePath) is missing so im gonna throw')
 			throw new VideoMissingError();
 		} else {
 			debug(`video is present ${this.tmpFilePath}`)
@@ -401,7 +400,7 @@ module.exports = class VOD {
 	async ensureTmpFilePath () {
 		if (this.hasTmpFilePath()) return;
 		const downloadMethod = this.getMethodToEnsureTmpFilePath();
-		console.log(`  [*] ensureTmpFilePath() determined the DOWNLOAD METHOD to be: ${downloadMethod}`);
+		console.log(`  [D] ensureTmpFilePath() determined the DOWNLOAD METHOD to be: ${downloadMethod.name}`);
 
 		if (downloadMethod === null) {
 			throw new VideoMissingError();
@@ -696,7 +695,7 @@ module.exports = class VOD {
 
 	async downloadFromB2 () {
 		const localFilePath = VOD._getTmpDownloadPath(this._getVideoBasename());
-		console.log(`downloading ${this.videoSrc} from B2 => ${localFilePath}`);
+		console.log(`  [*] downloading ${this.videoSrc} from B2 => ${localFilePath}`);
 		const { killed, exitCode } = await execa('wget', ['-O', localFilePath, this.videoSrc ]);
 		if (killed || exitCode !== 0) throw new Error(`killed:${killed}, exitCode:${exitCode}`)
 		this.tmpFilePath = localFilePath;
