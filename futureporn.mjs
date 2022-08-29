@@ -94,7 +94,7 @@ console.log(`
 						await vod.saveMarkdown();
 					}
 				}
-				console.log('[*********] CAUGHTEM')
+				console.log('  [*********] CAUGHTEM')
 				console.warn(JSON.stringify(e, 0, 2));
 				if (e.type === 'FileNotFoundError') {
 					console.error('EYYYYYYY\nEYYYYYYY\nEYYYYYYY\nEYYYYYYY\nEYYYYYYY\nEYYYYYYY\nEYYYYYYY\nEYYYYYYY\nEYYYYYYY\nEYYYYYYY\n')
