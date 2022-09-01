@@ -7,7 +7,6 @@ permalink: '/api/v1.json'
     {% for vod in collections.vods %}
       {
         "title": "{{ vod.data.title }}",
-        "videoSrc": "{{ vod.data.videoSrc }}",
         "videoSrcHash": "{{ vod.data.videoSrcHash }}",
         "video720Hash": "{{ vod.data.video720Hash }}",
         "video480Hash": "{{ vod.data.video480Hash }}",
