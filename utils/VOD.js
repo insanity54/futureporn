@@ -23,6 +23,7 @@ const { localTimeZone, later } = require('./constants');
 const { format, zonedTimeToUtc, utcToZonedTime, toDate } = dateFnsTz;
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const exoticTwitterDateFormat = "";
+const pinataSDK = require('@pinata/sdk');
 
 // const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 
@@ -431,7 +432,7 @@ module.exports = class VOD {
 			}
 		}
 		if (this.isMissingTmpFilePath()) throw new TmpFilePathMissingError('tmpFilePath is missing prior to upload which should not occur')
-		console.log(`~~~ uploading ${this.tmpFilePath} to web3 (IPFS) ~~~`)
+		console.log(`~~~ uploading ${this.tmpFilePath} to IPFS ~~~`)
 		const hash = await this._ipfsUpload(this.tmpFilePath);
 		this.videoSrcHash = `${hash}?filename=${videoBasename}`
 		console.log('done')
@@ -495,6 +496,27 @@ module.exports = class VOD {
 	}
 
 	async _ipfsUpload (filename) {
+		console.log('  [^] this upload provided by Pinata') // ipfs.storage restricted our account so we use Pinata for now
+		return _ipfsPinataUpload(filename);
+	}
+
+	async _ipfsPinataUpload (filename) {
+		const pinataApiKey = process.env.PINATA_API_KEY;
+		const pinataSecretApiKey = process.env.PINATA_SECRET_API_KEY;
+
+		if (typeof pinataApiKey === 'undefined') throw new Error('PINATA_API_KEY was missing from env');
+		if (typeof pinataSecretApiKey === 'undefined') throw new Error('PINATA_SECRET_API_KEY was missing from env');
+
+		const pinata = pinataSDK(pinataApiKey, pinataSecretApiKey);
+		const result = pinata.testAuthentication();
+		console.log(`  [*] successfully authed with Pinata`)
+		console.log(result);
+		const response = await pinata.pinFromFs(filename);
+		const { IpfsHash } = response;
+		return IpfsHash;
+	}
+
+	async _ipfsDotStorageUpload (filename) {
 		const token = process.env.WEB3_TOKEN;
 		if (typeof token === 'undefined') {
 			throw new Error('A token is needed. (WEB3_TOKEN in env must be defined). You can create one on https://web3.storage. ')
@@ -541,7 +563,7 @@ module.exports = class VOD {
 			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
 		}
 
-		const hash = await this._ipfsUpload(this.tmpFilePath);
+		const hash = await this._ipfsUpload(this.tmpFilePath); 
 
 		this.videoSrcHash = hash;
 	}
@@ -723,6 +745,7 @@ module.exports = class VOD {
 
 
 }
+
 
 
 

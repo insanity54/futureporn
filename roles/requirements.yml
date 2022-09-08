@@ -4,6 +4,11 @@ roles:
   - geerlingguy.nodejs
   - nvjacobo.caddy
   - jeffbr13.ipfs
+  - name: madoke.ansible-ipfs-cluster
+    src: https://github.com/madoke/ansible-ipfs-cluster.git
+    scm: git
+    type: git
+    version: 3bd23433fdae86f342eeb23a5857119a87adbac9
 
 collections:
   - ngine_io.vultr

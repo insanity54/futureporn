@@ -21,6 +21,7 @@
   gather_facts: no
   vars:
     - ansible_user: root
+    - nodejs_version: "16.x"
   roles:
     - role: base
     - role: geerlingguy.nodejs
