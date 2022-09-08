@@ -1,0 +1,28 @@
+---
+
+
+- hosts: ipfs-cluster*
+  gather_facts: no
+  vars:
+    - ansible_user: root
+  tasks:
+    - name: define secrets for this machine
+      ansible.builtin.set_fact:
+        ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER' ~ ansible_hostname | last ~ _SECRET') }}"
+        ipfs_cluster_peername: "{{ ansible_hostname }}"
+        ipfs_cluster_id: ""
+        ipfs_clister_private_key: ""
+        ipfs_peer_id: ""
+        ipfs_private_key: ""
+
+# ipfs_peer_id: "<ipfs_daemon_peer_id>"
+# ipfs_private_key: "<ipfs_daemon_private_key>"
+
+# ipfs_cluster_id: "<cluster_peer_id>"
+# ipfs_cluster_private_key: "<cluster_peer_private_key>"
+
+# ipfs_cluster_peer_addr: "/dns4/<hostname>/tcp/9096/ipfs/<ipfs_cluster_peer_id>"
+
+  roles:
+    - role: base
+    - role: madoke.ansible-ipfs-cluster

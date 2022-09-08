@@ -39,6 +39,7 @@
   "homepage": "https://github.com/insanity54/futureporn#readme",
   "dependencies": {
     "@grimtech/envimport": "^0.0.1",
+    "@pinata/sdk": "^1.1.26",
     "@uppy/core": "^2.2.0",
     "@uppy/dashboard": "^2.2.0",
     "@uppy/dropbox": "^2.0.6",
