@@ -47,7 +47,7 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
     const oauthClient = oauth(PATREON_CLIENT_ID, PATREON_CLIENT_SECRET)
 
     // mimic a database
-    let database = {}
+    let database = {};
 
 
     const loginUrl = formatUrl({
@@ -62,7 +62,7 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
             scopes: 'users pledges-to-me my-campaign'
         }
     })
-    open(loginUrl)
+    open(loginUrl);
 
 
     app.get('/oauth/callback', (req, res) => {
@@ -77,15 +77,32 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
             })
             .then(async ({ rawJson }) => {
 
-                const pledges = rawJson.included
-                    .filter(p => p.type === 'user')
-                    .filter(p => p.attributes.first_name !== '@CJ_Clippy')
-                    .map(p => p.attributes.first_name)
+
+                // this is a collection of active patrons
+                const activePatronIds = rawJson.data
+                    .filter(d => d.type === 'pledge')
+                    .filter(d => d.attributes.declined_since === null) // payments must not be declined
+                    .map(d => d.relationships.patron.data.id);
+
+
+
+                // we need the patron name which is nested down in the `included` array
+                // we will get all the users so we can query using ID
+                const users = rawJson.included
+                    .filter(u => u.type === 'user');
+
+
+                const activePatronNames = activePatronIds.map(n => users.find(u => u.id === n).attributes.first_name );
+
+
+                console.log('here are the active patrons')
+                console.log(activePatronNames);
+
 
 
                 const metadata = require(metadataFile);
 
-                const patchedMetadata = Object.assign({}, metadata, { patrons: pledges });
+                const patchedMetadata = Object.assign({}, metadata, { patrons: activePatronNames });
 
 
                 await fsp.writeFile(metadataFile, JSON.stringify(patchedMetadata, 0, 2), { encoding: 'utf-8' });
