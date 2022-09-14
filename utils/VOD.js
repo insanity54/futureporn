@@ -712,15 +712,20 @@ module.exports = class VOD {
 	}
 
 	async downloadFromIpfs () {
-		const hash = VOD._getIpfsHash(this.videoSrcHash);
-		const localFilePath = VOD._getTmpDownloadPath(this._getVideoBasename());
-		const url = this.getIpfsUrl();
-		const remoteVideoBasename = path.basename(url);
-		console.log(`  [*] downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
-		//await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
-		await execa('ipfs', ['-c', '/home/ipfs/.ipfs', 'get', '-o', localFilePath, hash])
-		this.tmpFilePath = localFilePath;
-		return this;
+        console.log('  [*] downloadFromIpfs begin');
+        const hash = VOD._getIpfsHash(this.videoSrcHash);
+        const localFilePath = VOD._getTmpDownloadPath(this._getVideoBasename());
+        const url = this.getIpfsUrl();
+        const remoteVideoBasename = path.basename(url);
+        console.log(`  [*] downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
+        const pro = execa('ipfs', ['-c', '/home/ipfs/.ipfs', 'get', '-o', localFilePath, hash]);
+        console.log('  [*] ipfs await pro here we go');
+        const {stdout, stderr} = await pro;
+        console.log('  [*] downloadFromIpfs  is done');
+        console.log(stdout)
+        console.error(stderr)
+        this.tmpFilePath = localFilePath;
+        return this;
 	}
 
 
