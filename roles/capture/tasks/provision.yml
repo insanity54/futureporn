@@ -78,5 +78,19 @@
   notify:
     - restart voddo
 
+- name: Download ipfs-cluster-ctl
+  ansible.builtin.unarchive:
+    src: https://dist.ipfs.tech/ipfs-cluster-ctl/v1.0.2/ipfs-cluster-ctl_v1.0.2_linux-amd64.tar.gz
+    dest: /root/
+  creates: /root/ipfs-cluster-ctl
+
+
+  # futureporn.mjs needs this to upload files to the ipfs cluster
+- name: Install ipfs-cluster-ctl
+  ansible.builtin.copy:
+    remote_src: yes
+    src: /root/ipfs-cluster-ctl/ipfs-cluster-ctl
+    dest: /usr/local/bin/ipfs-cluster-ctl
+    mode: '0755'
 
 
