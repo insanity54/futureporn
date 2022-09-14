@@ -6,7 +6,7 @@
 ## it might not be idempotent.
 ## it does not conform to the, "ansible way"
 ## 
-## The better solution is to use https://github.com/ngine-io/ansible-collection-vultr to do this
+## The better solution is to use https://github.com/ngine-io/ansible-collection-vultr
 ## However, I've run into problems lately as Vultr updates to their api V2.
 ## ansible-collection-vultr does not support that API version.
 ## 

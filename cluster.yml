@@ -1,28 +1,296 @@
 ---
 
+# wishlist for ansible-ipfs-cluster
+#   * dont restart if ipfs is going to error (JSON validation of /home/ipfs/.ipfs-cluster/service.json at a minimum)
+#   * no final comma in peer_addresses array when there is a failure on one host, or using --limit
 
-- hosts: ipfs-cluster*
-  gather_facts: no
+
+
+# spin-up is broken because theres something wack with the SSH key
+# - hosts: localhost
+#   gather_facts: no
+#   tasks:
+#     - name: start some instances
+#       vultr.cloud.instance:
+#         label: "{{ item.label }}"
+#         region: "{{ item.region }}" 
+#         state: started
+#         tags: 'ipfs-cluster'
+#         os: 'Ubuntu 22.04 LTS x64' #1743
+#         plan: 'vc2-1c-2gb'
+#         ssh_keys: ['LEO-COMPUTE']
+#       loop:
+#         - { 'label': 'ipfs-cluster1', 'region': 'ord' }
+#         - { 'label': 'ipfs-cluster2', 'region': 'ord' }
+#         - { 'label': 'ipfs-cluster3', 'region': 'atl' }
+#         - { 'label': 'ipfs-cluster4', 'region': 'dfw' }
+#         - { 'label': 'ipfs-cluster5', 'region': 'dfw' }
+#     - meta: refresh_inventory
+
+
+
+# @todo ipfs daemon throws a warning on VPS with <=2GB
+#       https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size
+#       a 4GB VPS might be the minimum if the cluster requires this buffer size to be set properly.
+
+- hosts: ~ipfs-cluster\d
+  gather_facts: no # `no` is a requirement for base role. the base role gather facts once able.
   vars:
     - ansible_user: root
+    - storage_gb: 500
   tasks:
-    - name: define secrets for this machine
+
+
+    # unfortunately the ngine_io.vultr.vultr inventory module does not contain instance UUIDs,
+    # a dependency for vultr.cloud.block_storage
+    # as a workaround, we get the UUID from API.
+    - name: get instance data from vultr API.
+      ansible.builtin.uri:
+        url: https://api.vultr.com/v2/instances
+        method: GET
+        body_format: json
+        status_code: [200, 202]
+        return_content: true
+        headers:
+          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
+      delegate_to: localhost
+      run_once: yes
+      register: instances
+
+    - debug: var=instances
+
+    - set_fact:
+        cluster_instances: "{{ instances.json.instances | selectattr('label', 'match', 'ipfs-cluster' ) }}"
+
+
+
+    - name: get just this vultr instance data
+      set_fact:
+        instance: "{{ cluster_instances | selectattr('label', 'equalto', inventory_hostname) | first }}"
+
+
+    - name: get the region (3 letter short version) and the instance UUID
+      set_fact:
+        region: "{{ instance.region }}"
+        uuid: "{{ instance.id }}"
+
+
+    - debug:
+       msg: "label:{{ instance.label }}, region:{{ instance.region }}, uuid:{{ uuid }}"
+
+    - debug: msg="{{cluster_instances | type_debug}}"
+
+    - name: "Print IP Address"
+      debug:
+        msg: "IP Address: {{ item.main_ip }} ({{ item.id }})"
+      with_items: "{{ cluster_instances }}"
+
+    - set_fact:
+        #trusted_peers_multiaddr: 
+        trusted_peers_multiaddr: |-
+          [
+          {% for instance in cluster_instances %}
+            "{{ lookup('env', 'IPFS_CLUSTER' ~ instance.label | last ~ '_IPFS_CLUSTER_ID') }}",
+          {%- endfor %}
+          ]
+
+    # - debug: var=trusted_peers
+    - debug: var=trusted_peers_multiaddr
+
+
+
+    # - meta: end_play
+
+    - include_role:
+        name: base
+
+    - name: Ensure a block storage volume exists and is attached to server
+      vultr.cloud.block_storage:
+        name: "{{ inventory_hostname }}-storage"
+        state: present
+        attached_to_instance: "{{ uuid }}"
+        region: "{{ region }}"
+        size_gb: "{{ storage_gb }}"
+        block_type: "storage_opt"
+        live: no
+      delegate_to: localhost
+
+
+    # - name: Create partition for vultr block storage
+    #   community.general.parted:
+    #     device: /dev/vdb
+    #     number: 1
+    #     state: present
+    #     label: gpt
+    #     fs_type: ext4
+
+    # - name: Create a ext4 filesystem 
+    #   community.general.filesystem:
+    #     fstype: ext4
+    #     dev: /dev/vdb1
+
+    # - name: mount block storage
+    #   ansible.posix.mount:
+    #     path: "/home/ipfs"
+    #     src: /dev/vdb1
+    #     fstype: ext4
+    #     opts: defaults,noatime,nofail
+    #     state: mounted
+
+    # - name: chown the data dir
+    #   ansible.builtin.file:
+    #     path: /home/ipfs
+    #     owner: ipfs
+    #     group: ipfs
+    #     mode: '0750'
+    #     state: directory
+
+    - name: Create local tmp directories for tmp SSL certs
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop: 
+        - /tmp/usr/local/etc/ssl/private/
+        - /tmp/usr/local/etc/ssl/certs/
+      delegate_to: localhost
+
+
+    - name: Create private key (RSA, 4096 bits)
+      community.crypto.openssl_privatekey:
+        path: certificate.key
+      delegate_to: localhost
+
+    - name: Create CSR
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: certificate.key
+        common_name: futureporn.net
+        organization_name: Futureporn.net
+        email_address: cj@futureporn.net
+        subject_alt_name:
+          - "DNS:cluster.futureporn.net"
+      delegate_to: localhost
+      register: csr
+
+    - name: Create simple self-signed certificate
+      community.crypto.x509_certificate:
+        path: /tmp/usr/local/etc/ssl/certs/cluster.futureporn.net.pem
+        csr_content: "{{ csr.csr }}"
+        privatekey_path: certificate.key
+        provider: selfsigned
+      delegate_to: localhost
+
+
+    - name: Create directories for SSL certs
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop: 
+        - /usr/local/etc/ssl/private/
+        - /usr/local/etc/ssl/certs/
+
+    - name: upload SSL cert
+      become: yes
+      copy:
+        remote_src: false
+        src: /tmp/usr/local/etc/ssl/certs/cluster.futureporn.net.pem
+        dest: /usr/local/etc/ssl/certs/cluster.futureporn.net.pem
+        mode: '0755'
+        owner: root
+        group: root
+
+
+    - name: upload SSL private key
+      become: yes
+      copy:
+        remote_src: false
+        src: certificate.key
+        dest: /usr/local/etc/ssl/private/cluster.futureporn.net.key
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Add all cluster instances to ansible ipfs_cluster group, a requirement for madoke.ansible-ipfs-cluster role
+      ansible.builtin.add_host:
+        name: '{{ item }}'
+        groups: ipfs_cluster
+      loop: "{{ cluster_instances | map(attribute='label') }}"
+
+
+    - debug: var=hostvars
+    - debug: var=groups
+    - debug: var=ansible_play_hosts
+
+
+    - name: Add ipfs & ipfs-cluster variables
       ansible.builtin.set_fact:
-        ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER' ~ ansible_hostname | last ~ _SECRET') }}"
-        ipfs_cluster_peername: "{{ ansible_hostname }}"
-        ipfs_cluster_id: ""
-        ipfs_clister_private_key: ""
-        ipfs_peer_id: ""
-        ipfs_private_key: ""
+        ipfs_version: "v0.15.0"
+        ipfs_cluster_version: "v1.0.2"
+        ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER_SECRET') }}"
+        ipfs_cluster_peername: "{{ inventory_hostname }}"
+        ipfs_cluster_id: "{{ lookup('env', 'IPFS_CLUSTER' ~ inventory_hostname | last ~ '_IPFS_CLUSTER_ID') }}"
+        ipfs_cluster_private_key: "{{ lookup('env', 'IPFS_CLUSTER' ~ inventory_hostname | last ~ '_IPFS_CLUSTER_PRIVATE_KEY') }}"
+        ipfs_peer_id: "{{ lookup('env', 'IPFS_CLUSTER' ~ inventory_hostname | last ~ '_IPFS_PEER_ID') }}"
+        ipfs_private_key: "{{ lookup('env', 'IPFS_CLUSTER' ~ inventory_hostname | last ~ '_IPFS_PRIVATE_KEY') }}"
+        ipfs_cluster_consensus: "crdt"
+        ipfs_cluster_crdt_cluster_name: "futureporn.net"
+        ipfs_cluster_restapi_http_listen_multiaddress: "/ip4/0.0.0.0/tcp/9094"
+        ipfs_cluster_restapi_users: 
+          - 
+            username: "{{ lookup('env', 'IPFS_CLUSTER_HTTP_API_USERNAME') }}"
+            password: "{{ lookup('env', 'IPFS_CLUSTER_HTTP_API_PASSWORD') }}"
+        ipfs_cluster_restapi_ssl_cert_file: /usr/local/etc/ssl/certs/cluster.futureporn.net.pem
+        ipfs_cluster_restapi_ssl_key_file: /usr/local/etc/ssl/private/cluster.futureporn.net.key
+        ipfs_cluster_crdt_trusted_peers: "{{ trusted_peers_multiaddr }}"
+        ipfs_storage_max: "{{ storage_gb }}GB"
 
-# ipfs_peer_id: "<ipfs_daemon_peer_id>"
-# ipfs_private_key: "<ipfs_daemon_private_key>"
+    - name: set the multiaddr
+      # we do this on a separate step because we first need ipfs_cluster_id to be set
+      ansible.builtin.set_fact:
+        ipfs_cluster_peer_addr: "/ip4/{{ hostvars[inventory_hostname].v4_main_ip }}/tcp/9096/ipfs/{{ hostvars[inventory_hostname].ipfs_cluster_id }}"
 
-# ipfs_cluster_id: "<cluster_peer_id>"
-# ipfs_cluster_private_key: "<cluster_peer_private_key>"
 
-# ipfs_cluster_peer_addr: "/dns4/<hostname>/tcp/9096/ipfs/<ipfs_cluster_peer_id>"
+    - name: Allow access to the HTTP RESTapi endpoint
+      community.general.ufw:
+        rule: allow
+        port: '9094'
+        proto: tcp
 
-  roles:
-    - role: base
-    - role: madoke.ansible-ipfs-cluster
+    - name: Allow public access to IPFS cluster swarm port
+      community.general.ufw:
+        rule: allow
+        port: '9096'
+        proto: tcp
+
+    - name: Allow access to the IPFS Pinning API endpoint
+      community.general.ufw:
+        rule: allow
+        port: '9097'
+        proto: tcp
+
+    - include_role: 
+        name: madoke.ansible-ipfs-cluster
+
+      # I'm using a domain other than futureporn.net for the IPFS cluster. cluster.sbtp.xyz
+      # (namecheap has to be updated manually)
+      # This is not ideal. It's a compromise for automation reasons.
+      # futureporn.net registrar is namecheap, a service which does not have an API for adding/updating their DNS records.
+      # I'd rather let Vultr handle futureporn.net's DNS, but I can't because Fleek requires ALIAS and CNAME records, which vultr does not support.
+      # In the future, if I find a good way to do what Fleek.co does in a robust D.I.Y. fashion, I could switch to Vultr at that time.
+      # Alternatively, I could find an alternate DNS provider with an API, which satisfies all the dependencies of Fleek.co
+    - name: set DNS
+      vultr.cloud.dns_record:
+        record_type: A
+        name: cluster
+        domain: sbtp.xyz
+        data: "{{ item.main_ip }}"
+        ttl: 3600
+        multiple: yes
+        state: present
+      delegate_to: localhost
+      run_once: yes
+      with_items:
+        - cluster_instances

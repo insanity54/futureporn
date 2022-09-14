@@ -23,7 +23,7 @@ const { localTimeZone, later } = require('./constants');
 const { format, zonedTimeToUtc, utcToZonedTime, toDate } = dateFnsTz;
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const exoticTwitterDateFormat = "";
-const pinataSDK = require('@pinata/sdk');
+
 
 // const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 
@@ -496,25 +496,10 @@ module.exports = class VOD {
 	}
 
 	async _ipfsUpload (filename) {
-		console.log('  [^] this upload provided by Pinata') // ipfs.storage restricted our account so we use Pinata for now
-		return _ipfsPinataUpload(filename);
+		console.log('  [^] this upload provided by futureporn.net');
+		return ipfsClusterUpload(filename);
 	}
 
-	async _ipfsPinataUpload (filename) {
-		const pinataApiKey = process.env.PINATA_API_KEY;
-		const pinataSecretApiKey = process.env.PINATA_SECRET_API_KEY;
-
-		if (typeof pinataApiKey === 'undefined') throw new Error('PINATA_API_KEY was missing from env');
-		if (typeof pinataSecretApiKey === 'undefined') throw new Error('PINATA_SECRET_API_KEY was missing from env');
-
-		const pinata = pinataSDK(pinataApiKey, pinataSecretApiKey);
-		const result = pinata.testAuthentication();
-		console.log(`  [*] successfully authed with Pinata`)
-		console.log(result);
-		const response = await pinata.pinFromFs(filename);
-		const { IpfsHash } = response;
-		return IpfsHash;
-	}
 
 	async _ipfsDotStorageUpload (filename) {
 		const token = process.env.WEB3_TOKEN;
@@ -552,16 +537,12 @@ module.exports = class VOD {
 	async uploadToIpfs () {
 		if (typeof this === 'undefined') throw new Error('*this* is undefined in uploadToIpfs which is UNSUPPORTED. There is likely a problem with how you are calling uploadToIpfs()')
 		if (R.isNil(this.tmpFilePath) || R.isEmpty(this.tmpFilePath)) throw new TmpFilePathMissingError();
-		if (os.totalmem() < 17179870000) throw new NotEnoughMemoryError('>=16GB is required for this task.');
 
 		if (R.match(/\.mp4/, this.tmpFilePath)) {
 			await this.encodeVideo();
 		}
 
 		console.log(`uploading ${this.tmpFilePath} to IPFS`);
-		if (typeof VOD.web3Token === 'undefined') {
-			throw new Error('A web3.storage token "token" must be passed in options object, but token was undefined.')
-		}
 
 		const hash = await this._ipfsUpload(this.tmpFilePath); 
 
@@ -737,7 +718,7 @@ module.exports = class VOD {
 		const remoteVideoBasename = path.basename(url);
 		console.log(`  [*] downloading ${remoteVideoBasename} from IPFS => ${localFilePath}`)
 		//await execa('wget', ['-O', localFilePath, url], { stdio: 'inherit' })
-		await execa('ipfs', ['get', '-o', localFilePath, hash])
+		await execa('ipfs', ['-c', '/home/ipfs/.ipfs', 'get', '-o', localFilePath, hash])
 		this.tmpFilePath = localFilePath;
 		return this;
 	}
