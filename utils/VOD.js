@@ -401,13 +401,12 @@ module.exports = class VOD {
 	async ensureTmpFilePath () {
 		if (this.hasTmpFilePath()) return;
 		const downloadMethod = this.getMethodToEnsureTmpFilePath();
-		console.log('  [D] the following is the download method ')
-		console.log(downloadMethod);
-		console.log(`  [D] ensureTmpFilePath() determined the DOWNLOAD METHOD to be: ${downloadMethod.name}`);
-
 		if (downloadMethod === null) {
 			throw new VideoMissingError();
 		}
+
+		console.log(`  [D] ensureTmpFilePath() determined the DOWNLOAD METHOD to be: ${downloadMethod.name}`);
+
 		await downloadMethod.apply(this);
 	}
 
