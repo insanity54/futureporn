@@ -87,7 +87,8 @@ console.log(`
 				if (e?.stderr) {
 					if (
 						/Permission denied/.test(e.stderr) ||
-						/FileNotFoundError/.test(e.stderr)
+						/FileNotFoundError/.test(e.stderr) ||
+						/No such file or directory/.test(e.stderr)
 					) {
 						console.log('  !!! VOD.tmpFilePath is not valid so we are deleting it.');
 						vod.tmpFilePath = '';
