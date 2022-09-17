@@ -661,9 +661,7 @@ module.exports = class VOD {
 			`layout: ${VOD.eleventyLayout}\n`+
 			'---\n';
 
-		console.log(`  [>] safe datestamp:${this.getDatestamp()}`);
 		const filename = this.getMarkdownFilename();
-		console.log(`  [.] markdown filename is ${filename}`);
 		await fsp.writeFile(filename, data, { encoding: 'utf-8' });
 		return this;
 	}
