@@ -152,6 +152,7 @@ module.exports = class VOD {
 
 	async ensureThiccHash () {
 		if (this.thiccHash !== '') return;
+		await this.ensureTmpFilePath();
 		if (this.tmpFilePath === '') {
 			debug('  local video (tmpFilePath) is missing so im gonna throw')
 			throw new VideoMissingError();
