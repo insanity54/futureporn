@@ -27,7 +27,6 @@ console.log(`
 
 	// create VOD object for each VOD markdown file
 	const markdownFiles = await fg([ vodDirPattern ]);
-	console.log(markdownFiles)
 	for (const markdownFile of markdownFiles) {
 		const mdRaw = await fsp.readFile(markdownFile);
 		const { data } = await marked(mdRaw);
