@@ -99,3 +99,31 @@
     fstype: ext4
     opts: defaults,noatime,nofail
     state: mounted
+
+- name: add --enable-gc to the ipfs daemon StartExec
+  lineinfile:
+    path: /etc/systemd/system/ipfs.service
+    regexp: '^ExecStart'
+    line: 'ExecStart=/usr/local/bin/ipfs daemon --migrate --enable-gc'
+    insertafter: '^\[Service\]'
+    state: present
+  notify:
+    - reload systemd
+    - restart IPFS
+  tags:
+    - gc
+
+- name: add ExecStartPre to remove the IPFS dir to workaround flakey garbage collection issue
+  lineinfile:
+    path: /etc/systemd/system/ipfs.service
+    regexp: '^ExecStartPre'
+    line: 'ExecStartPre=rm -rf /home/ipfs/.ipfs/blocks/ && sync'
+    insertafter: '^\[Service\]'
+    state: present
+  notify:
+    - reload systemd
+    - restart IPFS
+  tags:
+    - gc
+
+
