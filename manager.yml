@@ -19,9 +19,12 @@
     - ipfs_peer_id: "{{ lookup('env', 'IPFS_PEER_ID') }}"
     - nodejs_version: "16.x"
     - storage_gb: 500
+    - ipfs_storage_max: "15GB"
   roles:
     - role: base
     - role: geerlingguy.nodejs
+    - role: jeffbr13.ipfs 
     - role: capture
-    - role: manager
-    - role: jeffbr13.ipfs
+
+    # important that this comes after jeffbr13.ipfs as we monkey patch the ipfs.service file
+    - role: manager 

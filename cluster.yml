@@ -94,12 +94,6 @@
           {%- endfor %}
           ]
 
-    # - debug: var=trusted_peers
-    - debug: var=trusted_peers_multiaddr
-
-
-
-    # - meta: end_play
 
     - include_role:
         name: base
@@ -112,38 +106,39 @@
         region: "{{ region }}"
         size_gb: "{{ storage_gb }}"
         block_type: "storage_opt"
-        live: no
+        live: yes
       delegate_to: localhost
 
 
-    # - name: Create partition for vultr block storage
-    #   community.general.parted:
-    #     device: /dev/vdb
-    #     number: 1
-    #     state: present
-    #     label: gpt
-    #     fs_type: ext4
+    - name: Create partition for vultr block storage
+      community.general.parted:
+        device: /dev/vdb
+        number: 1
+        state: present
+        label: gpt
+        fs_type: ext4
 
-    # - name: Create a ext4 filesystem 
-    #   community.general.filesystem:
-    #     fstype: ext4
-    #     dev: /dev/vdb1
+    - name: Create a ext4 filesystem 
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/vdb1
 
-    # - name: mount block storage
-    #   ansible.posix.mount:
-    #     path: "/home/ipfs"
-    #     src: /dev/vdb1
-    #     fstype: ext4
-    #     opts: defaults,noatime,nofail
-    #     state: mounted
+    - name: mount block storage
+      ansible.posix.mount:
+        path: "/home/ipfs"
+        src: /dev/vdb1
+        fstype: ext4
+        opts: defaults,noatime,nofail
+        boot: yes
+        state: mounted
 
-    # - name: chown the data dir
-    #   ansible.builtin.file:
-    #     path: /home/ipfs
-    #     owner: ipfs
-    #     group: ipfs
-    #     mode: '0750'
-    #     state: directory
+    - name: chown the data dir
+      ansible.builtin.file:
+        path: /home/ipfs
+        owner: ipfs
+        group: ipfs
+        mode: '0750'
+        state: directory
 
     - name: Create local tmp directories for tmp SSL certs
       ansible.builtin.file:
@@ -246,6 +241,7 @@
         ipfs_cluster_restapi_ssl_key_file: /usr/local/etc/ssl/private/cluster.futureporn.net.key
         ipfs_cluster_crdt_trusted_peers: "{{ trusted_peers_multiaddr }}"
         ipfs_storage_max: "{{ storage_gb }}GB"
+        ipfs_enable_gc: yes
 
     - name: set the multiaddr
       # we do this on a separate step because we first need ipfs_cluster_id to be set
@@ -274,6 +270,10 @@
     - include_role: 
         name: madoke.ansible-ipfs-cluster
 
+    - debug: msg="{{ item.main_ip }}"
+      with_items: 
+        - cluster_instances
+
       # I'm using a domain other than futureporn.net for the IPFS cluster. cluster.sbtp.xyz
       # (namecheap has to be updated manually)
       # This is not ideal. It's a compromise for automation reasons.
@@ -290,7 +290,6 @@
         ttl: 3600
         multiple: yes
         state: present
-      delegate_to: localhost
       run_once: yes
       with_items:
         - cluster_instances

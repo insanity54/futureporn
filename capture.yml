@@ -11,7 +11,7 @@
   gather_facts: no
   vars:
     - vps_hostname: "futureporn-capture"
-    - vps_plan: vc2-2c-4gb
+    - vps_plan: vc2-1c-2gb
     - vps_region: dfw
   roles:
     - role: spinup

@@ -58,7 +58,7 @@
   ansible.builtin.lineinfile:
     dest: /home/ipfs/.ipfs/config
     regexp: "StorageMax"
-    line: "\"StorageMax\": \"20GB\","
+    line: "\"StorageMax\": \"{{ ipfs_storage_max }}\","
     state: present
     owner: ipfs
     group: ipfs
@@ -69,7 +69,7 @@
   ansible.builtin.lineinfile:
     dest: /home/ipfs/.ipfs/config
     regexp: "GCPeriod"
-    line: "\"GCPeriod\": \"15m\","
+    line: "\"GCPeriod\": \"{{ ipfs_gc_period }}\","
     state: present
     owner: ipfs
     group: ipfs

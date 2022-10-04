@@ -1,7 +1,7 @@
 ---
 
 - name: Create the ipfs group
-  ansible.builtin.user:
+  ansible.builtin.group:
     name: ipfs
 
 - name: Create the ipfs user
@@ -88,7 +88,7 @@
   ansible.builtin.lineinfile:
     dest: /home/ipfs/.ipfs/config
     regexp: "GCPeriod"
-    line: "\"GCPeriod\": \"15m\","
+    line: "\"GCPeriod\": \"5m\","
     state: present
     owner: ipfs
     group: ipfs
