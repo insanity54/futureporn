@@ -30,9 +30,8 @@
       <a class="navbar-item" href="/faq">FAQ</a>
       <a class="navbar-item" href="/goals">Goals</a>
       <a class="navbar-item" href="/patrons">Patrons</a>
+      <a class="navbar-item" href="/api">API</a>
       {# <a class="navbar-item" href="/feedback">Feedback</a> COMING SOMEDAY #}
-
-
     </nav>
     <div class="container">
 
@@ -98,6 +97,8 @@
 
     {% block scripts %}
     <script src="{% webpackAsset 'base.js' %}"></script>
+    <script data-goatcounter="https://futureporn.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
     {% endblock %}
 
 {% block end %}
