@@ -62,7 +62,7 @@ console.log(`
 			vod.saveMarkdown,           // why is saveMarkdown run after every ensure function? I forget why I did this but I think it might be important
 			vod.ensureVideoSrcHash,     // make sure the VOD is uploaded to IPFS
 			vod.saveMarkdown,           //
-			// vod.ensureVideo240Hash,     // encode a 240p version of the VOD
+			vod.ensureVideo240Hash,     // encode a 240p version of the VOD
 			// vod.ensureVideo480Hash,  // coming soon (TM)
 			vod.ensureThiccHash,        // create a thumbnail
 			vod.ensureTextFormatting,   // fix any erroneus text
