@@ -453,7 +453,7 @@ module.exports = class VOD {
 		} else {
 			this.video240HashTmp = target;
 		}
-		const hash = await this._ipfsUpload(this.video240HashTmp);
+		const hash = await this._ipfsUpload(this.video240HashTmp, '2160h'); // 2160h is 90 days (pin expiration)
 		this.video240Hash = `${hash}?filename=${videoBasename}`
 	}
 
@@ -498,9 +498,9 @@ module.exports = class VOD {
 		}
 	}
 
-	async _ipfsUpload (filename) {
+	async _ipfsUpload (filename, expiryDuration) {
 		console.log('  [^] this upload provided by futureporn.net');
-		return ipfsClusterUpload(filename);
+		return ipfsClusterUpload(filename, expiryDuration);
 	}
 
 
@@ -564,7 +564,7 @@ module.exports = class VOD {
 		while (unsuccessful) {
 			attempts += 1
 			// const { exitCode, killed } = await execa('rclone', ['copy', filename, `${VOD.rcloneDestination}:${VOD.B2BucketName}`]);
-			const { exitCode, killed, stdout } = await execa('b2-linux', ['upload-file', 'futureporn', filename, path.basename(filename)])
+			const { exitCode, killed, stdout } = await execa('b2-linux', ['upload-file', 'futureporn', filename, path.basename(filename)]);
 			console.log(stdout)
 			if (exitCode === 0 && killed === false) {
 				console.log('all good')

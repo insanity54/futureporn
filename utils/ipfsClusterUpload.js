@@ -14,14 +14,24 @@ if (typeof IPFS_CLUSTER_HTTP_API_USERNAME === 'undefined') throw new Error('IPFS
 if (typeof IPFS_CLUSTER_HTTP_API_PASSWORD === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_PASSWORD in env is undefined');
 if (typeof IPFS_CLUSTER_HTTP_API_MULTIADDR === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_MULTIADDR in env is undefined');
 
-const ipfsClusterUpload = async (filename) => {
+const ipfsClusterUpload = async (filename, expiryDuration) => {
 	try {
-		const { stdout } = await execa('/usr/local/bin/ipfs-cluster-ctl', [
+		let args = [
 			'--no-check-certificate',
 			'--host', IPFS_CLUSTER_HTTP_API_MULTIADDR,
 			'--basic-auth', `${IPFS_CLUSTER_HTTP_API_USERNAME}:${IPFS_CLUSTER_HTTP_API_PASSWORD}`,
-			'add', '--quieter', filename
-		]);
+			'add',
+			'--quieter',
+			'--cid-version', 1
+		];
+
+		if (expiryDuration) {
+			args = args.concat(['--expire-in', expiryDuration])
+		}
+
+		args.push(filename)
+
+		const { stdout } = await execa('/usr/local/bin/ipfs-cluster-ctl', args);
 		return stdout;
 	} catch (e) {
 		console.error('Error while adding file to ipfs');
