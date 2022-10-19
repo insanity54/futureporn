@@ -16,9 +16,22 @@ eleventyNavigation:
 		<p><a class="mt-3 mb-5 button is-primary" href="./v1.json">Futureporn API Version 1</a></p>
 
     <p class="is-size-3 mb-2">IPFS Cluster Template</p>
-    <p>The IPFS Cluster Template allows other IPFS cluster instances to join the Futureporn.net IPFS cluster as a follower peer. Cluster peers automatically pin (replicate) the IPFS content listed on this website.</p>
+    <p>The IPFS Cluster Template allows other IPFS cluster instances to <a target="_blank" href="https://ipfscluster.io/documentation/collaborative/joining/">join the Futureporn.net IPFS cluster <span class="icon"><i class="fas fa-external-link-alt"></i></span></a> as a follower peer. Cluster peers automatically pin (replicate) the IPFS content listed on this website.</p>
 
-    <p><a class="mt-3 mb-5" href="./service.json">Futureporn IPFS Cluster Template (service.json)</a></p>
+    <p>Basic instructions are as follows</p>
+    <ol>
+    <li>Download & install both <a target="_blank" href="https://dist.ipfs.tech/#kubo">ipfs-kubo<span class="icon"><i class="fas fa-external-link-alt"></i></span></a> and <a target="_blank" href="https://dist.ipfs.tech/#ipfs-cluster-follow">ipfs-cluster-follow <span class="icon"><i class="fas fa-external-link-alt"></i></span></a> onto your server.</li>
+    <li>Initialize your ipfs repo & start the ipfs daemon 
+<pre>
+ipfs init
+ipfs daemon
+</pre>
+    </li>
+    <li>Join the cluster <pre>ipfs-cluster-follow futureporn.net run --init https://futureporn.net/api/service.json</pre></li>
+    </ol>
+
+
+    <p><a id="cluster" class="mt-3 mb-5 button is-info" href="./service.json">Futureporn IPFS Cluster Template (service.json)</a></p>
     <div class="mb-5"></div>
 	</div>
   </div>
