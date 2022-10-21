@@ -413,7 +413,7 @@ module.exports = class VOD {
 		await downloadMethod.apply(this);
 
 		// sanity check for https://github.com/insanity54/futureporn/issues/66
-		const stats = await fsPromises.stat(this.tmpFilePath);
+		const stats = await fsp.stat(this.tmpFilePath);
 		if (stats.isDirectory()) throw new Error('HALT THERE, CRIMINAL SCUM! The VOD\'s tmpFilePath is a directory which is a BUG. Please track down the culprit which is making a directory!!! See https://github.com/insanity54/futureporn/issues/66')
 	}
 
