@@ -234,8 +234,12 @@ describe('VOD', function () {
             const res = await v.downloadFromB2(videoSrcFixture);
             const target = '/root/futureporn_tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
             chai.expect(v.tmpFilePath).to.equal(target);
-            const stat = await fsp.lstat(target);
+            const stat = await fsp.stat(target);
             chai.expect(stat.size).to.equal(175645);
+
+            // The downloaded file MUST NOT be a directory https://github.com/insanity54/futureporn/issues/66
+            chai.expect(stat.isDirectory()).to.be.false;
+
         })
     })
 
@@ -249,8 +253,12 @@ describe('VOD', function () {
             await v.downloadFromIpfs(ipfsHashFixture);
             const target = '/root/futureporn_tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
             chai.expect(v.tmpFilePath).to.equal(target);
-            const stat = await fsp.lstat(target);
+            const stat = await fsp.stat(target);
             chai.expect(stat.size).to.equal(202524);
+
+            // The downloaded file MUST NOT be a directory https://github.com/insanity54/futureporn/issues/66
+            chai.expect(stat.isDirectory()).to.be.false;
+
         })
     })
 
