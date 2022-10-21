@@ -224,7 +224,7 @@ describe('VOD', function () {
 
     })
 
-    describe('downloadFrom', function () {
+    describe('downloadFromB2', function () {
         this.timeout(30000)
         it('should download a file to /tmp', async function () {
             const v = new VOD({
@@ -232,7 +232,7 @@ describe('VOD', function () {
                 date: futureDateFixture
             })
             const res = await v.downloadFromB2(videoSrcFixture);
-            const target = '/tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
+            const target = '/root/futureporn_tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
             chai.expect(v.tmpFilePath).to.equal(target);
             const stat = await fsp.lstat(target);
             chai.expect(stat.size).to.equal(175645);
@@ -241,13 +241,13 @@ describe('VOD', function () {
 
     describe('downloadFromIpfs', function () {
         this.timeout(300000) // 5 min
-        it('should download a file to /tmp', async function () {
+        it('should download a file to /root/futureporn_tmp/', async function () {
             const v = new VOD({
                 date: futureDateFixture,
                 videoSrcHash: ipfsHashFixture
             })
             await v.downloadFromIpfs(ipfsHashFixture);
-            const target = '/tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
+            const target = '/root/futureporn_tmp/projektmelody-chaturbate-30211016T000000Z.mp4';
             chai.expect(v.tmpFilePath).to.equal(target);
             const stat = await fsp.lstat(target);
             chai.expect(stat.size).to.equal(202524);
