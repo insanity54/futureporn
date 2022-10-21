@@ -57,7 +57,7 @@
 
     <p class="mb-4">The ipfs.storage account restriction meant that the way forward for Futureporn was to run it's own storage and IPFS infrastructure. This has been the case since 2022-09-07, but the transition has not been easy. The additional datacenter server and HDD rentals have given me sticker shock. Worse, the bill only gets bigger each month as new VODs are pinned.</p>
 
-    <p class="mb-4"><b>TL;DR: I don't know if I can continue to pay the bills, but I'm going to do my best</b>. My plan going forward is to limit the rate at which Futureporn utilizes storage. This means that I will no longer be re-encoding any VODs to lower resolutions. No 240p, source only.</p>
+    <p class="mb-4"><b>TL;DR: I don't know if I can continue to pay the bills, but I'm going to do my best</b>. My plan going forward is to limit the rate at which Futureporn utilizes storage. I'm going to pin 240p VODs for only 6 months, after which they will expire and be deleted. Anyone else is free to pin the 240p content IDs (CIDs) to keep them alive, but I am only going to pin the source VODs long-term.</p>
 
     <p class="mb-4">I did some calculations for a minimum viable service and it's going to cost around $130 per month to run the site. This includes a VPS for recording VODs, a second VPS to run the Futureporn IPFS cluster, and enough disk storage for all 1.4TB of VODs.</p>
 
@@ -77,7 +77,7 @@
             {#<th>Video (720p)</th>#}
             {#<th>Video (480p)</th>#}
             {#<th>Video (360p)</th>#}
-            <th class="is-danger">Video (240p)</th>
+            <th>Video (240p)</th>
             {#<th>Audio Only</th>#}
             <th>Thumbnail</th>
             <th>Title</th>
