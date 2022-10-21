@@ -145,11 +145,36 @@ describe('VOD', function () {
             chai.expect(v).to.have.property('layout', 'layouts/vod.njk');
             chai.expect(v).to.have.property('announceUrl', 'https://twitter.com/ProjektMelody/status/1225922638687752192');
         })
+
+        it('should load tags from vod data', async function () {
+            const fakeVodFile = path.join(__dirname, '../website/vods/30211016T000000Z.md');
+            const fixtureFileLines = [
+                '---',
+                `date: ${futureDateFixture}`,
+                'tags:',
+                '  - sexy',
+                '  - cute',
+                '---'
+            ];
+
+            await fsp.writeFile(fakeVodFile, fixtureFileLines.join('\n'), { encoding: 'utf-8' });
+
+            const v = new VOD({
+                date: futureDateFixture
+            })
+            await v.loadMarkdown();
+
+            chai.expect(v).to.have.property('tags');
+            chai.expect(v.tags).to.have.lengthOf(2);
+            chai.expect(v.tags[0]).to.equal('sexy');
+            chai.expect(v.tags[1]).to.equal('cute');
+
+            // cleanup
+            await fsp.unlink(fakeVodFile);
+        })
     })
 
     describe('saveMarkdown', function () {
-
-
         const date = '3021-10-16T00:30:00Z';
         const safeDate = '30211016T003000Z';
         after(async function () {
@@ -185,13 +210,13 @@ describe('VOD', function () {
                 { encoding: 'utf-8' }
             );
             const m = matter(md);
-            console.log(md)
             chai.expect(m.data).to.have.property('videoSrcHash', videoSrcFixture);
             chai.expect(m.data).to.have.property('note', note);
             chai.expect(m.data).to.have.property('date');
             chai.expect(m.data).to.have.property('video240Hash');
             chai.expect(m.data).to.have.property('video240TmpFilePath');
             chai.expect(m.data).to.have.property('tmpFilePath');
+            chai.expect(m.data).to.have.property('tags');
             chai.expect(m.data.date).to.be.an.instanceof(Date);
             chai.expect(isEqual(m.data.date, parseISO(date))).to.be.true;
         })

@@ -101,6 +101,7 @@ module.exports = class VOD {
 		this.tmpFilePath = VOD.default(data.tmpFilePath);
 		this.video240TmpFilePath = VOD.default(data.video240TmpFilePath);
 		this.twitterThrottleTimer = new Date();
+		this.tags = R.defaultTo([])(data.tags);
 	}
 
 	static B2BucketName = 'futureporn';
@@ -453,7 +454,7 @@ module.exports = class VOD {
 		} else {
 			this.video240HashTmp = target;
 		}
-		const hash = await this._ipfsUpload(this.video240HashTmp, '2160h'); // 2160h is 90 days (pin expiration)
+		const hash = await this._ipfsUpload(this.video240HashTmp, '4383h'); // 4383h is 6 months (pin expiration)
 		this.video240Hash = `${hash}?filename=${videoBasename}`
 	}
 
@@ -635,31 +636,42 @@ module.exports = class VOD {
 
 		// prevent overwriting any existing k/v
 		Object.keys(this).forEach((key) => {
-			if (key !== 'date' && this[key] !== '') throw new Error(`  [d] loadMarkdown detected that this vod already has a key/value ${key}/${this[key]} which means loadMarkdown would overwrite the value. This is unsupported. Please make a VOD instance with only a date, then run loadMarkdown(). (or code new behavior)`)
+			if (
+				key !== 'date' && 
+				key !== 'twitterThrottleTimer' &&
+				key !== 'tags' && 
+				this[key] !== ''
+			) throw new Error(`  [d] loadMarkdown detected that this vod already has a key/value ${key}/${this[key]} which means loadMarkdown would overwrite the value. This is unsupported. Please make a VOD instance with only a date, then run loadMarkdown(). (or code new behavior)`)
 		});
 
 		this.mergeProperties(data);
 	}
 
 	async saveMarkdown () {
-		const data = '---\n'+
-			`title: "${VOD._getSafeText(this.title)}"\n`+
-			`videoSrc: ${this.videoSrc}\n`+
-			`videoSrcHash: ${this.videoSrcHash}\n`+
-			`video720Hash: ${this.video720Hash}\n`+
-			`video480Hash: ${this.video480Hash}\n`+
-			`video360Hash: ${this.video360Hash}\n`+
-			`video240Hash: ${this.video240Hash}\n`+
-			`thinHash: ${this.thinHash}\n`+
-			`thiccHash: ${this.thiccHash}\n`+
-			`announceTitle: "${VOD._getSafeText(this.announceTitle)}"\n`+
-			`announceUrl: ${this.announceUrl}\n`+
-			`date: ${this.getDatestamp()}\n`+
-			`note: ${this.note}\n`+
-			`video240TmpFilePath: ${this.video240TmpFilePath}\n`+
-			`tmpFilePath: ${this.tmpFilePath}\n`+
-			`layout: ${VOD.eleventyLayout}\n`+
-			'---\n';
+		let lines = [];
+		lines.push('---');
+		lines.push(`title: "${VOD._getSafeText(this.title)}"`);
+		lines.push(`videoSrc: ${this.videoSrc}`);
+		lines.push(`videoSrcHash: ${this.videoSrcHash}`);
+		lines.push(`video720Hash: ${this.video720Hash}`);
+		lines.push(`video480Hash: ${this.video480Hash}`);
+		lines.push(`video360Hash: ${this.video360Hash}`);
+		lines.push(`video240Hash: ${this.video240Hash}`);
+		lines.push(`thinHash: ${this.thinHash}`);
+		lines.push(`thiccHash: ${this.thiccHash}`);
+		lines.push(`announceTitle: "${VOD._getSafeText(this.announceTitle)}"`);
+		lines.push(`announceUrl: ${this.announceUrl}`);
+		lines.push(`date: ${this.getDatestamp()}`);
+		lines.push(`note: ${this.note}`);
+		lines.push(`video240TmpFilePath: ${this.video240TmpFilePath}`);
+		lines.push(`tmpFilePath: ${this.tmpFilePath}`);
+		lines.push(`layout: ${VOD.eleventyLayout}`);
+		lines.push(`tags:`);
+		for (const tag of this.tags) {
+			lines.push(`  - ${tag}`);
+		}
+		lines.push('---');
+		const data = lines.join('\n');
 
 		const filename = this.getMarkdownFilename();
 		await fsp.writeFile(filename, data, { encoding: 'utf-8' });
