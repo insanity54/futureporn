@@ -675,6 +675,7 @@ module.exports = class VOD {
 			lines.push(`  - ${tag}`);
 		}
 		lines.push('---');
+		lines.push('');
 		const data = lines.join('\n');
 
 		const filename = this.getMarkdownFilename();
