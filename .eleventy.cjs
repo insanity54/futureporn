@@ -96,6 +96,12 @@ module.exports = function(eleventyConfig) {
     return array.slice(0, n);
   });
 
+  // keep text descriptions small, for design consistency
+  eleventyConfig.addFilter("truncate", (text, n) => {
+    if (text.length > n) return `${text.substring(0, n)}...`;
+    return text
+  })
+
   eleventyConfig.addFilter("min", (...numbers) => {
     return Math.min.apply(null, numbers);
   });
