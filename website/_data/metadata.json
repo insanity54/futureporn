@@ -17,17 +17,6 @@
     "email": "chris@grimtech.net",
     "url": "https://grimtech.net/about"
   },
-  "patrons": [
-    "Subject",
-    "Molotover",
-    "OSE",
-    "AverageYuriEnjoyer",
-    "LaoPao",
-    "LzyAsn",
-    "polarknight",
-    "LEONKA11",
-    "Cjyoubusta"
-  ],
   "contributors": [
     {
       "name": "Zipdox",
@@ -53,5 +42,33 @@
       "name": "Awesomeness4512",
       "link": "https://www.reddit.com/user/Awesomeness4512"
     }
+  ],
+  "activePatronNames": [
+    "i subscribe to things",
+    "Cjyoubusta",
+    "LzyAsn",
+    "AverageYuriEnjoyer",
+    "LEONKA11",
+    "OSE ",
+    "Subject",
+    "Molotover ",
+    "polarknight 537",
+    "LaoPao"
+  ],
+  "allPatronNames": [
+    "i subscribe to things",
+    "Cjyoubusta",
+    "jax4you ",
+    "LzyAsn",
+    "Torben Bott",
+    "AverageYuriEnjoyer",
+    "LEONKA11",
+    "OSE ",
+    "Subject",
+    "Molotover ",
+    "polarknight 537",
+    "Chio",
+    "catboxL",
+    "LaoPao"
   ]
 }

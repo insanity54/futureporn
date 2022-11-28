@@ -26,7 +26,7 @@ eleventyNavigation:
           {% else %}
 
           <ul class="patron-list">
-          {%- for patron in metadata.patrons %}
+          {%- for patron in metadata.activePatronNames %}
             <li>{{ patron }}</li>
           {% endfor %}
           </ul>

@@ -59,6 +59,12 @@
                   Futureporn.net is made with ❤️ by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
                 </p>
                 <p>
+                  Made possible by generous donations from
+                  {%- for patron in metadata.allPatronNames %}
+                    <span>{{ patron }}</span>{% if loop.index === metadata.allPatronNames.length %} {% else %}, {% endif %}
+                  {% endfor %}
+                </p>
+                <p>
                   VOD contributions by 
                     {%- for c in metadata.contributors %}
                       {% if (c.link) %}
