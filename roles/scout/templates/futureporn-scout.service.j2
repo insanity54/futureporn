@@ -9,6 +9,7 @@ After=network.target
 ExecStart=/root/futureporn/utils/scout.js
 WorkingDirectory=/root/futureporn
 Restart=always
+RestartSec=5
 Environment=PATH=/usr/bin:/usr/local/bin
 Environment=NODE_ENV=production
 Environment=DEBUG=futureporn
@@ -16,5 +17,8 @@ Environment=TWITTER_API_KEY={{ lookup('env', 'TWITTER_API_KEY') }}
 Environment=TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}
 Environment=TWITTER_ACCESS_TOKEN={{ lookup('env', 'TWITTER_ACCESS_TOKEN') }}
 Environment=TWITTER_ACCESS_TOKEN_SECRET={{ lookup('env', 'TWITTER_ACCESS_TOKEN_SECRET') }}
-Type=simple
+Environment=IPFS_CLUSTER_HTTP_API_USERNAME={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_USERNAME') }}
+Environment=IPFS_CLUSTER_HTTP_API_PASSWORD={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_PASSWORD') }}
+Environment=IPFS_CLUSTER_HTTP_API_MULTIADDR={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_MULTIADDR') }}
 
+Type=simple

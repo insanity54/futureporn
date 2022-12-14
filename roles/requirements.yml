@@ -11,8 +11,8 @@ roles:
 
 collections:
   - ngine_io.vultr
-  # - vultr.cloud # not using because my PR has not been merged
+  - vultr.cloud
   # In the mean time, I'm using my vultr.cloud fork
-  - name: https://github.com/insanity54/ansible-collection-vultr.git
-    type: git
-    version: 70a16ab4a424753713c66c133246e285eb7a1804
+  # - name: https://github.com/insanity54/ansible-collection-vultr.git
+  #   type: git
+  #   version: 70a16ab4a424753713c66c133246e285eb7a1804

@@ -1,3 +1,4 @@
+---
 
 - name: Set B2_APPLICATION_KEY_ID secret in env
   ansible.builtin.lineinfile:
