@@ -74,17 +74,15 @@
       {% for vod in vodslist | reverse %}
         <div class="column">
           <div class="card">
-            <div class="card-image">
-              <figure class="image is-16by9">
-                <img src="{% buildIpfsUrl vod.data.thiccHash %}" />
-              </figure>
-            </div>
             <div class="card-content">
               <div class="media">
                 <div class="media-content">
                   <a href="{{ vod.url | url }}">
                     <p class="title is-4">{{ vod.data.date | htmlDateString }}
                   </a>
+                  <p class="subtitle">
+                    {{ vod.data.title | urlDecode | truncate(75) }}
+                  </p>
                 </div>
               </div>
             </div>
