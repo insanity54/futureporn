@@ -6,26 +6,15 @@
 
 
 
-# spin-up is broken because theres something wack with the SSH key
-# - hosts: localhost
-#   gather_facts: no
-#   tasks:
-#     - name: start some instances
-#       vultr.cloud.instance:
-#         label: "{{ item.label }}"
-#         region: "{{ item.region }}" 
-#         state: started
-#         tags: 'ipfs-cluster'
-#         os: 'Ubuntu 22.04 LTS x64' #1743
-#         plan: 'vc2-1c-2gb'
-#         ssh_keys: ['LEO-COMPUTE']
-#       loop:
-#         - { 'label': 'ipfs-cluster1', 'region': 'ord' }
-#         - { 'label': 'ipfs-cluster2', 'region': 'ord' }
-#         - { 'label': 'ipfs-cluster3', 'region': 'atl' }
-#         - { 'label': 'ipfs-cluster4', 'region': 'dfw' }
-#         - { 'label': 'ipfs-cluster5', 'region': 'dfw' }
-#     - meta: refresh_inventory
+
+- name: spin up instances
+  hosts: localhost
+  vars:
+    - instance_plan: vc2-1c-2gb
+    - instance_count: 3
+    - instance_type: cluster
+  roles:
+    - role: spinup
 
 
 
@@ -33,11 +22,12 @@
 #       https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size
 #       a 4GB VPS might be the minimum if the cluster requires this buffer size to be set properly.
 
-- hosts: ~ipfs-cluster\d
+- name: provision ipfs cluster
+  hosts: ~futureporn-cluster\d
   gather_facts: no # `no` is a requirement for base role. the base role gather facts once able.
   vars:
     - ansible_user: root
-    - storage_gb: 500
+    - storage_gb: 1000
   tasks:
 
 
@@ -59,8 +49,14 @@
 
     - debug: var=instances
 
+
+    - include_role:
+        name: base
+
+
+    - debug: var=instances
     - set_fact:
-        cluster_instances: "{{ instances.json.instances | selectattr('label', 'match', 'ipfs-cluster' ) }}"
+        cluster_instances: "{{ instances.json.instances | selectattr('label', 'match', 'futureporn-cluster' ) }}"
 
 
 
@@ -95,9 +91,7 @@
           ]
 
 
-    - include_role:
-        name: base
-
+      
     - name: Ensure a block storage volume exists and is attached to server
       vultr.cloud.block_storage:
         name: "{{ inventory_hostname }}-storage"
@@ -110,13 +104,19 @@
       delegate_to: localhost
 
 
-    - name: Create partition for vultr block storage
+    - name: Create partition for vultr block storage and resize to 100% if necessary (useful for upgrades)
       community.general.parted:
         device: /dev/vdb
         number: 1
         state: present
         label: gpt
         fs_type: ext4
+        part_end: "100%"
+        resize: true
+      register: create_partition_output
+      ignore_errors: true
+
+    - debug: var=create_partition_output
 
     - name: Create a ext4 filesystem 
       community.general.filesystem:
@@ -131,6 +131,16 @@
         opts: defaults,noatime,nofail
         boot: yes
         state: mounted
+
+    - name: create ipfs group
+      group:
+        name: ipfs
+        state: present
+
+    - name: create ipfs user
+      user:
+        name: ipfs
+        state: present
 
     - name: chown the data dir
       ansible.builtin.file:
@@ -270,9 +280,9 @@
     - include_role: 
         name: madoke.ansible-ipfs-cluster
 
-    - debug: msg="{{ item.main_ip }}"
+    - debug: var=item
       with_items: 
-        - cluster_instances
+        - "{{ cluster_instances }}"
 
       # I'm using a domain other than futureporn.net for the IPFS cluster. cluster.sbtp.xyz
       # (namecheap has to be updated manually)
@@ -283,6 +293,7 @@
       # Alternatively, I could find an alternate DNS provider with an API, which satisfies all the dependencies of Fleek.co
     - name: set DNS
       vultr.cloud.dns_record:
+        api_key: "{{ lookup('env', 'VULTR_API_KEY')}}"
         record_type: A
         name: cluster
         domain: sbtp.xyz
@@ -292,4 +303,4 @@
         state: present
       run_once: yes
       with_items:
-        - cluster_instances
+        - "{{ cluster_instances }}"

@@ -1,38 +1,6 @@
 ---
 
-- name: install yarn
-  community.general.npm:
-    name: yarn
-    global: yes
-    state: present
 
-- name: install ssh config
-  become: yes
-  ansible.builtin.template:
-    src: sshConfig.j2
-    dest: ~/.ssh/config
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: install deploy SSH pubkey
-  become: yes
-  ansible.builtin.copy:
-    src: ~/.ssh/futureporn.pub
-    dest: ~/.ssh/futureporn.pub
-    owner: root
-    group: root
-    mode: "0644"
-
-
-- name: install deploy SSH privkey
-  become: yes
-  ansible.builtin.copy:
-    src: ~/.ssh/futureporn
-    dest: ~/.ssh/futureporn
-    owner: root
-    group: root
-    mode: "0600"
 
 # unfortunately the ngine_io.vultr.vultr inventory module does not contain instance UUIDs,
 # a dependency for vultr.cloud.block_storage
@@ -52,13 +20,10 @@
 
 - debug: var=instances
 
-- set_fact:
-    instances: "{{ instances.json.instances | selectattr('label', 'match', 'futureporn-manager' ) }}"
-
 
 - name: get just this vultr instance data
   set_fact:
-    instance: "{{ instances | selectattr('label', 'equalto', inventory_hostname) | first }}"
+    instance: "{{ instances.json.instances | selectattr('label', 'equalto', inventory_hostname) | first }}"
 
 
 - name: get the region (3 letter short version) and the instance UUID

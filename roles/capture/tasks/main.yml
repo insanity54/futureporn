@@ -5,15 +5,15 @@
   debug:
     var: task
 
-- include: ./provision.yml
+- include_tasks: ./provision.yml
   when: task == "provision"
 
-- include: ./b2-linux.yml
+- include_tasks: ./b2-linux.yml
   when: task == "provision"
 
-- include: ./upload.yml
+- include_tasks: ./upload.yml
   when: task == "upload"
 
-- include: ./ls.yml
+- include_tasks: ./ls.yml
   when: task == "ls"
 

@@ -1,0 +1,16 @@
+---
+
+
+- name: create ufw exception for mosh
+  community.general.ufw:
+    rule: allow
+    port: 60000:61000
+    proto: udp
+
+
+
+# - name: create ufw exception for et
+#   community.general.ufw:
+#     rule: allow
+#     port: 2022
+#     proto: tcp

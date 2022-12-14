@@ -35,11 +35,36 @@
   ansible.builtin.hostname:
     name: "{{ inventory_hostname }}"
 
-- name: Set FUTUREPORN_WORKDIR env var
-  ansible.builtin.lineinfile:
-    dest: /root/.bashrc
-    line: "export FUTUREPORN_WORKDIR=/root/"
-    state: present
+- name: install deploy SSH pubkey
+  become: yes
+  ansible.builtin.copy:
+    src: ~/.ssh/futureporn.pub
+    dest: ~/.ssh/futureporn.pub
+    owner: root
+    group: root
+    mode: "0644"
+
+
+- name: install deploy SSH privkey
+  become: yes
+  ansible.builtin.copy:
+    src: ~/.ssh/futureporn
+    dest: ~/.ssh/futureporn
+    owner: root
+    group: root
+    mode: "0600"
+
+
+- name: install ssh config
+  become: yes
+  ansible.builtin.template:
+    src: sshConfig.j2
+    dest: ~/.ssh/config
+    owner: root
+    group: root
+    mode: "0644"
+
+
 
 
 - name: Enable journalctl persistent logging
@@ -69,11 +94,7 @@
     - "alias whr='wormhole receive --accept-file'"
     - "alias phdl='youtube-dl --abort-on-unavailable-fragment --limit-rate 1M'"
 
-- name: create ufw exception for mosh
-  community.general.ufw:
-    rule: allow
-    port: 60000:61000
-    proto: udp
+- include_tasks: ./firewall.yml
 
 - name: Allow release-info to change for APT repositories
   command: apt-get update -y --allow-releaseinfo-change
@@ -104,3 +125,5 @@
     state: directory
 
 
+
+- include_tasks: ./env.yml

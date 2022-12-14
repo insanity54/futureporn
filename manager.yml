@@ -3,7 +3,7 @@
 - hosts: localhost
   gather_facts: no
   vars:
-    - vps_plan: vc2-2c-4gb
+    - vps_plan: vc2-1c-2gb
     - vps_region: atl
     - vps_hostname: futureporn-manager
   roles:

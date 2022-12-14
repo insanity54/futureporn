@@ -1,0 +1,27 @@
+module.exports = {
+  protos: ['tcp'],
+  host: '0.0.0.0',
+  port: 1883,
+  wsPort: 3000,
+  wssPort: 4000,
+  tlsPort: 8883,
+  brokerId: "{{ ansible_hostname }}",
+  credentials: '/home/aedes/aedes/credentials.json',
+  persistence: {
+    name: 'redis',
+    options: {
+      host: '{{ REDIS_HOST }}',
+      port: '{{ REDIS_PORT }}',
+      password: '{{ REDIS_PASSWORD }}',
+      username: '{{ REDIS_USERNAME }}',
+      enableReadyCheck: false
+    }
+  },
+  stats: false,
+  key: null,
+  cert: null,
+  rejectUnauthorized: true,
+  verbose: true,
+  veryVerbose: false,
+  noPretty: false
+}
