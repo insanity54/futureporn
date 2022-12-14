@@ -1,6 +1,6 @@
 {
-  "name": "futureporn",
-  "version": "1.0.0",
+  "name": "futureporn-cb-chat",
+  "version": "0.0.1",
   "description": "https://futureporn.net",
   "engineStrict": "true",
   "engines": {
@@ -27,12 +27,10 @@
     "cluster": "./ansible-playbook.sh -i vultr.yml cluster.yml",
     "gateway": "./ansible-playbook.sh -i vultr.yml gateway.yml",
     "uppy": "./ansible-playbook.sh -i vultr.yml uppy.yml",
-    "start": "node futureporn.mjs"
+    "start": "node futureporn.mjs",
+    "rabbitmq": "docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.11-management"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/insanity54/futureporn.git"
-  },
+  "repository": "git+https://github.com/insanity54/futureporn.git",
   "author": "Chris Grimmett <chris@grimtech.net>",
   "license": "Unlicense",
   "bugs": {
@@ -40,12 +38,15 @@
   },
   "homepage": "https://github.com/insanity54/futureporn#readme",
   "dependencies": {
+    "@chainsafe/libp2p-gossipsub": "^5.2.0",
+    "@faker-js/faker": "^7.6.0",
     "@grimtech/envimport": "^0.0.1",
     "@uppy/core": "^2.2.0",
     "@uppy/dashboard": "^2.2.0",
     "@uppy/dropbox": "^2.0.6",
     "@uppy/google-drive": "^2.1.0",
     "@uppy/xhr-upload": "^2.1.0",
+    "amqplib": "^0.10.3",
     "argv": "^0.0.2",
     "bulma-prefers-dark": "^0.1.0-beta.1",
     "cheerio": "^1.0.0-rc.10",
@@ -57,9 +58,14 @@
     "execa": "^5.1.1",
     "fdir": "^5.1.0",
     "gray-matter": "^4.0.3",
+    "ipfs": "^0.37",
+    "ipfs-http-client": "^59.0.0",
+    "ipfs-pubsub-room": "^3.0.0",
+    "libp2p": "^0.40.0",
     "markdown-it-anchor": "^8.1.0",
     "mini-css-extract-plugin": "^2.1.0",
     "minimist": "^1.2.6",
+    "mqtt": "^4.3.7",
     "nedb-promises": "^6.0.3",
     "ngrok": "^4.3.1",
     "node-fetch": "^2.6.6",
@@ -71,7 +77,7 @@
     "twitter-lite": "^1.1.0",
     "twitter-v2": "^1.1.0"
   },
-  "private": "true",
+  "private": true,
   "devDependencies": {
     "@11ty/eleventy": "^0.12.1",
     "@11ty/eleventy-navigation": "^0.1.6",
@@ -125,5 +131,6 @@
   "optionalDependencies": {
     "neocities-extended": "https://github.com/thatcomputerguy0101/neocities-node-extended",
     "web3.storage": "^3.3.2"
-  }
+  },
+  "main": "index.js"
 }

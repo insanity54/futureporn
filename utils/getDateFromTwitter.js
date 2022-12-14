@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const debug = require('debug')('futureporn')
 const argv = require('argv');
 const VOD = require('./VOD.js');
 const options = {
@@ -21,7 +22,15 @@ const args = argv.option( options ).run();
 
     const vv = await v.getDateFromTwitter();
 
-    console.log('date is as follows');
-    console.log(vv.date);
-    console.log(`  [d] getDatestamp result: ${v.getDatestamp()}`);
+    debug('  [d]date is as follows');
+    debug(`  [d] ${vv.date}`);
+    debug(`  [d] getDatestamp result: ${v.getDatestamp()}`);
+
+    const output = {
+        safeDatestamp: v.getSafeDatestamp(),
+        datestamp: v.getDatestamp()
+    }
+
+    console.log(output)
+
 })();

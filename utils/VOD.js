@@ -12,6 +12,7 @@ const execa = require('execa');
 const os = require('os');
 const fsp = require('fs/promises');
 const path = require('path');
+const { add, isAfter, sub } = require('date-fns')
 const dateFnsTz = require('date-fns-tz');
 const fetch = require('node-fetch');
 const Twitter = require('twitter-v2');
@@ -27,6 +28,14 @@ const exoticTwitterDateFormat = "";
 
 
 // const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
+
+
+class UploadFailedError extends Error {
+	constructor (message) {
+		super(R.defaultTo('Upload failed!'))
+		this.name = 'UploadFailedError';
+	}
+}
 
 class NotEnoughMemoryError extends Error {
 	constructor (message) {
@@ -442,6 +451,7 @@ module.exports = class VOD {
 		if (this.isMissingTmpFilePath()) throw new TmpFilePathMissingError('tmpFilePath is missing prior to upload which should not occur')
 		console.log(`~~~ uploading ${this.tmpFilePath} to IPFS ~~~`)
 		const hash = await this._ipfsUpload(this.tmpFilePath);
+		if (typeof hash === 'undefined') throw new UploadFailedError()
 		this.videoSrcHash = `${hash}?filename=${videoBasename}`
 		console.log('done')
 	}
@@ -459,6 +469,7 @@ module.exports = class VOD {
 			this.video240HashTmp = target;
 		}
 		const hash = await this._ipfsUpload(this.video240HashTmp, '4383h'); // 4383h is 6 months (pin expiration)
+		if (typeof hash === 'undefined') throw new UploadFailedError()
 		this.video240Hash = `${hash}?filename=${videoBasename}`
 	}
 
@@ -695,9 +706,9 @@ module.exports = class VOD {
 		const lastRunAt = this.twitterThrottleTimer
 		const now = Date.now();
 		const delayRequired = 5000
-		const nextRunAt = (lastRunAt + delayRequired);
-		const msTillNextRun = (now > nextRunAt) ? 0 : (now - nextRunAt);
-		console.log(`  [TTTTT] Waiting ${msTillNextRun} ms until next run.`);
+		const nextRunAt = add(lastRunAt, delayRequired);
+		const msTillNextRun = isAfter(now, nextRunAt) ? 0 : sub(now, nextRunAt) //(now > nextRunAt) ? 0 : (now - nextRunAt);
+		debug(`  [getDateFromTwitter] Waiting until ${msTillNextRun} for next run.`);
 	    await later(msTillNextRun, null); // throttle
 
 		const tweetId = this.getTweetIdFromAnnounceUrl();
