@@ -10,7 +10,7 @@
 
 
 require('dotenv').config()
-const { oauth, patreon } = require('patreon');
+const { oauth } = require('patreon');
 const ngrok = require('ngrok');
 const express = require('express');
 const { format: formatUrl } = require('url');
@@ -33,6 +33,8 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
 
 (async () => {
 
+
+
     await ngrok.connect({
       proto: 'http', // http|tcp|tls, defaults to http
       addr: port, // port or network address, defaults to 80
@@ -46,9 +48,6 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
 
     const oauthClient = oauth(PATREON_CLIENT_ID, PATREON_CLIENT_SECRET)
 
-    // mimic a database
-    let database = {};
-
 
     const loginUrl = formatUrl({
         protocol: 'https',
@@ -59,67 +58,82 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
             client_id: PATREON_CLIENT_ID,
             redirect_uri: redirect,
             state: 'bing-chilling',
-            scopes: 'users pledges-to-me my-campaign'
+            // scopes: 'users pledges-to-me my-campaign campaigns.members'
+            scopes: 'identity identity.memberships campaigns campaigns.members ampaigns.members[email] campaigns.members.address'
         }
     })
     open(loginUrl);
 
 
-    app.get('/oauth/callback', (req, res) => {
+    app.get('/oauth/callback', async (req, res) => {
         const { code } = req.query
-        let token
 
-        return oauthClient.getTokens(code, redirect)
-            .then(({ access_token }) => {
-                token = access_token // eslint-disable-line camelcase
-                const apiClient = patreon(token)
-                return apiClient('/campaigns/8012692/pledges')
-            })
-            .then(async ({ rawJson }) => {
+        try {
+
+            const tokens = await oauthClient.getTokens(code, redirect)
+            // .then(({ access_token }) => {
+                // token = access_token // eslint-disable-line camelcase
+                // const apiClient = patreon(token)
+                // return apiClient('/campaigns/8012692/pledges')
+                // return apiClient('')
+
+            const {default: got} = await import('got');
+
+            const access_token = tokens?.access_token
+
+            if (typeof access_token === 'undefined') throw new Error('did not see tokens.access token from the Patreon via the oauth client')
+
+            const { data } = await got({
+                url: encodeURI('https://www.patreon.com/api/oauth2/v2/campaigns/8012692/members?include=currently_entitled_tiers&fields[member]=full_name,lifetime_support_cents,patron_status'),
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${access_token}`
+                }
+            }).json()
+            
+
+            console.log('here is the data')
+            // console.log(data)
+            console.log(JSON.stringify(data, 0, 2))
+            console.log('----')
+
+            const stortedPatrons = data.sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
+            const allPatronNames = stortedPatrons.map(patron => patron.attributes.full_name);
+            const activePatronNames = stortedPatrons.filter(patron => patron.attributes.patron_status === 'active_patron').map(patron => patron.attributes.full_name);
+
+            console.log('here are all patrons');
+            console.log(allPatronNames);
+            console.log('----')
+            console.log('here are active patrons')
+            console.log(activePatronNames)
 
 
-                // this is a collection of active patrons
-                const activePatronIds = rawJson.data
-                    .filter(d => d.type === 'pledge')
-                    .filter(d => d.attributes.declined_since === null) // payments must not be declined
-                    .map(d => d.relationships.patron.data.id);
+
+            const metadata = require(metadataFile);
+
+            const patchedMetadata = Object.assign({}, metadata, { activePatronNames, allPatronNames });
 
 
+            await fsp.writeFile(metadataFile, JSON.stringify(patchedMetadata, 0, 2), { encoding: 'utf-8' });
 
-                // we need the patron name which is nested down in the `included` array
-                // we will get all the users so we can query using ID
-                const users = rawJson.included
-                    .filter(u => u.type === 'user');
+            return res.redirect(`/done`)
 
-
-                const activePatronNames = activePatronIds.map(n => users.find(u => u.id === n).attributes.first_name );
-
-
-                console.log('here are the active patrons')
-                console.log(activePatronNames);
-
-
-
-                const metadata = require(metadataFile);
-
-                const patchedMetadata = Object.assign({}, metadata, { patrons: activePatronNames });
-
-
-                await fsp.writeFile(metadataFile, JSON.stringify(patchedMetadata, 0, 2), { encoding: 'utf-8' });
-
-                return res.redirect(`/done`)
-            })
-            .catch((err) => {
-                console.log(err)
-                console.log('Error! Redirecting to login')
-                res.redirect('/')
-            })
+        } catch (err) {
+            console.log(err)
+            console.log('Error!')
+            res.redirect('/error')
+        }
+        
     })
 
+    app.get('/error', (req, res) => {
+        res.send('There was an error. please check the logs.')
+        process.exit(1)
+    })
 
     app.get('/done', (req, res) => {
         res.send('OK');
-        process.exit();
+        process.exit(0);
     })
     app.listen(port, () => {
         console.log(`Listening on http://localhost:${port}`);

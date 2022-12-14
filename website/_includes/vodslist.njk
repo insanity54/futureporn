@@ -69,7 +69,32 @@
     </div>
   </article>
 
-    <table class="table">
+    <div class="smallGallery">
+      <div class="columns">
+      {% for vod in vodslist | reverse %}
+        <div class="column">
+          <div class="card">
+            <div class="card-image">
+              <figure class="image is-16by9">
+                <img src="{% buildIpfsUrl vod.data.thiccHash %}" />
+              </figure>
+            </div>
+            <div class="card-content">
+              <div class="media">
+                <div class="media-content">
+                  <a href="{{ vod.url | url }}">
+                    <p class="title is-4">{{ vod.data.date | htmlDateString }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+
+    <table class="table bigTable">
       <thead>
           <tr>
             <th>Date</th>
@@ -203,5 +228,4 @@
           </tr>
           {% endfor %}
         </tbody>
-
     </table>
