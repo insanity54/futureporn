@@ -1,0 +1,15 @@
+{
+  "name": "futureporn-scout",
+  "version": "0.0.1",
+  "description": "event emitter that detects start and end of stream",
+  "main": "index.js",
+  "license": "Unlicense",
+  "private": true,
+  "scripts": {
+    "start": "node index"
+  },
+  "type": "module",
+  "dependencies": {
+    "rxjs": "^7.8.0"
+  }
+}
