@@ -1,0 +1,17 @@
+{
+  "name": "futureporn-capture",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "Unlicense",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "minimatch": "^5.1.1",
+    "rxjs": "^7.8.0",
+    "youtube-dl-wrap": "^2.1.1"
+  }
+}
