@@ -185,6 +185,7 @@ module.exports = class VOD {
 		await pThicc.generate();
 		const thiccFilePath = pThicc.output;
 		const thiccHash = await this._ipfsUpload(thiccFilePath);
+		if (typeof thiccHash === 'undefined') UploadFailedError('thiccHash was undefined after running the _ipfsUpload function');
 		this.thiccHash = `${thiccHash}?filename=${this.getSafeDatestamp()}-thicc.jpg`;
 	}
 
