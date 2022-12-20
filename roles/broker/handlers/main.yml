@@ -1,7 +1,0 @@
----
-
-- name: restart aedes
-  ansible.builtin.systemd:
-    name: aedes
-    state: restarted
-    daemon_reload: true

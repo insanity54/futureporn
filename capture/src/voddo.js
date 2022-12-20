@@ -69,7 +69,7 @@ export default class Voddo extends EventEmitter {
 	}
 
 	emitReport(report) {
-		this.ee.emit('report', report)
+		this.emit('report', report)
 	}
 
 	getCourtesyTimer(callback) {
