@@ -1,0 +1,7 @@
+---
+
+
+- name: restart capture
+  ansible.builtin.systemd:
+    name: capture
+    state: restarted

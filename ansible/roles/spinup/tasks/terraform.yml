@@ -1,0 +1,12 @@
+---
+
+    - community.general.terraform:
+        project_path: ./terraform
+        state: present
+        variables:
+          instance_count: "{{ instance_count }}"
+          vultr_ssh_keys: "{{ vultr_ssh_keys | list | to_json }}"
+            
+    - meta: refresh_inventory
+
+

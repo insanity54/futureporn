@@ -1,0 +1,23 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=Uppy Companion for Futureporn
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+User=uppy
+Group=uppy
+ExecStart=/home/uppy/companion/companion.js
+WorkingDirectory=/home/uppy/companion
+Restart=always
+RestartSec=3
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+Environment=DEBUG=uppy
+Environment=SMTP_USER={{ lookup('env', 'SMTP_USER') }}
+Environment=SMTP_PASSWORD={{ lookup('env', 'SMTP_PASSWORD') }}
+Environment=SMTP_HOST={{ lookup('env', 'SMTP_HOST') }}
+Environment=SESSION_SECRET={{ lookup('env', 'SESSION_SECRET') }}
+Type=simple

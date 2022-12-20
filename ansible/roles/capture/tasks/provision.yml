@@ -1,0 +1,71 @@
+---
+
+- name: Download screen configuration
+  git:
+    repo: 'https://github.com/insanity54/dotfiles'
+    dest: /root/dotfiles
+
+- name: Configure screen
+  copy:
+    src: /root/dotfiles/.screenrc
+    dest: /root/.screenrc
+    remote_src: yes
+
+
+- name: install yarn
+  community.general.npm:
+    name: yarn
+    global: yes
+    state: present
+
+- name: Install & update youtube-dl
+  pip:
+    name: youtube-dl
+    state: latest
+
+
+- name: Download futureporn
+  git:
+    repo: https://github.com/insanity54/futureporn
+    dest: /root/futureporn
+    depth: 1
+    update: yes
+    force: yes
+
+- name: Install futureporn
+  community.general.yarn:
+    path: /root/futureporn/capture
+
+- name: Install capture system service
+  ansible.builtin.template:
+    src: templates/capture.service.j2
+    dest: /etc/systemd/system/capture.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart capture
+
+- name: Enable capture system service
+  systemd:
+    name: capture
+    state: started
+    daemon_reload: yes
+    enabled: yes
+  notify:
+    - restart capture
+
+- name: Download ipfs-cluster-ctl
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src: https://dist.ipfs.tech/ipfs-cluster-ctl/v1.0.2/ipfs-cluster-ctl_v1.0.2_linux-amd64.tar.gz
+    dest: /root/
+
+
+  # futureporn.mjs needs this to upload files to the ipfs cluster
+- name: Install ipfs-cluster-ctl
+  ansible.builtin.copy:
+    remote_src: yes
+    src: /root/ipfs-cluster-ctl/ipfs-cluster-ctl
+    dest: /usr/local/bin/ipfs-cluster-ctl
+    mode: '0755'

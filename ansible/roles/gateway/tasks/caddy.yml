@@ -1,0 +1,20 @@
+---
+
+- name: Create /var/www
+  ansible.builtin.file:
+    path: /var/www
+    state: directory
+    owner: caddy
+    group: caddy
+    mode: '0600'
+  notify: reload caddy
+
+- name: Configure Caddy
+  ansible.builtin.template:
+    src: templates/Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: caddy
+    group: caddy
+    mode: '0600'
+  notify: reload caddy
+
