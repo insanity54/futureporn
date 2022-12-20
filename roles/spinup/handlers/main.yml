@@ -1,6 +1,0 @@
----
-
-- name: refresh inventory
-  meta: refresh_inventory
-  ignore_errors: true # https://github.com/ansible/ansible/issues/50306
-                      # https://github.com/ansible/ansible/pull/50608

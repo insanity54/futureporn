@@ -1,6 +1,0 @@
----
-
-- name: restart futureporn-scout
-  ansible.builtin.systemd:
-    name: futureporn-scout
-    state: restarted

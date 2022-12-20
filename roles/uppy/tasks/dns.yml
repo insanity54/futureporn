@@ -1,9 +1,0 @@
----
-
-- name: ensure we have facts
-  ansible.builtin.setup:
-  when: not ansible_default_ipv4
-
-- name: prompt user to set DNS manually
-  debug:
-    msg: "Namecheap has no API. Please set redis.futureporn.net and uppy.futureporn.net A records at https://ap.www.namecheap.com/Domains/DomainControlPanel/futureporn.net/advancedns. IP address is {{ ansible_default_ipv4.address }}"

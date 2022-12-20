@@ -1,7 +1,0 @@
----
-
-# - name: Ensure DNS A record exists
-#   # @todo namecheap dns record:
-#     record_type: A
-#     domain: gateway.futureporn.net
-#     data: {{ ansible_default_ipv4.address }}
