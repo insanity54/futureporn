@@ -1,0 +1,8 @@
+---
+
+- name: Ensure DNS A record exists
+    # @todo enable futureporn.net
+    # see https://github.com/insanity54/futureporn/issues/73
+    record_type: A
+    domain: ipfs.sbtp.xyz
+    data: {{ ansible_default_ipv4.address }}

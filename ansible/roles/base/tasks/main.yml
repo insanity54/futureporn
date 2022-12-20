@@ -1,0 +1,129 @@
+---
+
+  # work around the issue of Ansible asking for user input to verify
+  # authenticity of a remote host which is being contacted for the first time
+  # greets https://stackoverflow.com/a/54735937
+- name: Check SSH known_hosts for {{ inventory_hostname }}
+  local_action: shell ssh-keygen -F {{ inventory_hostname }}
+  register: checkForKnownHostsEntry
+  failed_when: false
+  changed_when: false
+  ignore_errors: yes
+
+- name: Add {{ inventory_hostname }} to SSH known hosts automatically
+  when: checkForKnownHostsEntry.rc == 1
+  changed_when: checkForKnownHostsEntry.rc == 1
+  set_fact:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+
+- name: Wait up to 600 seconds for SSH to be up
+  wait_for_connection:
+    timeout: 600
+
+- name: wait for boot-finished file to exist
+  raw: test -f /var/lib/cloud/instance/boot-finished
+  retries: 50
+  register: cmd_res
+  changed_when: false
+  until: cmd_res is success
+
+- name: gather facts
+  ansible.builtin.setup:
+
+- name: set hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: install deploy SSH pubkey
+  become: yes
+  ansible.builtin.copy:
+    src: ~/.ssh/futureporn.pub
+    dest: ~/.ssh/futureporn.pub
+    owner: root
+    group: root
+    mode: "0644"
+
+
+- name: install deploy SSH privkey
+  become: yes
+  ansible.builtin.copy:
+    src: ~/.ssh/futureporn
+    dest: ~/.ssh/futureporn
+    owner: root
+    group: root
+    mode: "0600"
+
+
+- name: install ssh config
+  become: yes
+  ansible.builtin.template:
+    src: sshConfig.j2
+    dest: ~/.ssh/config
+    owner: root
+    group: root
+    mode: "0644"
+
+
+
+
+- name: Enable journalctl persistent logging
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    search_string: '^Storage='
+    line: 'Storage=persistent'
+    state: present
+  notify: 
+    - restart systemd-journald
+
+- name: setup bash aliases file
+  ansible.builtin.file:
+    path: /root/.bash_aliases
+    state: touch
+    owner: root
+    group: root
+    mode: 0664
+
+- name: set up magic-wormhole & other helpful aliases
+  ansible.builtin.lineinfile:
+    path: /root/.bash_aliases
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "alias whs='wormhole send'"
+    - "alias whr='wormhole receive --accept-file'"
+    - "alias phdl='youtube-dl --abort-on-unavailable-fragment --limit-rate 1M'"
+
+- include_tasks: ./firewall.yml
+
+- name: Allow release-info to change for APT repositories
+  command: apt-get update -y --allow-releaseinfo-change
+
+
+- name: Install dependencies
+  become: yes
+  apt:
+    pkg: 
+      - python3
+      - python3-pip
+      - mg 
+      - git
+      - magic-wormhole
+      - ffmpeg
+      - mosh
+    state: present
+    update_cache: yes
+    allow_change_held_packages: yes
+
+
+- name: Create tmp dir
+  file:
+    path: /root/futureporn_tmp
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
+
+
+- include_tasks: ./env.yml

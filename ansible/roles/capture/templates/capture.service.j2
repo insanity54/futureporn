@@ -1,0 +1,18 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description="futureporn capture worker"
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/env node /root/futureporn/capture/index.js
+WorkingDirectory=/root/futureporn/capture
+Type=simple
+Restart=always
+RestartSec=5
+Environment=AEDES_HOST={{ lookup('env', 'AEDES_HOST') }}
+Environment=AEDES_PASSWORD={{ lookup('env', 'AEDES_PASSWORD') }}
+Environment=AEDES_USERNAME={{ lookup('env', 'AEDES_USERNAME') }}
+Environment=FUTUREPORN_WORKDIR={{ lookup('env', 'FUTUREPORN_WORKDIR') }}
+Environment=DEBUG="futureporn/*"

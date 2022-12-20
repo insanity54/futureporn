@@ -1,0 +1,7 @@
+{
+	"name": "futureporn-cb-chat",
+	"dependencies": {
+		"date-fns": "^2.29.3",
+		"seedrandom": "^3.0.5"
+	}
+}

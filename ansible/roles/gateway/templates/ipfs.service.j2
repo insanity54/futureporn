@@ -1,0 +1,19 @@
+[Unit]
+Description=IPFS Daemon
+After=network.target
+
+[Service]
+User=ipfs
+Group=ipfs
+Environment=IPFS_PATH=/home/ipfs/.ipfs
+ExecStart=/usr/local/bin/ipfs daemon --init --migrate --enable-gc
+## the following ExecStartPre is a workaround for missing disk usage limit functionality in go-ipfs
+## see https://github.com/ipfs/go-ipfs/issues/3066
+ExecStartPre=rm -rf /home/ipfs/.ipfs/blocks/ && sync
+StandardOutput=journal
+Restart=always
+KillSignal=SIGINT
+RestartSec=8
+
+[Install]
+WantedBy=multi-user.target

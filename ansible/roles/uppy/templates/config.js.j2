@@ -1,0 +1,35 @@
+
+
+const config = {
+    debug: true,
+    metrics: true,
+    server: {
+        host: "{{ lookup('env', 'COMPANION_DOMAIN') }}",
+        protocol: "{{ lookup('env', 'COMPANION_PROTOCOL') }}",
+        port: "{{ lookup('env', 'COMPANION_PORT') }}"
+    },
+    streamingUpload: true,
+    corsOrigins: "https://futureporn.net",
+    redisUrl: "{{ lookup('env', 'COMPANION_REDIS_URL') }}",
+    secret: "{{ lookup('env', 'COMPANION_SECRET') }}",
+    filePath: "{{ lookup('env', 'COMPANION_DATADIR') }}",
+    uploadUrls: ["https://uppy.futureporn.net/"],
+    providerOptions: {
+        s3: {
+            "key": "{{ lookup('env', 'COMPANION_AWS_KEY') }}",
+            "secret": "{{ lookup('env', 'COMPANION_AWS_SECRET') }}",
+            "bucket": "{{ lookup('env', 'COMPANION_AWS_BUCKET') }}",
+            "endpoint": "{{ lookup('env', 'COMPANION_AWS_ENDPOINT') }}"
+        },
+        drive: {
+          key: "{{ lookup('env', 'COMPANION_GOOGLE_KEY') }}",
+          secret: "{{ lookup('env', 'COMPANION_GOOGLE_SECRET') }}",
+        },
+        dropbox: {
+          key: "{{ lookup('env', 'COMPANION_DROPBOX_KEY') }}",
+          secret: "{{ lookup('env', 'COMPANION_DROPBOX_SECRET') }}"
+        },
+    }
+}
+
+export default config;

@@ -1,0 +1,57 @@
+---
+
+
+- name: Set Twitter api key in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export TWITTER_API_KEY={{ lookup('env', 'TWITTER_API_KEY') }}"
+    state: present
+
+- name: Set Twitter secret in env
+  ansible.builtin.lineinfile:
+    dest: /root/.bashrc
+    line: "export TWITTER_API_KEY_SECRET={{ lookup('env', 'TWITTER_API_KEY_SECRET') }}"
+    state: present
+
+- name: Ensure futureporn is updated
+  git:
+    repo: https://github.com/insanity54/futureporn
+    dest: /root/futureporn
+    update: yes
+
+- name: ensure yarn is installed
+  community.general.npm:
+    name: yarn
+    global: yes
+
+- name: install futureporn
+  community.general.yarn:
+    path: /root/futureporn
+
+# - name: Make scout executable
+#   file:
+#     path: /root/futureporn/utils/scout.js
+#     mode: '0755'
+#     owner: root
+#     group: root
+#     state: file
+
+- name: Install futureporn-scout system service
+  ansible.builtin.template:
+    src: templates/futureporn-scout.service.j2
+    dest: /etc/systemd/system/futureporn-scout.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart futureporn-scout
+
+- name: Enable futureporn-scout system service
+  systemd:
+    name: futureporn-scout
+    state: started
+    daemon_reload: yes
+    enabled: yes
+  notify:
+    - restart futureporn-scout
+

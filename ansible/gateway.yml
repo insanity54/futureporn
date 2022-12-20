@@ -1,0 +1,22 @@
+---
+
+- name: spin up instances
+  hosts: localhost
+  vars:
+    - instance_plan: vc2-1c-2gb
+    - instance_count: 1
+    - instance_type: gateway
+  roles:
+    - role: spinup
+
+
+- hosts: ~futureporn-gateway\d
+  gather_facts: no
+  vars:
+    - ansible_user: root
+    - ipfs_kubo_version: v0.17.0
+    - ipfs_storage_max: 768GB
+  roles:
+    - role: base
+    - role: nvjacobo.caddy
+    - role: gateway

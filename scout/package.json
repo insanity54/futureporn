@@ -1,0 +1,25 @@
+{
+  "name": "futureporn-scout",
+  "version": "0.0.1",
+  "description": "event emitter that detects start and end of stream",
+  "main": "index.js",
+  "license": "Unlicense",
+  "private": true,
+  "scripts": {
+    "start": "node index",
+    "test": "mocha",
+    "dev": "DEBUG=\"futureporn/*\" FUTUREPORN_WORKDIR=/home/chris/Downloads nodemon index"
+  },
+  "type": "module",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
+    "rxjs": "^7.8.0",
+    "twitter-v2": "^1.1.0"
+  },
+  "devDependencies": {
+    "esm": "^3.2.25",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.20"
+  }
+}

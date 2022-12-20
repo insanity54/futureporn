@@ -1,0 +1,53 @@
+---
+
+- name: create aedes user
+  user:
+    name: aedes
+
+- name: create aedes group
+  group:
+    name: aedes
+
+- name: copy config to server
+  template:
+    src: config.js.j2
+    dest: /home/aedes/aedes/config.js
+  notify: 
+    - restart aedes
+
+- name: create credentials.json file
+  template:
+    src: credentials.json.j2
+    dest: /home/aedes/aedes/credentials.json
+  notify:
+    - restart aedes
+
+- name: set config perms
+  file:
+    path: /home/aedes/aedes/config.js
+    owner: aedes
+    group: aedes
+    mode: '0755'
+
+- name: set credentials perms
+  file:
+    path: /home/aedes/aedes/config.js
+    owner: aedes
+    group: aedes
+    mode: '0600'
+
+- name: Install aedes-cli
+  community.general.npm:
+    name: aedes-cli
+    version: '^0.6.0'
+    path: /home/aedes/aedes
+
+- name: install aedes.service
+  ansible.builtin.template:
+    src: aedes.service.j2
+    dest: /etc/systemd/system/aedes.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart aedes
