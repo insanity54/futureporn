@@ -8,66 +8,32 @@
       </section>
     </div>
 
-  <article class="message is-success">
+  <article class="message is-info">
     <div class="message-header">
-       Science Team, We Did It! 🎉
+       Funding Goal
       <figure class="image is-32x32">
         <a target="_blank" href="https://twitter.com/cj_clippy"><img class="is-rounded" src="/img/cj_clippy.jpeg"></a>
       </figure>
     </div>
     <div class="message-body has-text-centered">
-      <p class="my-5"><span class="is-size-2">Progress: <mark>{% ipfsProgressPercentage collections.vods %}</mark> ✅</span></p>
 
-      <p class="mb-4">All known Projektmelody Chaturbate vods have been pinned on 
-      <a target="_blank" href="https://ipfs.tech">IPFS<span class="icon"><i class="fas fa-external-link-alt"></i>
-                    </span>.
-                </a></p>
+      {% set goal = metadata.incompleteGoals[0]%}
+      <p class="subtitle">${{ (goal.amount_cents*(goal.completed_percentage*0.01)/100) | round }} of ${{ goal.amount_cents / 100 }} ({{goal.completed_percentage}}%)</p>
 
+      <progress class="progress is-info is-medium" value="{{ goal.completed_percentage }}" max="100">{{ goal.completed_percentage }}%</progress>
 
-
-      <p class="mb-4"><b>Wow</b>, that 100% looks great. I'm really proud of what we have accomplished!</p>
-
-      <p class="mb-5">This was a team effort. There were countless Science Team members who reached out with VOD contributions and issue reports. Many offered encouragement, upboats, reddit awards, and some absolute madlads even opened their wallets and supported the project financially via <a target="_blank" href="https://www.patreon.com/CJ_Clippy">Patreon <span class="icon">
-                      <i class="fas fa-external-link-alt"></i>
-                    </span></a>. Thank you for the support, it means so much to me.</p>
-
-      <p class="mb-4 is-size-3">🥰</p>
-
+      <p>{{ goal.description }}</p>
+      <p>Thank you, 
+        <a href="https://patreon.com/CJ_Clippy">
+        Patrons
+        <span class="icon">
+          <i class="fas fa-external-link-alt"></i>
+        </span></a>!
+      </p>
     </div>
   </article>
 
 
-  <article class="message is-info">
-    <div class="message-header">
-      Now for some not-so-good news
-      <figure class="image is-32x32">
-          <a target="_blank" href="https://twitter.com/cj_clippy"><img class="is-rounded" src="/img/cj_clippy.jpeg"></a>
-      </figure>
-    </div>
-    <div class="message-body">
-    <p class="mb-4"><b>Futureporn's future is uncertain.</b></p>
-
-    <p class="mb-4">Until recently, I had been leveraging ipfs.storage which provides file uploads and IPFS pinning for free. This worked well. It kept operating cost low, a necessity since I don't have a "regular job."</p>
-
-    <p class="mb-4">Recently, a third party reported some of the content pinned via my ipfs.storage account. Their report said the content contains their licensed content. ipfs.storage responded, restricting my account from uploading and pinning any new files.</p>
-
-    <p class="mb-4">I reached out to ipfs.storage to see if I could get in touch with the reporting party to get more details. Per ipfs.storage policy, they do not disclose the reporting party's identity, but they did oblige to forwarding my contact details to said party.</p>
-
-    <p class="mb-4">I think I have to explain my income. I make most of my money selling anime trading cards on eBay. I make less than minimum wage, and every month I struggle to pay my rent. I've taken on debt, and I think prioritizing Futureporn is a financial irresponsibility on my part. I do it anyway because Futureporn is one of the most exciting and meaningful projects of my life.</p>
-
-    <p class="mb-4">The ipfs.storage account restriction meant that the way forward for Futureporn was to run it's own storage and IPFS infrastructure. This has been the case since 2022-09-07, but the transition has not been easy. The additional datacenter server and HDD rentals have given me sticker shock. Worse, the bill only gets bigger each month as new VODs are pinned.</p>
-
-    <p class="mb-4"><b>TL;DR: I don't know if I can continue to pay the bills, but I'm going to do my best</b>. My plan going forward is to limit the rate at which Futureporn utilizes storage. I'm going to pin 240p VODs for only 6 months, after which they will expire and be deleted. Anyone else is free to pin the 240p content IDs (CIDs) to keep them alive, but I am only going to pin the source VODs long-term.</p>
-
-    <p class="mb-4">I did some calculations for a minimum viable service and it's going to cost around $130 per month to run the site. This includes a VPS for recording VODs, a second VPS to run the Futureporn IPFS cluster, and enough disk storage for all 1.4TB of VODs.</p>
-
-    <p class="mb-4">This is not a redundant setup, as healthy clusters have multiple replications. I am only running one, so if the IPFS cluster goes down for any reason, there would be a lengthy outage while I restore from backup. This is where the IPFS network comes in. Other ProjektMelody enthusiasts who are pinning the content and/or join the cluster can serve VODs in the case that Futureporn goes down.</p>
-
-    <p class="mb-4">The biggest complaint I receive about Futureporn is <a href="/faq#not-working">buffering</a>. I cannot address VOD download speed on my budget. VODs will continue to be slow and buffery for the forseeable future. In other words, creating speed is not on my radar. Surviving the test of time is.</p>
-
-
-    </div>
-  </article>
 
     <div class="smallGallery">
       <div class="columns">

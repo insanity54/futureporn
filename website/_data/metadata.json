@@ -64,6 +64,7 @@
     "Torben Bott",
     "AverageYuriEnjoyer",
     "LEONKA11",
+    "Pokemaniacs",
     "OSE ",
     "Subject",
     "Molotover ",
@@ -74,5 +75,33 @@
     "catboxL",
     "LaoPao",
     "CelebiShrine"
+  ],
+  "goals": [
+    {
+      "amount_cents": 13000,
+      "completed_percentage": 85,
+      "description": "This goal would cover my minimum operating cost of Futureporn.net.",
+      "title": ""
+    },
+    {
+      "amount_cents": 23000,
+      "completed_percentage": 48,
+      "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
+      "title": ""
+    }
+  ],
+  "incompleteGoals": [
+    {
+      "amount_cents": 13000,
+      "completed_percentage": 85,
+      "description": "This goal would cover my minimum operating cost of Futureporn.net.",
+      "title": ""
+    },
+    {
+      "amount_cents": 23000,
+      "completed_percentage": 48,
+      "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
+      "title": ""
+    }
   ]
 }
