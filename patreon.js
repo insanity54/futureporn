@@ -30,6 +30,22 @@ if (typeof PATREON_CLIENT_ID === 'undefined') throw new Error('PATREON_CLIENT_ID
 if (typeof PATREON_CLIENT_SECRET === 'undefined') throw new Error('PATREON_CLIENT_SECRET must be defined in env, but it was undefined.');
 if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be defined in env, but it was undefined');
 
+// greets https://stackoverflow.com/a/1349426/1004931
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+async function sleep (ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+
 
 (async () => {
 
@@ -57,9 +73,8 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
             response_type: 'code',
             client_id: PATREON_CLIENT_ID,
             redirect_uri: redirect,
-            state: 'bing-chilling',
-            // scopes: 'users pledges-to-me my-campaign campaigns.members'
-            scopes: 'identity identity.memberships campaigns campaigns.members ampaigns.members[email] campaigns.members.address'
+            state: makeid(14),
+            scopes: 'identity identity.memberships campaigns campaigns.members campaigns.members[email] campaigns.members.address'
         }
     })
     open(loginUrl);
@@ -81,10 +96,12 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
 
             const access_token = tokens?.access_token
 
+            console.log(`access_token:${access_token}`)
+
             if (typeof access_token === 'undefined') throw new Error('did not see tokens.access token from the Patreon via the oauth client')
 
             const { data } = await got({
-                url: encodeURI('https://www.patreon.com/api/oauth2/v2/campaigns/8012692/members?include=currently_entitled_tiers&fields[member]=full_name,lifetime_support_cents,patron_status'),
+                url: encodeURI('https://www.patreon.com/api/oauth2/v2/campaigns/8012692/members?include=currently_entitled_tiers&fields[member]=full_name,lifetime_support_cents,currently_entitled_amount_cents,patron_status'),
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${access_token}`
@@ -100,18 +117,35 @@ if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be def
             const stortedPatrons = data.sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
             const allPatronNames = stortedPatrons.map(patron => patron.attributes.full_name);
             const activePatronNames = stortedPatrons.filter(patron => patron.attributes.patron_status === 'active_patron').map(patron => patron.attributes.full_name);
+            // const currentSupportCents = data.reduce((acc, patron) => acc + patron.attributes.currently_entitled_amount_cents, 0)
 
             console.log('here are all patrons');
             console.log(allPatronNames);
             console.log('----')
             console.log('here are active patrons')
             console.log(activePatronNames)
+            // console.log(`current total support cents-- ${currentSupportCents} ($${currentSupportCents/100})`)
 
+
+            const response = await got({
+                url: 'https://www.patreon.com/api/oauth2/v2/campaigns/8012692?include=goals&fields%5Bgoal%5D=title,amount_cents,completed_percentage,description',
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${access_token}`
+                }
+            }).json()
+
+
+            console.log('here is the campaign data')
+            console.log(JSON.stringify(response, 0, 2))
+
+            const goals = response.included.map((goal) => goal.attributes)
+            const incompleteGoals = goals.filter((goal) => goal.completed_percentage < 100)
 
 
             const metadata = require(metadataFile);
 
-            const patchedMetadata = Object.assign({}, metadata, { activePatronNames, allPatronNames });
+            const patchedMetadata = Object.assign({}, metadata, { activePatronNames, allPatronNames, goals, incompleteGoals });
 
 
             await fsp.writeFile(metadataFile, JSON.stringify(patchedMetadata, 0, 2), { encoding: 'utf-8' });
