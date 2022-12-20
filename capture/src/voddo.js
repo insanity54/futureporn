@@ -1,19 +1,21 @@
 import YoutubeDlWrap from "youtube-dl-wrap";
-import debugFactory from 'debug'
+import debugFactory from 'debug';
+import { EventEmitter } from 'node:events';
 
 const debug = debugFactory('futureporn/capture/voddo');
 const ytdl = new YoutubeDlWrap();
 
 
 
-export default class Voddo {
+export default class Voddo extends EventEmitter {
 	constructor(opts) {
+		super()
 		this.courtesyTimer = setTimeout(() => {}, 0);
 		this.retryCount = 0;
 		this.url = opts.url;
 		this.format = opts.format;
 		this.cwd = opts.cwd;
-		this.ee;
+		this.ytdlee; // event emitter for ytdlwrap
 		this.stats = { filePaths: [] };
 	}
 
@@ -23,12 +25,11 @@ export default class Voddo {
 
 
 		// @todo this needs to be reset after stream completion!
-		//       [*] progress listeners are automatically reset
-		//       [ ] this.stats.filePaths needs to be cleared
-		//           maybe triggered after a certain time period of capture failures
+		//       [x] progress listeners are automatically reset
+		//       [x] this.stats.filePaths gets cleared by getReport
 		//           
 		return (
-			this.ee?.listeners('progress').length !== undefined &&
+			this.ytdlee?.listeners('progress').length !== undefined &&
 			this.stats.filePaths.length > 0
 		)
 	}
@@ -57,6 +58,20 @@ export default class Voddo {
 		this.download()
 	}
 
+	/** generate a report **/
+	getReport(error) {
+		let report = {}
+		report.stats = Object.assign({}, this.stats)
+		report.reason = error ? error : 'close'
+		// reset the filePaths
+		this.stats.filePaths = []
+		return report
+	}
+
+	emitReport(report) {
+		this.ee.emit('report', report)
+	}
+
 	getCourtesyTimer(callback) {
 		// 600000ms = 10m
 		const waitTime = Math.min(600000, (Math.pow(2, this.retryCount) * 1000));
@@ -80,11 +95,12 @@ export default class Voddo {
 				debug('  [*] ytdl error')
 				console.warn(error.message)
 			}
-			this.ee.off('progress', handleProgress)
-			this.ee.off('handleYtdlEvent', handleYtdlEvent)
+			this.ytdlee.off('progress', handleProgress)
+			this.ytdlee.off('handleYtdlEvent', handleYtdlEvent)
 
 			// restart the download after the courtesyTimeout
 			this.courtesyTimer = this.getCourtesyTimer(() => this.download())
+			this.emitReport(this.getReport(error.message))
 		}
 
 
@@ -93,23 +109,25 @@ export default class Voddo {
 			if (type === 'download' && data.includes('Destination:')) {
 				let filePath = /Destination:\s(.*)$/.exec(data)[1]
 				debug(`  [*] Destination file detected: ${filePath}`)
+				this.emit('file', { file: filePath })
 				this.stats.filePaths.push(filePath)
 			}
 		}
 
 		const handleClose = () => {
 	        debug('  [*] got a close event');
-			this.ee.off('progress', handleProgress)
-			this.ee.off('handleYtdlEvent', handleYtdlEvent)
+			this.ytdlee.off('progress', handleProgress)
+			this.ytdlee.off('handleYtdlEvent', handleYtdlEvent)
 			// restart the download after the courtesyTimeout
 			this.courtesyTimer = this.getCourtesyTimer(this.download)
+			this.emitReport(this.getReport())
 		}
 
-		this.ee = ytdl.exec([this.url, '-f', this.format], { cwd: this.cwd });
-		this.ee.on('progress', handleProgress);
-		this.ee.on('youtubeDlEvent', handleYtdlEvent);
-	    this.ee.once('error', handleError);
-	    this.ee.once('close', handleClose);
+		this.ytdlee = ytdl.exec([this.url, '-f', this.format], { cwd: this.cwd });
+		this.ytdlee.on('progress', handleProgress);
+		this.ytdlee.on('youtubeDlEvent', handleYtdlEvent);
+	    this.ytdlee.once('error', handleError);
+	    this.ytdlee.once('close', handleClose);
 	}
 
 
