@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import "dotenv/config";
 import aedesClientFactory from './src/aedes.js'
 import Voddo from './src/voddo.js'
@@ -17,10 +19,8 @@ const aedesClient = aedesClientFactory(
 )
 
 const voddo = new Voddo({
-	url: 'https://chaturbate.com/_keti_',
-	// url: 'https://www.twitch.tv/cdawgva',
+	url: 'https://chaturbate.com/projektmelody',
 	format: 'worst',
-	// format: 'best',
 	cwd: process.env.FUTUREPORN_WORKDIR
 })
 
@@ -28,7 +28,14 @@ const voddo = new Voddo({
 voddo.start()
 
 
+// voddo generates a report when it's done recording a stream
+voddo.on('report', (report) => {
+	aedesClient.publish('futureporn/capture/report', JSON.stringify(report))
+})
 
+voddo.on('file', (file) => {
+	aedesClient.publish('futureporn/capture/file', JSON.stringify(file))
+})
 
 // on connection event:
 aedesClient.on('connect', (data) => {
