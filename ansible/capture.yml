@@ -40,6 +40,7 @@
   hosts: futureporn-capture1
   gather_facts: no # just for speed
   vars:
+    - ansible_user: root
+  roles:
     - role: scout
-      tags: 
-        - scout
+      tags: [scout]

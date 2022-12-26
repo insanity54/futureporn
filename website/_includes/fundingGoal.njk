@@ -1,0 +1,26 @@
+<article class="message is-info">
+<div class="message-header">
+   Funding Goal
+  <figure class="image is-32x32">
+    <a target="_blank" href="https://twitter.com/cj_clippy">
+      {% image "website/img/cj_clippy.jpeg", "is-rounded", "CJ_Clippy smiling and waving" %}
+    </a>
+  </figure>
+</div>
+<div class="message-body has-text-centered">
+
+  {% set goal = metadata.incompleteGoals[0]%}
+  <p class="subtitle">${{ (goal.amount_cents*(goal.completed_percentage*0.01)/100) | round }} of ${{ goal.amount_cents / 100 }} ({{goal.completed_percentage}}%)</p>
+
+  <progress class="progress is-info is-medium" value="{{ goal.completed_percentage }}" max="100">{{ goal.completed_percentage }}%</progress>
+
+  <p>{{ goal.description }}</p>
+  <p class="mt-3">Thank you, 
+    <a target="_blank" href="https://patreon.com/CJ_Clippy">
+    Patrons
+    <span class="icon">
+      <i class="fas fa-external-link-alt"></i>
+    </span></a>!
+  </p>
+</div>
+</article>

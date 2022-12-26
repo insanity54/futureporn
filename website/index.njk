@@ -3,10 +3,75 @@ layout: layouts/base.njk
 eleventyNavigation:
   key: Home
   order: 1
-
+pagination:
+  data: collections.vods
+  size: 48
+  reverse: true
 ---
 
 
-{% set vodslist = collections.vods %}
-{% set vodslistCounter = collections.vods | length %}
-{% include "vodslist.njk" %}
+
+{% include "heading.njk" %}
+{% include "fundingGoal.njk" %}
+
+
+
+<div class="columns is-multiline is-mobile">
+  {% asyncEach vod in pagination.items %}
+    {% include "vodCard.njk" %}
+  {% endeach %}
+</div>
+
+
+<div class="mt-5 block box">
+  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+
+
+    {% if not pagination.href.previous %}
+      <a disabled class="pagination-previous is-disabled">
+        <span class="icon">
+          <i class="fas fa-arrow-left"></i>
+        </span>
+      </a>
+    {% else %}
+      <a class="pagination-previous" href="{{ pagination.href.previous }}">
+        <span class="icon">
+          <i class="fas fa-arrow-left"></i>
+        </span>
+      </a>
+    {% endif %}
+    
+    {% if not pagination.href.next %}
+      <button disabled class="pagination-next is-disabled">
+        <span class="icon">
+          <i class="fas fa-arrow-right"></i>
+        </span>
+      </button>
+    {% else %}
+      <a class="pagination-next" href="{{ pagination.href.next }}">
+        <span class="icon">
+          <i class="fas fa-arrow-right"></i>
+        </span>
+      </a>
+    {% endif %}
+    
+
+    <ul class="pagination-list">
+
+    {%- for page in pagination.pages %}
+      <li>
+          <a 
+          class="pagination-link"
+          aria-label="Goto page {{ loop.index0 }}"
+          href="{{ pagination.hrefs[loop.index0] }}">
+            {{ loop.index0 }}
+          </a>
+      </li>
+    {%- endfor %}
+    
+    </ul>
+  </nav>
+</div>
+
+
+

@@ -11,22 +11,30 @@
 
 
 
-@import 'plyr/dist/plyr.css';
-
-
 
 
 html {
   background-image: linear-gradient($red, $darkred);
 }
-.smallGallery {
-  @include from($tablet) {
-    display: none;
-    border: 3px solid lime;
-  }
+
+
+div.card-content p {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 1rem;
+  white-space: nowrap;
 }
-.bigTable {
-  @include until($tablet) {
-    display: none;
-  }
+
+a.pagination-link,
+a.pagination-next,
+a.pagination-previous,
+progress.progress,
+button.button {
+  vertical-align: unset;
+}
+
+figure.image {
+  background-image: linear-gradient(45deg, $red, $color1);
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
 }

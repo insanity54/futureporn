@@ -17,7 +17,9 @@
   git:
     repo: https://github.com/insanity54/futureporn
     dest: /root/futureporn
+    depth: 1
     update: yes
+    force: yes
 
 - name: ensure yarn is installed
   community.general.npm:
@@ -28,30 +30,23 @@
   community.general.yarn:
     path: /root/futureporn
 
-# - name: Make scout executable
-#   file:
-#     path: /root/futureporn/utils/scout.js
-#     mode: '0755'
-#     owner: root
-#     group: root
-#     state: file
 
-- name: Install futureporn-scout system service
+- name: Install scout system service
   ansible.builtin.template:
-    src: templates/futureporn-scout.service.j2
-    dest: /etc/systemd/system/futureporn-scout.service
+    src: templates/scout.service.j2
+    dest: /etc/systemd/system/scout.service
     owner: root
     group: root
     mode: '0755'
   notify: 
-    - restart futureporn-scout
+    - restart scout
 
-- name: Enable futureporn-scout system service
+- name: Enable scout system service
   systemd:
-    name: futureporn-scout
+    name: scout
     state: started
     daemon_reload: yes
     enabled: yes
   notify:
-    - restart futureporn-scout
+    - restart scout
 

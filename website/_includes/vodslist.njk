@@ -1,64 +1,9 @@
 
 
-    <div class="block">
-      <section class="hero is-primary">
-        <div class="hero-body">
-          <p class="subtitle">Unofficial <a target="_blank" href="https://twitter.com/ProjektMelody">ProjektMelody <span class="icon"><i class="fas fa-external-link-alt"></i></span></a> Chaturbate VOD Archive. For Adults Only. (NSFW)</p>
-        </div>
-      </section>
-    </div>
-
-  <article class="message is-info">
-    <div class="message-header">
-       Funding Goal
-      <figure class="image is-32x32">
-        <a target="_blank" href="https://twitter.com/cj_clippy"><img class="is-rounded" src="/img/cj_clippy.jpeg"></a>
-      </figure>
-    </div>
-    <div class="message-body has-text-centered">
-
-      {% set goal = metadata.incompleteGoals[0]%}
-      <p class="subtitle">${{ (goal.amount_cents*(goal.completed_percentage*0.01)/100) | round }} of ${{ goal.amount_cents / 100 }} ({{goal.completed_percentage}}%)</p>
-
-      <progress class="progress is-info is-medium" value="{{ goal.completed_percentage }}" max="100">{{ goal.completed_percentage }}%</progress>
-
-      <p>{{ goal.description }}</p>
-      <p>Thank you, 
-        <a href="https://patreon.com/CJ_Clippy">
-        Patrons
-        <span class="icon">
-          <i class="fas fa-external-link-alt"></i>
-        </span></a>!
-      </p>
-    </div>
-  </article>
 
 
 
-    <div class="smallGallery">
-      <div class="columns">
-      {% for vod in vodslist | reverse %}
-        <div class="column">
-          <div class="card">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-content">
-                  <a href="{{ vod.url | url }}">
-                    <p class="title is-4">{{ vod.data.date | htmlDateString }}
-                  </a>
-                  <p class="subtitle">
-                    {{ vod.data.title | urlDecode | truncate(75) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-      </div>
-    </div>
-
-    <table class="table bigTable">
+    <table class="table">
       <thead>
           <tr>
             <th>Date</th>
@@ -74,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for vod in vodslist | reverse %}
+          {% for vod in vodslist %}
           <tr>
             <td><a href="{{ vod.url | url }}">{{ vod.data.date | htmlDateString }}</a></td>
             <td>

@@ -8,9 +8,18 @@ const markdownItAnchor = require("markdown-it-anchor");
 const decodeUriComponent = require('decode-uri-component');
 const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
 const faviconPlugin = require("eleventy-favicon");
+// const tinyCSS = require('@sardine/eleventy-plugin-tinycss');
+
+const isDev = process.env.NODE_ENV === "development";
+
+
+const Image = require("@11ty/eleventy-img");
+Image.concurrency = 1;
+
 const manifest = JSON.parse(
   fs.readFileSync(manifestPath, { encoding: "utf8" })
 );
+
 
 const filterIpfsCompleted = (vods) => {
   let golo = [];
@@ -28,23 +37,72 @@ const filterB2Completed = (vods) => {
   return golo.length;
 }
 
+
+function buildIpfsUrl(urlFragment) {
+  return `https://dweb.link/ipfs/${urlFragment}`;
+}
+
+async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
+
+
+
+  let options = {
+    outputDir: './website/img',
+    widths: widths,
+    formats: ['jpeg', 'avif'],
+    concurrency: 1,
+    cacheOptions: { 
+      directory: '.img-cache',
+      duration: "365d"
+    }
+  };
+
+
+  let isCid = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/.test(src)
+  let url = isCid ? buildIpfsUrl(src) : src
+
+
+  let imageAttributes = {
+    class: cls,
+    alt,
+    sizes,
+    loading: "lazy",
+    decoding: "async",
+    onerror: "this.style.display='none'" // avoid ugly border
+  };
+
+
+  try {
+    console.log(`  [*] Downloading ${url}`)
+    let metadata = await Image(url, options);
+    return Image.generateHTML(metadata, imageAttributes)
+  } catch (e) {
+    console.error('We got an Image fetch error. Defaulting to Melface')
+    console.error(e);
+    let metadata = await Image('website/favicon.png', options);
+    return Image.generateHTML(metadata, imageAttributes)
+  }
+}
+
+
 module.exports = function(eleventyConfig) {
+
 
   eleventyConfig.addPassthroughCopy({ "website/img": "img" });
 
   eleventyConfig.addPlugin(faviconPlugin);
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginNavigation);
+  // eleventyConfig.addPlugin(tinyCSS, tinyCssOptions);
 
   eleventyConfig.setDataDeepMerge(true);
 
   eleventyConfig.addLayoutAlias("vod", "layouts/vod.njk");
   eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
 
+  eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
 
-  eleventyConfig.addShortcode("buildIpfsUrl", function(urlFragment) {
-    return `https://dweb.link/ipfs/${urlFragment}`;
-  });
+  eleventyConfig.addShortcode("buildIpfsUrl", buildIpfsUrl);
 
   eleventyConfig.addShortcode("ipfsProgressComplete", function(vods) {
     return `${filterIpfsCompleted(vods)}`;
@@ -146,6 +204,7 @@ module.exports = function(eleventyConfig) {
     permalinkSymbol: "#"
   });
   eleventyConfig.setLibrary("md", markdownLibrary);
+
 
   // Browsersync Overrides
   eleventyConfig.setBrowserSyncConfig({

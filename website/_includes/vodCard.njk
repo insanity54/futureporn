@@ -1,0 +1,31 @@
+
+{# {% set imageUrl =  %} #}
+{# {% set imageData = await EleventyFetch(imageUrl).then(r => r.buffer()) %} #}
+
+{# {{ vod.data.thiccHash }} #}
+<div class="column is-half-mobile is-one-third-tablet is-one-fifth-desktop">
+  <div class="card">
+    <div class="card-image">
+      <a href="{{ vod.url | url }}">
+        <figure class="image is-16by9">
+          {% image vod.data.thiccHash %}
+        </figure>
+      </a>
+    </div>
+      <div class="card-content">
+        {# <p>imageUrl:{% buildIpfsUrl vod.data.thiccHash %}</p> #}
+        <a href="{{ vod.url | url }}">
+          <h3 class="heading">{{ vod.data.date | htmlDateString }}</h3>
+          <p class="description is-size-7">
+            {% if vod.data.announceTitle %}
+              {{ vod.data.announceTitle | urlDecode }}
+            {% elseif vod.data.title %}
+              {{ vod.data.title | urlDecode }}
+            {% endif %}
+          </p>
+        </a>
+      </div>
+    <div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+---
+layout: layouts/base.njk
+eleventyNavigation:
+  key: Home
+  order: 1
+pagination:
+  data: collections.vods
+  size: 50
+---
+
+
+{% set vodslist = collections.vods %}
+{% set vodslistCounter = collections.vods | length %}
+{% include "vodslist.njk" %}
