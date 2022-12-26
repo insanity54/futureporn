@@ -1,6 +1,9 @@
 const path = require("path");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin')
+const glob = require('glob')
+
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -10,8 +13,7 @@ module.exports = {
   mode: isDev ? "development" : "production",
   entry: {
     'base': path.resolve(__dirname, "website", "js", "base.js"),
-    'player': path.resolve(__dirname, "website", "js", "player.js"),
-    'upload': path.resolve(__dirname, "website", "js", "upload.js"),
+    'player': path.resolve(__dirname, "website", "js", "player.js")
   },
   output: {
     path: path.resolve(__dirname, "_site", "assets"),
@@ -52,6 +54,13 @@ module.exports = {
   devtool: isDev ? "eval" : "source-map",
   plugins: [
     new MiniCssExtractPlugin({ filename: '[name].css' }),
-    new WebpackManifestPlugin({ publicPath: "/assets/" }),
+    new PurgeCSSPlugin({
+      paths: glob.sync(`${path.resolve(__dirname, 'website')}/**/*`, { nodir: true }),
+      safelist: {
+        deep: [/^plyr/]
+      },
+      
+    }),
+    new WebpackManifestPlugin({ publicPath: "/assets/" })
   ],
 };

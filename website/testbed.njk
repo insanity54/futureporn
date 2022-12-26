@@ -6,14 +6,71 @@ eleventyNavigation:
 ---
 
 
-<div class="content">
-  <div class="block">
-    <div class="box">
-      <div class="columns">
-        <div class="column is-6">
-          <video id="testplayer" style="--plyr-color-main:#353fff;" controls data-poster="">
-        </div>
+
+<div>
+  <div class="box">
+  {% image "bafkreibjdogqxmhw5hmsiotyolzhy5q26hpqepddifddogksen3rgqfjei?filename=20221217T221420Z-thicc.jpg" %}
+  </div>
+  <div class="columns is-gaplessi bns-1 is-multiline is-mobile">
+    <div class="column box is-half-mobile is-two-thirds-tablet is-one-fifth-desktop">
+
+      <div 
+        class="sprite" 
+        style="background-image: url('../img/thicc-sample.jpg')"
+      >
+      </div>
+    </div>
+    <div class="column box is-half-mobile is-two-thirds-tablet is-one-fifth-desktop">
+      <div 
+        class="sprite" 
+        style="background-image: url('../img/thicc-sample2.jpg')"
+      >
       </div>
     </div>
   </div>
 </div>
+
+
+
+
+<script>
+  var currentFrame = 0;
+  var numFrames = 25;
+
+  function animateSprite() {
+    // get all elements with the "sprite" class
+    var sprites = document.getElementsByClassName('sprite');
+
+    // loop through all the sprites and change the background position
+    for (var i = 0; i < sprites.length; i++) {
+      // get the current width and height of the sprite element
+      var frameWidth = sprites[i].offsetWidth;
+      var frameHeight = sprites[i].offsetHeight;
+
+      const bgImageWidth = Math.floor(frameWidth*5)
+      const bgImageHeight = Math.floor(frameHeight*5)
+
+      sprites[i].style.backgroundSize = bgImageWidth+'px '+bgImageHeight+'px'
+
+      // change the background position of the sprite to the next frame
+      sprites[i].style.backgroundPosition =
+        (-frameWidth * (currentFrame % 5)) + 'px ' +
+        (-frameHeight * Math.floor(currentFrame / 5)) + 'px';
+    }
+
+    // increment the current frame
+    currentFrame = (currentFrame + 1) % numFrames;
+
+    // set a timer to call the animateSprite function again after a delay
+    setTimeout(animateSprite, 500);
+  }
+
+  // start the animation
+  animateSprite();
+
+</script>
+
+ 
+
+
+

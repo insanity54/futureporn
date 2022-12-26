@@ -4,6 +4,7 @@
 <html lang="en">
   <head>
     {% favicon './website/favicon.png' %}
+    {% block head %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
@@ -18,6 +19,7 @@
     <link rel="canonical" href="{{ metadata.url }}">
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
     <title>{{ metadata.title }}</title>
+    {% endblock %}
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
