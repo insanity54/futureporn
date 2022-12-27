@@ -57,7 +57,7 @@
     "express": "^4.17.3",
     "fdir": "^5.1.0",
     "gray-matter": "^4.0.3",
-    "ipfs": "^0.37",
+    "ipfs": "^0.65",
     "ipfs-http-client": "^59.0.0",
     "light-server": "^2.9.1",
     "minimist": "^1.2.6",
