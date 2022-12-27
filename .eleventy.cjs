@@ -46,7 +46,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
   let options = {
     outputDir: './website/img',
     widths: widths,
-    formats: ['jpeg', 'avif'],
+    formats: ['avif', 'jpeg'],
     concurrency: 1,
     cacheOptions: { 
       directory: '.img-cache',
