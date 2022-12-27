@@ -7,8 +7,6 @@ const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const decodeUriComponent = require('decode-uri-component');
 const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
-// const faviconPlugin = require("eleventy-favicon");
-// const tinyCSS = require('@sardine/eleventy-plugin-tinycss');
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -42,10 +40,9 @@ function buildIpfsUrl(urlFragment) {
   return `https://dweb.link/ipfs/${urlFragment}`;
 }
 
+
+
 async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
-
-
-
   let options = {
     outputDir: './website/img',
     widths: widths,
@@ -74,12 +71,13 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
   try {
     console.log(`  [*] Downloading ${url}`)
+    if (process.env.SKIP_DOWNLOAD) throw new Error('  >> Skipping download');
     let metadata = await Image(url, options);
     return Image.generateHTML(metadata, imageAttributes)
   } catch (e) {
     console.error('We got an Image fetch error. Defaulting to Melface')
     console.error(e);
-    let metadata = await Image('website/favicon.png', options);
+    let metadata = await Image('website/favicon/favicon.png', options);
     return Image.generateHTML(metadata, imageAttributes)
   }
 }
@@ -89,6 +87,7 @@ module.exports = function(eleventyConfig) {
 
 
   eleventyConfig.addPassthroughCopy({ "website/img": "img" });
+  eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
 
   // eleventyConfig.addPlugin(faviconPlugin);
   eleventyConfig.addPlugin(pluginRss);
@@ -111,6 +110,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode("ipfsProgressTotal", function(vods) {
     return `${vods.length}`;
   });
+
 
   eleventyConfig.addShortcode("b2ProgressPercentage", function(vods) {
     const totalVods = vods.length;
@@ -223,7 +223,7 @@ module.exports = function(eleventyConfig) {
     ghostMode: false
   });
 
-
+  
 
 
   return {
