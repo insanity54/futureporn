@@ -7,7 +7,7 @@ const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const decodeUriComponent = require('decode-uri-component');
 const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
-const faviconPlugin = require("eleventy-favicon");
+// const faviconPlugin = require("eleventy-favicon");
 // const tinyCSS = require('@sardine/eleventy-plugin-tinycss');
 
 const isDev = process.env.NODE_ENV === "development";
@@ -90,7 +90,7 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPassthroughCopy({ "website/img": "img" });
 
-  eleventyConfig.addPlugin(faviconPlugin);
+  // eleventyConfig.addPlugin(faviconPlugin);
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginNavigation);
   // eleventyConfig.addPlugin(tinyCSS, tinyCssOptions);
