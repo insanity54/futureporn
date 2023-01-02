@@ -16,7 +16,6 @@ const { add, isAfter, sub } = require('date-fns')
 const dateFnsTz = require('date-fns-tz');
 const fetch = require('node-fetch');
 const Twitter = require('twitter-v2');
-const { Web3Storage, getFilesFromPath } = require('web3.storage');
 const Prevvy = require('prevvy');
 const { fileURLToPath } = require('url');
 const matter = require('gray-matter');
@@ -123,7 +122,6 @@ module.exports = class VOD {
 		consumer_key:         process.env.TWITTER_API_KEY,
 		consumer_secret:      process.env.TWITTER_API_KEY_SECRET
 	})
-	static web3Client = new Web3Storage({ token: VOD.web3Token });
 
 	// greetz https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
 	static fixedEncodeURIComponent(str) {
@@ -469,7 +467,7 @@ module.exports = class VOD {
 		} else {
 			this.video240HashTmp = target;
 		}
-		const hash = await this._ipfsUpload(this.video240HashTmp, '4383h'); // 4383h is 6 months (pin expiration)
+		const hash = await this._ipfsUpload(this.video240HashTmp);
 		if (typeof hash === 'undefined') throw new UploadFailedError()
 		this.video240Hash = `${hash}?filename=${videoBasename}`
 	}
@@ -521,38 +519,6 @@ module.exports = class VOD {
 	}
 
 
-	async _ipfsDotStorageUpload (filename) {
-		const token = process.env.WEB3_TOKEN;
-		if (typeof token === 'undefined') {
-			throw new Error('A token is needed. (WEB3_TOKEN in env must be defined). You can create one on https://web3.storage. ')
-		}
-		const storage = new Web3Storage({ token })
-		const files = await getFilesFromPath(filename);
-
-
-		async function __upload (storage, files, attempt = 0) {
-		  try {
-		    attempt++;
-
-		    debug(`[^] uploading ${files.map(f => f.name)}`);
-		    const rootCid = await storage.put(files)
-
-		    debug(`[^] Upload complete. The rootCid is ${rootCid}`);
-		    return rootCid;
-
-		  } catch (e) {
-		    console.error(e);
-		    debug(`[^] upload error at attempt ${attempt}. trying again.`);
-
-		    if (attempt > 2) throw new Error(`Upload failed. Tried ${attempt} times.`);
-		    else return __upload(storage, files, attempt);
-		  }
-		}
-
-		const rootCid = await __upload(storage, files);
-		const cid = await VOD._getBranchHash(rootCid);
-		return cid;
-	}
 
 	async uploadToIpfs () {
 		if (typeof this === 'undefined') throw new Error('*this* is undefined in uploadToIpfs which is UNSUPPORTED. There is likely a problem with how you are calling uploadToIpfs()')
