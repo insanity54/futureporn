@@ -20,7 +20,7 @@ const aedesClient = aedesClientFactory(
 
 const voddo = new Voddo({
 	url: 'https://chaturbate.com/projektmelody',
-	format: 'worst',
+	format: 'best',
 	cwd: process.env.FUTUREPORN_WORKDIR
 })
 
