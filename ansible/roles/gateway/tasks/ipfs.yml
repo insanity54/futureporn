@@ -83,4 +83,5 @@
     name: ipfs
     state: started
     daemon_reload: yes
+    enabled: yes
 

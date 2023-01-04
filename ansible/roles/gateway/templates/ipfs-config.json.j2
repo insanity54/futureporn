@@ -96,7 +96,7 @@
     "Writable": false,
     "PathPrefixes": [],
     "APICommands": [],
-    "NoFetch": true,
+    "NoFetch": false,
     "NoDNSLink": true,
     "PublicGateways": null
   },
@@ -115,7 +115,20 @@
       "Multiplexers": {}
     },
     "ConnMgr": {},
-    "ResourceMgr": {}
+    "ResourceMgr": {
+      "Limits": {
+        "System": {
+          "Memory": 1073741824,
+          "FD": 4096,
+          "Conns": 2048,
+          "ConnsInbound": 1024,
+          "ConnsOutbound": 2048,
+          "Streams": 8192,
+          "StreamsInbound": 4096,
+          "StreamsOutbound": 8192
+        }
+      }
+    }
   },
   "AutoNAT": {},
   "Pubsub": {
