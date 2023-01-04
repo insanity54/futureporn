@@ -1,20 +1,43 @@
 ---
 
-- name: Create /var/www
-  ansible.builtin.file:
-    path: /var/www
-    state: directory
-    owner: caddy
-    group: caddy
-    mode: '0600'
-  notify: reload caddy
+# - name: Create the caddy group
+#   ansible.builtin.group:
+#     name: caddy
+
+# - name: Create the caddy user
+#   ansible.builtin.user:
+#     name: caddy
+#     groups: caddy
+#     create_home: yes
+#     home: /home/caddy
+
+# - name: Create /var/www
+#   ansible.builtin.file:
+#     path: /var/www
+#     state: directory
+#     owner: caddy
+#     group: caddy
+#     mode: '0600'
+#   notify: reload caddy
+
+# - name: mkdir for caddy
+#   ansible.builtin.file:
+#     state: directory
+#     dest: /etc/caddy
+#     owner: root
+#     group: root
+#     mode: '0755'
 
 - name: Configure Caddy
   ansible.builtin.template:
     src: templates/Caddyfile.j2
     dest: /etc/caddy/Caddyfile
-    owner: caddy
-    group: caddy
-    mode: '0600'
+    owner: root
+    group: root
+    mode: '0755'
   notify: reload caddy
 
+# - name: Install caddy init file
+#   ansible.builtin.template:
+#     src: templates/caddy.service.j2
+#     dest: 

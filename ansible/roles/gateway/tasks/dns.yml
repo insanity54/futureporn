@@ -1,8 +1,15 @@
 ---
 
-- name: Ensure DNS A record exists
-    # @todo enable futureporn.net
-    # see https://github.com/insanity54/futureporn/issues/73
+# see https://github.com/insanity54/futureporn/issues/73
+- name: set gateway DNS
+  vultr.cloud.dns_record:
+    api_key: "{{ lookup('env', 'VULTR_API_KEY')}}"
     record_type: A
-    domain: ipfs.sbtp.xyz
-    data: {{ ansible_default_ipv4.address }}
+    name: ipfs
+    domain: sbtp.xyz
+    data: "{{ ansible_default_ipv4.address }}"
+    ttl: 3600
+    multiple: no
+    state: present
+  delegate_to: localhost
+  run_once: yes

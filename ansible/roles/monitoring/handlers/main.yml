@@ -1,0 +1,8 @@
+---
+
+- name: restart grafana-agent
+  systemd:
+    daemon_reload: yes
+    name: grafana-agent
+    enabled: yes
+    state: restarted

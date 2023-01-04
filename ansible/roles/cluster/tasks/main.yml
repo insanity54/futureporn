@@ -1,0 +1,188 @@
+---
+
+
+
+    - name: Create local tmp directories for tmp SSL certs
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop: 
+        - /tmp/usr/local/etc/ssl/private/
+        - /tmp/usr/local/etc/ssl/certs/
+      delegate_to: localhost
+
+
+    - name: Create private key (RSA, 4096 bits)
+      community.crypto.openssl_privatekey:
+        path: certificate.key
+      delegate_to: localhost
+
+    - name: Create CSR
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: certificate.key
+        common_name: futureporn.net
+        organization_name: Futureporn.net
+        email_address: cj@futureporn.net
+        subject_alt_name:
+          - "DNS:cluster.futureporn.net"
+      delegate_to: localhost
+      register: csr
+
+    - name: Create simple self-signed certificate
+      community.crypto.x509_certificate:
+        path: /tmp/usr/local/etc/ssl/certs/cluster.futureporn.net.pem
+        csr_content: "{{ csr.csr }}"
+        privatekey_path: certificate.key
+        provider: selfsigned
+      delegate_to: localhost
+
+
+    - name: Create directories for SSL certs
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop: 
+        - /usr/local/etc/ssl/private/
+        - /usr/local/etc/ssl/certs/
+
+    - name: upload SSL cert
+      become: yes
+      copy:
+        remote_src: false
+        src: /tmp/usr/local/etc/ssl/certs/cluster.futureporn.net.pem
+        dest: /usr/local/etc/ssl/certs/cluster.futureporn.net.pem
+        mode: '0755'
+        owner: root
+        group: root
+
+
+    - name: upload SSL private key
+      become: yes
+      copy:
+        remote_src: false
+        src: certificate.key
+        dest: /usr/local/etc/ssl/private/cluster.futureporn.net.key
+        mode: '0755'
+        owner: root
+        group: root
+
+
+    - name: Allow access to the HTTP RESTapi endpoint
+      community.general.ufw:
+        rule: allow
+        port: '9094'
+        proto: tcp
+
+    - name: Allow public access to IPFS cluster swarm port
+      community.general.ufw:
+        rule: allow
+        port: '9096'
+        proto: tcp
+
+    - name: Allow access to the IPFS Pinning API endpoint
+      community.general.ufw:
+        rule: allow
+        port: '9097'
+        proto: tcp
+
+    - name: Download ipfs-cluster-service
+      ansible.builtin.get_url:
+        url: "https://dist.ipfs.tech/ipfs-cluster-service/{{ ipfs_cluster_service_version }}/ipfs-cluster-service_{{ ipfs_cluster_service_version }}_linux-amd64.tar.gz"
+              # https://dist.ipfs.tech/ipfs-cluster-service/v1.0.4/ipfs-cluster-service_v1.0.4_linux-amd64.tar.gz
+        dest: /root/
+        checksum: sha256:d0ea34e5b3a063447cf03ec009cb02302b29b22f93e41ab8d01740fa93143821
+
+    - name: unarchive ipfs-cluster-service
+      ansible.builtin.unarchive:
+        remote_src: yes
+        src: "ipfs-cluster-service_{{ ipfs_cluster_service_version }}_linux-amd64.tar.gz"
+        dest: /root/
+
+    - name: install ipfs-cluster-service
+      ansible.builtin.copy:
+        remote_src: yes
+        src: /root/ipfs-cluster-service/ipfs-cluster-service
+        dest: /usr/local/bin/ipfs-cluster-service
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Install ipfs system service
+      ansible.builtin.template:
+        src: templates/ipfs-cluster.service.j2
+        dest: /etc/systemd/system/ipfs-cluster.service
+        owner: root
+        group: root
+        mode: '0755'
+      notify: 
+        - restart ipfs-cluster
+
+    - name: create .ipfs-cluster dir
+      file:
+        state: directory
+        dest: /home/ipfs/.ipfs-cluster
+        owner: ipfs
+        group: ipfs
+
+    - name: create ipfs-cluster config
+      template:
+        src: service.json.j2
+        dest: /home/ipfs/.ipfs-cluster/service.json
+        owner: ipfs
+        group: ipfs
+        mode: '0600'
+      notify: restart ipfs-cluster
+
+
+    - name: create identity file
+      template:
+        src: identity.json.j2
+        dest: /home/ipfs/.ipfs-cluster/identity.json
+        owner: ipfs
+        group: ipfs
+        mode: '0600'
+      notify: restart ipfs-cluster
+
+    - name: create peerstore
+      template:
+        src: peerstore.j2
+        dest: /home/ipfs/.ipfs-cluster/peerstore
+        owner: ipfs
+        group: ipfs
+        mode: '0655'
+      notify: restart ipfs-cluster
+
+    - name: enable and start IPFS Cluster
+      become: yes
+      service:
+        name: ipfs-cluster
+        state: started
+        enabled: yes
+
+
+
+
+    # see https://github.com/insanity54/futureporn/issues/73
+    - name: set DNS
+      vultr.cloud.dns_record:
+        api_key: "{{ lookup('env', 'VULTR_API_KEY')}}"
+        record_type: A
+        name: cluster
+        domain: sbtp.xyz
+        data: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+        ttl: 3600
+        multiple: no
+        state: present
+      delegate_to: localhost
+      run_once: yes
+
+
+    - name: set up monitoring
+      include_role:
+        name: monitoring
+      tags:
+        - monitoring

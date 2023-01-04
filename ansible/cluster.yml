@@ -7,15 +7,6 @@
 
 
 
-- name: spin up instances
-  hosts: localhost
-  vars:
-    - instance_plan: vc2-1c-2gb
-    - instance_count: 2
-    - instance_type: cluster
-  roles:
-    - role: spinup
-
 
 
 # @todo ipfs daemon throws a warning on VPS with <=2GB
@@ -23,116 +14,17 @@
 #       a 4GB VPS might be the minimum if the cluster requires this buffer size to be set properly.
 
 - name: provision ipfs cluster
-  hosts: ~futureporn-cluster\d
-  gather_facts: no # `no` is a requirement for base role. the base role gather facts once able.
+  hosts: cluster
+  gather_facts: no # `no` is a requirement for insanity54/base role. the base role gather facts once able.
   vars:
     - ansible_user: root
-    - storage_gb: 1000
+    - storage_gb: 3000
   tasks:
-
-
-    # unfortunately the ngine_io.vultr.vultr inventory module does not contain instance UUIDs,
-    # a dependency for vultr.cloud.block_storage
-    # as a workaround, we get the UUID from API.
-    - name: get instance data from vultr API.
-      ansible.builtin.uri:
-        url: https://api.vultr.com/v2/instances
-        method: GET
-        body_format: json
-        status_code: [200, 202]
-        return_content: true
-        headers:
-          Authorization: "Bearer {{ lookup('env', 'VULTR_API_KEY') }}"
-      delegate_to: localhost
-      run_once: yes
-      register: instances
-
-    - debug: var=instances
 
 
     - include_role:
         name: base
 
-
-    - debug: var=instances
-    - set_fact:
-        cluster_instances: "{{ instances.json.instances | selectattr('label', 'match', 'futureporn-cluster' ) }}"
-
-
-
-    - name: get just this vultr instance data
-      set_fact:
-        instance: "{{ cluster_instances | selectattr('label', 'equalto', inventory_hostname) | first }}"
-
-
-    - name: get the region (3 letter short version) and the instance UUID
-      set_fact:
-        region: "{{ instance.region }}"
-        uuid: "{{ instance.id }}"
-
-
-    - debug:
-       msg: "label:{{ instance.label }}, region:{{ instance.region }}, uuid:{{ uuid }}"
-
-    - debug: msg="{{cluster_instances | type_debug}}"
-
-    - name: "Print IP Address"
-      debug:
-        msg: "IP Address: {{ item.main_ip }} ({{ item.id }})"
-      with_items: "{{ cluster_instances }}"
-
-    - set_fact:
-        #trusted_peers_multiaddr: 
-        trusted_peers_multiaddr: |-
-          [
-          {% for instance in cluster_instances %}
-            "{{ lookup('env', 'IPFS_CLUSTER' ~ instance.label | last ~ '_IPFS_CLUSTER_ID') }}",
-          {%- endfor %}
-          ]
-
-
-      
-    - name: Ensure a block storage volume exists and is attached to server
-      vultr.cloud.block_storage:
-        name: "{{ inventory_hostname }}-storage"
-        state: present
-        attached_to_instance: "{{ uuid }}"
-        region: "{{ region }}"
-        size_gb: "{{ storage_gb }}"
-        block_type: "storage_opt"
-        live: yes
-      delegate_to: localhost
-      register: block_storage_create
-
-
-    - name: Create partition for vultr block storage and resize to 100% if necessary (useful for upgrades)
-      community.general.parted:
-        device: /dev/vdb
-        number: 1
-        state: present
-        label: gpt
-        fs_type: ext4
-        part_end: "100%"
-        resize: true
-      register: create_partition_outpu
-      when: block_storage_create.changed
-
-
-    - debug: var=create_partition_output
-
-    - name: Create a ext4 filesystem 
-      community.general.filesystem:
-        fstype: ext4
-        dev: /dev/vdb1
-
-    - name: mount block storage
-      ansible.posix.mount:
-        path: "/home/ipfs"
-        src: /dev/vdb1
-        fstype: ext4
-        opts: defaults,noatime,nofail
-        boot: yes
-        state: mounted
 
     - name: create ipfs group
       group:
@@ -220,11 +112,11 @@
         owner: root
         group: root
 
-    - name: Add all cluster instances to ansible ipfs_cluster group, a requirement for madoke.ansible-ipfs-cluster role
-      ansible.builtin.add_host:
-        name: '{{ item }}'
-        groups: ipfs_cluster
-      loop: "{{ cluster_instances | map(attribute='label') }}"
+    # - name: Add all cluster instances to ansible ipfs_cluster group, a requirement for madoke.ansible-ipfs-cluster role
+    #   ansible.builtin.add_host:
+    #     name: '{{ item }}'
+    #     groups: ipfs_cluster
+    #   loop: "{{ cluster_instances | map(attribute='label') }}"
 
 
     - debug: var=hostvars
@@ -251,7 +143,7 @@
             password: "{{ lookup('env', 'IPFS_CLUSTER_HTTP_API_PASSWORD') }}"
         ipfs_cluster_restapi_ssl_cert_file: /usr/local/etc/ssl/certs/cluster.futureporn.net.pem
         ipfs_cluster_restapi_ssl_key_file: /usr/local/etc/ssl/private/cluster.futureporn.net.key
-        ipfs_cluster_crdt_trusted_peers: "{{ trusted_peers_multiaddr }}"
+        # ipfs_cluster_crdt_trusted_peers: "{{ trusted_peers_multiaddr }}" # I am all alone. #ForeverAlone amirite KEKW
         ipfs_storage_max: "{{ storage_gb }}GB"
         ipfs_enable_gc: yes
         ipfs_cluster_metrics_enable_stats: true
@@ -261,7 +153,7 @@
     - name: set the multiaddr
       # we do this on a separate step because we first need ipfs_cluster_id to be set
       ansible.builtin.set_fact:
-        ipfs_cluster_peer_addr: "/ip4/{{ hostvars[inventory_hostname].v4_main_ip }}/tcp/9096/ipfs/{{ hostvars[inventory_hostname].ipfs_cluster_id }}"
+        ipfs_cluster_peer_addr: "/ip4/{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/tcp/9096/ipfs/{{ hostvars[inventory_hostname].ipfs_cluster_id }}"
 
 
     - name: Allow access to the HTTP RESTapi endpoint
@@ -285,23 +177,6 @@
     - include_role: 
         name: madoke.ansible-ipfs-cluster
 
-    - debug: var=item
-      with_items: 
-        - "{{ cluster_instances }}"
-
-    # we do this because there might be old DNS records and we want to clear everything
-    # and enter new records for cluster instances which actually exist
-    - name: clear cluster DNS records
-      vultr.cloud.dns_record:
-        api_key: "{{ lookup('env', 'VULTR_API_KEY')}}"
-        record_type: A
-        name: cluster
-        domain: sbtp.xyz
-        data: ""
-        multiple: true # we use this to clear everything
-        state: absent
-      run_once: true
-      delegate_to: localhost
 
     # see https://github.com/insanity54/futureporn/issues/73
     - name: set DNS
@@ -310,11 +185,16 @@
         record_type: A
         name: cluster
         domain: sbtp.xyz
-        data: "{{ item.main_ip }}"
+        data: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
         ttl: 3600
-        multiple: yes
+        multiple: no
         state: present
       delegate_to: localhost
       run_once: yes
-      with_items:
-        - "{{ cluster_instances }}"
+
+
+    - name: set up monitoring
+      include_role:
+        name: monitoring
+      tags:
+        - monitoring

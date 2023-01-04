@@ -11,24 +11,22 @@
     create_home: yes
     home: /home/ipfs
 
-- name: Download go-ipfs
+- name: Download kubo
   ansible.builtin.get_url:
-    url: "https://dist.ipfs.io/go-ipfs/{{ ipfs_kubo_version }}/go-ipfs_{{ ipfs_kubo_version }}_linux-amd64.tar.gz"
+    url: "https://dist.ipfs.tech/kubo/{{ ipfs_kubo_version }}/kubo_{{ ipfs_kubo_version }}_linux-amd64.tar.gz"
     dest: /root/
-    checksum: sha256:941e315b4979a3d8add4db8d84404509e7b9dd7775ec89e83304211578cea3cd
-  register: dl
+    checksum: sha256:7121f3e2d44a6a978d289a206cdbc7f10ba0348f7386c456ff1fdc4d4a8408d0
 
-- name: unarchive go-ipfs
+- name: unarchive kubo
   ansible.builtin.unarchive:
     remote_src: yes
-    src: "/root/go-ipfs_{{ ipfs_kubo_version }}_linux-amd64.tar.gz"
+    src: "/root/kubo_{{ ipfs_kubo_version }}_linux-amd64.tar.gz"
     dest: /root/
-  when: dl.changed
 
-- name: install go-ipfs
+- name: install kubo
   ansible.builtin.copy:
     remote_src: yes
-    src: /root/go-ipfs/ipfs
+    src: /root/kubo/ipfs
     dest: /usr/local/bin/ipfs
     mode: '0755'
     owner: root
@@ -64,7 +62,21 @@
     proto: tcp
 
 
+- name: install ipfs config
+  template:
+    src: templates/ipfs-config.json.j2
+    dest: /home/ipfs/.ipfs/config
+    owner: ipfs
+    group: ipfs
+    mode: '0600'
 
+- name: init IPFS
+  become: yes
+  become_user: ipfs
+  command: /usr/local/bin/ipfs init --empty-repo -- /home/ipfs/.ipfs/config
+  args:
+    creates: "/home/ipfs/.ipfs/config"
+  notify: restart ipfs
 
 - name: start ipfs
   ansible.builtin.systemd:
@@ -72,24 +84,3 @@
     state: started
     daemon_reload: yes
 
-
-- name: configure ipfs StorageMax
-  ansible.builtin.lineinfile:
-    dest: /home/ipfs/.ipfs/config
-    regexp: "StorageMax"
-    line: "\"StorageMax\": \"{{ ipfs_storage_max }}\","
-    state: present
-    owner: ipfs
-    group: ipfs
-  notify: restart ipfs
-
-
-- name: configure ipfs GCPeriod
-  ansible.builtin.lineinfile:
-    dest: /home/ipfs/.ipfs/config
-    regexp: "GCPeriod"
-    line: "\"GCPeriod\": \"5m\","
-    state: present
-    owner: ipfs
-    group: ipfs
-  notify: restart ipfs

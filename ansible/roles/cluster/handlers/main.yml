@@ -1,0 +1,7 @@
+---
+
+
+- name: restart ipfs-cluster
+  ansible.builtin.systemd:
+    name: ipfs-cluster
+    state: restarted

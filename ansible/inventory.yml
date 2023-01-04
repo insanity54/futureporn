@@ -1,0 +1,22 @@
+---
+
+
+monoliths:
+  hosts:
+    baba:
+      ansible_host: 38.242.216.6
+      # ansible_host: fe80::250:56ff:fe49:6cd3
+      cluster_peers: 
+        - /ip4/45.32.201.82/tcp/9096/ipfs/QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
+        - /ip4/127.0.0.1/tcp/9096/p2p/QmQ7kYMaeENoN5e55TTkRMjeq1va2W1BzMKteGvmsXM54U
+      trusted_peers:
+        - QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
+        - QmQ7kYMaeENoN5e55TTkRMjeq1va2W1BzMKteGvmsXM54U
+      ipfs_kubo_version: v0.17.0
+      ipfs_privkey: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_PRIVATE_KEY') }}"
+      ipfs_peer_id: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_PEER_ID') }}"
+      ipfs_cluster_privkey: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_CLUSTER_PRIVATE_KEY') }}"
+      ipfs_cluster_id: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_CLUSTER_ID') }}"
+      ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER_SECRET') }}"
+      ipfs_cluster_service_version: v1.0.4
+      ipfs_cluster_follow_version: v1.0.4

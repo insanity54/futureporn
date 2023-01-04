@@ -4,7 +4,7 @@
     "PrivKey": "{{ ipfs_privkey }}"
   },
   "Datastore": {
-    "StorageMax": "10GB",
+    "StorageMax": "{{ storage_gb }}GB",
     "StorageGCWatermark": 90,
     "GCPeriod": "1h",
     "Spec": {
@@ -96,7 +96,7 @@
     "Writable": false,
     "PathPrefixes": [],
     "APICommands": [],
-    "NoFetch": false,
+    "NoFetch": true,
     "NoDNSLink": true,
     "PublicGateways": null
   },
