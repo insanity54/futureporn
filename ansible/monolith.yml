@@ -1,0 +1,32 @@
+---
+
+- name: cluster and gateway and basically a monolith for a dedicated server
+  hosts: monoliths
+  gather_facts: no # `no` is a requirement for insanity54/base role. the base role gather facts once able.
+  vars:
+    - ansible_user: root
+    - storage_gb: 3000
+    - ipfs_gc_period: 3h
+  pre_tasks:
+    - name: de-boogie
+      ansible.builtin.debug:
+        var: ipfs_peer_id
+      tags: [gateway]
+    - name: gather facts only if specific tag is used
+      gather_facts:
+      tags: 
+        - never
+        - gateway
+        - cluster
+        - scout
+  roles:
+    - role: base
+    - role: nvjacobo.caddy
+      tags:
+        - gateway
+    - role: gateway # also installs/configures IPFS
+      tags: [gateway]
+    - role: cluster
+      tags: [cluster]
+    - role: capture
+    - role: scout

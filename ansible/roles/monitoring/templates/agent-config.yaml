@@ -1,0 +1,76 @@
+
+integrations:
+  agent:
+    enabled: true
+  node_exporter:
+    enabled: true
+    relabel_configs:
+    - replacement: hostname
+      source_labels:
+      - __address__
+      target_label: instance
+
+metrics:
+  wal_directory: /tmp/wal
+  global:
+    scrape_interval: 60s
+  configs:
+    - name: hosted-prometheus
+      scrape_configs:
+        - job_name: node
+          static_configs:
+          - targets: ['localhost:30000']
+      remote_write:
+        - url: {{ grafana_agent_url }}
+          basic_auth:
+            username: {{ grafana_agent_username }}
+            password: {{ grafana_agent_password }}
+
+logs:
+  positions_directory: /home/grafana-agent/positions
+  configs:
+  - name: cluster-logs
+    clients:
+    - url: {{ grafana_promtail_url }}
+    scrape_configs:
+    - job_name: systemd-journal
+      journal:
+        max_age: 24h
+        labels:
+          instance: hostname
+          job: systemd-journal
+      relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
+      - source_labels: ['__journal__boot_id']
+        target_label: 'boot_id'
+      - source_labels: ['__journal__transport']
+        target_label: 'transport'
+  - name: integrations
+    scrape_configs:
+    - job_name: integrations/node_exporter_journal_scrape
+      journal:
+        max_age: 24h
+        labels:
+          instance: baba
+          job: integrations/node_exporter
+      relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
+      - source_labels: ['__journal__boot_id']
+        target_label: 'boot_id'
+      - source_labels: ['__journal__transport']
+        target_label: 'transport'
+      - source_labels: ['__journal_priority_keyword']
+        target_label: 'level'
+
+
+# integrations:
+#   node_exporter:
+#     enabled: true
+#     relabel_configs:
+#     - replacement: baba
+#       target_label: instance
+
+# logs:
+#   configs:

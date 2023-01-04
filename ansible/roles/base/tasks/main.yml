@@ -21,12 +21,13 @@
   wait_for_connection:
     timeout: 600
 
-- name: wait for boot-finished file to exist
-  raw: test -f /var/lib/cloud/instance/boot-finished
-  retries: 50
-  register: cmd_res
-  changed_when: false
-  until: cmd_res is success
+# - name: wait for boot-finished file to exist
+#   raw: test -f /var/lib/cloud/instance/boot-finished
+#   retries: 50
+#   register: cmd_res
+#   changed_when: false
+#   until: cmd_res is success
+
 
 - name: gather facts
   ansible.builtin.setup:

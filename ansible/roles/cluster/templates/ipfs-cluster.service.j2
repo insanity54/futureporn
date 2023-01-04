@@ -1,0 +1,14 @@
+[Unit]
+Description=IPFS Cluster Service
+After=network.target
+
+[Service]
+LimitNOFILE=10000
+Environment="IPFS_CLUSTER_FD_MAX=10000"
+ExecStart=/usr/local/bin/ipfs-cluster-service daemon
+Restart=always
+RestartSec=30
+User=ipfs
+
+[Install]
+WantedBy=multi-user.target
