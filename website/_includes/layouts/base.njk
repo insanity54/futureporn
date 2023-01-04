@@ -27,15 +27,22 @@
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <h1 class="title">{{ metadata.title }}</h1>
-        </a>
-      </div>
-      <a class="navbar-item" href="/about">About</a>
-      <a class="navbar-item" href="/faq">FAQ</a>
-      <a class="navbar-item" href="/goals">Goals</a>
-      <a class="navbar-item" href="/patrons">Patrons</a>
-      <a class="navbar-item" href="/feed">RSS</a>
-      <a class="navbar-item" href="/api">API</a>
-      {# <a class="navbar-item" href="/feedback">Feedback</a> COMING SOMEDAY #}
+          <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+          <div class="navbar-menu" id="navMenu">
+            <a class="navbar-item" href="/about">About</a>
+            <a class="navbar-item" href="/faq">FAQ</a>
+            <a class="navbar-item" href="/goals">Goals</a>
+            <a class="navbar-item" href="/patrons">Patrons</a>
+            <a class="navbar-item" href="/feed">RSS</a>
+            <a class="navbar-item" href="/api">API</a>
+            {# <a class="navbar-item" href="/feedback">Feedback</a> COMING SOMEDAY #}
+          </div>
+            </a>
+          </div>
     </nav>
     <div class="container">
 
