@@ -37,7 +37,7 @@ const filterB2Completed = (vods) => {
 
 
 function buildIpfsUrl(urlFragment) {
-  return `https://ipfs.sbtp.xyz/ipfs/${urlFragment}`;
+  return `https://sbtp.xyz/ipfs/${urlFragment}`;
 }
 
 
@@ -49,7 +49,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
     formats: ['avif', 'jpeg'],
     concurrency: 1,
     cacheOptions: { 
-      directory: '.img-cache',
+      directory: '.cache',
       duration: "365d"
     }
   };
