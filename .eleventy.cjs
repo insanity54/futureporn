@@ -50,7 +50,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
     concurrency: 1,
     cacheOptions: { 
       directory: '.img-cache',
-      duration: "365d"
+      duration: "*"
     }
   };
 
