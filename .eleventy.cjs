@@ -7,7 +7,7 @@ const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const decodeUriComponent = require('decode-uri-component');
 const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
-const sharpPlugin = require('eleventy-plugin-sharp');
+// const sharpPlugin = require('eleventy-plugin-sharp');
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -20,10 +20,10 @@ const manifest = JSON.parse(
 );
 
 
-const imageDownloader = (src) => {
-  console.log(`imageDownloader. Oi mate, fak auff!`)
-  console.log(src)
-}
+// const imageDownloader = (src) => {
+//   console.log(`imageDownloader. Oi mate, fak auff!`)
+//   console.log(src)
+// }
 
 const filterIpfsCompleted = (vods) => {
   let golo = [];
@@ -127,11 +127,11 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
 
-  eleventyConfig.addPlugin(imageDownloader);
-  eleventyConfig.addPlugin(sharpPlugin({
-    urlPath: '/img',
-    outputDir: '_site/img'
-  }));
+  // eleventyConfig.addPlugin(imageDownloader);
+  // eleventyConfig.addPlugin(sharpPlugin({
+  //   urlPath: '/img',
+  //   outputDir: '_site/img'
+  // }));
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginNavigation);
 
