@@ -8,7 +8,25 @@
     <div class="card-image">
       <a href="{{ vod.url | url }}">
         <figure class="image is-16by9">
-          {% image vod.data.thiccHash %}
+          {# {% set image = 'https://sbtp.xyz/ipfs/'+vod.data.thiccHash | sharp %} #}
+          <picture>
+            <source 
+              type="image/avif" 
+              srcset="https://sbtp.xyz/ipfs/{{ vod.data.thiccHash }}"
+              sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px"
+            >
+            <img 
+              class="image" 
+              alt="" 
+              loading="lazy" 
+              decoding="async" 
+              onerror="this.style.display='none'" 
+              src="https://sbtp.xyz/ipfs/{{ vod.data.thiccHash }}"
+              width="64" 
+              height="65"
+            >
+          </picture>
+
         </figure>
       </a>
     </div>
@@ -29,3 +47,12 @@
     </div>
   </div>
 </div>
+
+
+{# 
+<picture>
+  <source srcset="{% getUrl image | resize({ width: 1440, height: 460 }) | webp %} 1x, {% getUrl image | resize({ width: 2560, height: 800 }) | webp %} 2x" media="(min-width: 640px)">
+  <source srcset="{% getUrl image | resize({ width: 640, height: 320 }) | webp %} 1x, {% getUrl image | resize({ width: 1280, height: 640 }) | webp %} 2x">
+  <source srcset="{% getUrl image | resize({ width: 1440, height: 460 }) %} 1x, {% getUrl image | resize({ width: 2560, height: 800 }) %} 2x" media="(min-width: 640px)">
+  <img class="articleHero-image" srcset="{% getUrl image | resize({ width: 640, height: 320 }) %} 1x, {% getUrl image | resize({ width: 1280, height: 640 }) %} 2x" alt="{{ image.title }}">
+</picture> #}
