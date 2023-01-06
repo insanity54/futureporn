@@ -28,5 +28,11 @@
       tags: [gateway]
     - role: cluster
       tags: [cluster]
+    - role: geerlingguy.nodejs
+      tags: 
+        - capture
+        - scout
     - role: capture
+      tags: [capture]
     - role: scout
+      tags: [scout]

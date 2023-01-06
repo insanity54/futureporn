@@ -20,13 +20,30 @@
 #     mode: '0600'
 #   notify: reload caddy
 
-# - name: mkdir for caddy
-#   ansible.builtin.file:
-#     state: directory
-#     dest: /etc/caddy
-#     owner: root
-#     group: root
-#     mode: '0755'
+- name: mkdir for caddy
+  ansible.builtin.file:
+    state: directory
+    dest: /usr/local/etc/caddy
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: mkdir for www
+  file:
+    state: directory
+    dest: /var/www/ipfs.sbtp.xyz
+    owner: caddy
+    group: caddy
+    mode: '0755'
+
+- name: copy index.html to server
+  ansible.builtin.copy:
+    remote_src: false
+    src: files/index.html
+    dest: /var/www/ipfs.sbtp.xyz/index.html
+    owner: caddy
+    group: caddy
+    mode: '0744'
 
 - name: Configure Caddy
   ansible.builtin.template:
