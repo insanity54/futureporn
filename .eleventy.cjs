@@ -7,17 +7,23 @@ const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const decodeUriComponent = require('decode-uri-component');
 const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
+const sharpPlugin = require('eleventy-plugin-sharp');
 
 const isDev = process.env.NODE_ENV === "development";
 
 
-const Image = require("@11ty/eleventy-img");
-Image.concurrency = 1;
+// const Image = require("@11ty/eleventy-img");
+// Image.concurrency = 1;
 
 const manifest = JSON.parse(
   fs.readFileSync(manifestPath, { encoding: "utf8" })
 );
 
+
+const imageDownloader = (src) => {
+  console.log(`imageDownloader. Oi mate, fak auff!`)
+  console.log(src)
+}
 
 const filterIpfsCompleted = (vods) => {
   let golo = [];
@@ -41,65 +47,99 @@ function buildIpfsUrl(urlFragment) {
 }
 
 
+// function imageShortcode(
+//   src, 
+//   cls = "image", 
+//   alt = "", 
+//   sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", 
+//   widths = [90, 180, 360]
+// ) {
+//   console.log(`  [*] getting ${src}`)
+//   let img = sharpPlugin.getUrl(src)
 
-async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
-  let options = {
-    outputDir: './website/img',
-    widths: widths,
-    formats: ['avif', 'jpeg'],
-    concurrency: 1,
-    cacheOptions: { 
-      directory: '.img-cache',
-      duration: "*"
-    }
-  };
+//   return `
+//     <picture>
+//       <source 
+//         type="image/avif" 
+//         srcset="/img/vlhQdaV-L1-64.avif 64w" 
+//         sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px"
+//       >
+//       <img 
+//         class="image" 
+//         alt="" 
+//         loading="lazy" 
+//         decoding="async" 
+//         onerror="this.style.display='none'" 
+//         src="/img/vlhQdaV-L1-64.jpeg" 
+//         width="64" 
+//         height="65"
+//       >
+//     </picture>`
+// }
 
 
-  let isCid = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/.test(src)
-  let url = isCid ? buildIpfsUrl(src) : src
+// async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
+//   let options = {
+//     outputDir: '_site/img/',
+//     url: '/img/',
+//     widths: widths,
+//     formats: ['avif', 'jpeg'],
+//     dryRun: true,
+//     cacheOptions: { 
+//       concurrency: 1,
+//       verbose: true,
+//       directory: '.img-cache',
+//       duration: "*",
+//     }
+//   };
 
 
-  let imageAttributes = {
-    class: cls,
-    alt,
-    sizes,
-    loading: "lazy",
-    decoding: "async",
-    onerror: "this.style.display='none'" // avoid ugly border
-  };
+//   let isCid = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/.test(src)
+//   let url = isCid ? buildIpfsUrl(src) : src
 
 
-  try {
-    console.log(`  [*] Downloading ${url}`)
-    if (process.env.SKIP_DOWNLOAD) throw new Error('  >> Skipping download');
-    let metadata = await Image(url, options);
-    return Image.generateHTML(metadata, imageAttributes)
-  } catch (e) {
-    console.error('We got an Image fetch error. Defaulting to Melface')
-    console.error(e);
-    let metadata = await Image('website/favicon/favicon.png', options);
-    return Image.generateHTML(metadata, imageAttributes)
-  }
-}
+//   let imageAttributes = {
+//     class: cls,
+//     alt,
+//     sizes,
+//     loading: "lazy",
+//     decoding: "async",
+//     onerror: "this.style.display='none'" // avoid ugly border
+//   };
+
+
+//   try {
+//     console.log(`  [*] checking ${url}`)
+//     if (process.env.SKIP_DOWNLOAD) throw new Error('  >> Skipping download');
+//     let metadata = await Image(url, options);
+//     return Image.generateHTML(metadata, imageAttributes)
+//   } catch (e) {
+//     console.error('We got an Image fetch error. Defaulting to Melface')
+//     console.error(e);
+//     let metadata = await Image('website/favicon/favicon.png', options);
+//     return Image.generateHTML(metadata, imageAttributes)
+//   }
+// }
 
 
 module.exports = function(eleventyConfig) {
 
 
-  eleventyConfig.addPassthroughCopy({ "website/img": "img" });
   eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
 
-  // eleventyConfig.addPlugin(faviconPlugin);
+  eleventyConfig.addPlugin(imageDownloader);
+  eleventyConfig.addPlugin(sharpPlugin({
+    urlPath: '/img',
+    outputDir: '_site/img'
+  }));
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginNavigation);
-  // eleventyConfig.addPlugin(tinyCSS, tinyCssOptions);
 
   eleventyConfig.setDataDeepMerge(true);
 
   eleventyConfig.addLayoutAlias("vod", "layouts/vod.njk");
   eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
 
-  eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
 
   eleventyConfig.addShortcode("buildIpfsUrl", buildIpfsUrl);
 
