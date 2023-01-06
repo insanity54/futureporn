@@ -15,7 +15,7 @@
   ansible.builtin.get_url:
     url: "https://dist.ipfs.tech/kubo/{{ ipfs_kubo_version }}/kubo_{{ ipfs_kubo_version }}_linux-amd64.tar.gz"
     dest: /root/
-    checksum: sha256:7121f3e2d44a6a978d289a206cdbc7f10ba0348f7386c456ff1fdc4d4a8408d0
+    checksum: "{{ ipfs_kubo_checksum }}"
 
 - name: unarchive kubo
   ansible.builtin.unarchive:

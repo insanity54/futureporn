@@ -9,7 +9,7 @@
     domain: sbtp.xyz
     data: "{{ ansible_default_ipv4.address }}"
     ttl: 3600
-    multiple: no
+    multiple: yes
     state: present
   delegate_to: localhost
   run_once: yes
