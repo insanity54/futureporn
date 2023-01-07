@@ -27,9 +27,7 @@ function generateRandomString(seed) {
     let random = new seedrandom(seed);
     return [...Array(11)].map(i => possibleCharacters[Math.floor(random() * possibleCharacters.length)]).join('');
 }
-// this._transUrl = info.base_url ? info.base_url : this.url;
-//                wss://chatw-51.stream.highwebmedia.com/ws/322/knhfu313/websocket
-// var transportUrl = urlUtils.addPath(this._transUrl, '/' + this._server + '/' + this._generateSessionId());
+
 export function chat(roomName) {
     class Chat extends EventEmitter {
         constructor(roomName = defaultRoomName) {
@@ -163,50 +161,6 @@ export async function pushServiceAuth(csrfToken, roomName = defaultRoomName, roo
 export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost, fallbackHosts) {
 
 
-
-
-    // const res = await fetch(`https://${realtimeHost}/keys/${keyName}/requestToken?rnd=${randomNumber}`, {
-    //     "credentials": "omit",
-    //     "headers": {
-    //         "User-Agent": ua,
-    //         "Accept": "application/json",
-    //         "Accept-Language": "en-US,en;q=0.5",
-    //         "content-type": "application/json",
-    //         "X-Ably-Version": "1.2",
-    //         "Ably-Agent": "ably-js/1.2.13 browser",
-    //         "Sec-Fetch-Dest": "empty",
-    //         "Sec-Fetch-Mode": "cors",
-    //         "Sec-Fetch-Site": "cross-site",
-    //         "Sec-GPC": "1"
-    //     },
-    //     "referrer": "https://chaturbate.com/",
-    //     "body": JSON.stringify(body),
-    //     "method": "POST",
-    //     "mode": "cors"
-    // });
-    
-    // const json = await res.json()
-    // console.log(auth.token_request)
-
-
-
-
-    // basic auth with an API key
-    // var client = new Ably.Realtime(keyName);
-
-    // using a Client Options object, see https://www.ably.com/docs/rest/usage#client-options
-    // which must contain at least one auth option, i.e. at least
-    // one of: key, token, tokenDetails, authUrl, or authCallback
-
-    // var ablyRest = new Ably.Rest({ 
-    //     environment: realtime_host,
-    //     fallbackHosts: fallback_hosts,
-    //     token: auth.token_request,
-    //     authUrl: `https://${realtime_host}/keys/${keyName}/requestToken?rnd=${randomNumber}`,
-    //     authMethod: 'POST',
-    // });
-
-
     const realtime = new Ably.Realtime.Promise({
         autoConnect: false,
         closeOnUnload: true,
@@ -216,17 +170,7 @@ export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost
         realtimeHost: realtimeHost,
         restHost: realtimeHost,
         fallback_hosts: fallbackHosts,
-        // realtimeHost: 'realtime.pa.highwebmedia.com',
-        // restHost: 'realtime.pa.highwebmedia.com',
-        // fallbackHosts: [
-        //     "a-fallback.pa.highwebmedia.com",
-        //     "b-fallback.pa.highwebmedia.com",
-        //     "c-fallback.pa.highwebmedia.com",
-        //     "d-fallback.pa.highwebmedia.com",
-        //     "e-fallback.pa.highwebmedia.com"
-        // ],
-        // authUrl: 'https://chaturbate.com/push_service/auth/',
-        // authMethod: 'POST',
+
         
         authCallback: ((tokenParams, cb) => {
             console.log(`   >>> authCallback I don't actually have antyhing i just wanted to see the tokenParams`)
@@ -235,14 +179,7 @@ export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost
 
             cb(null, tokenRequest)
 
-            // pushServiceAuth(csrfToken).then((auth) => {
-            //     const { keyName, ttl, nonce, capability, timestamp, mac } = auth.token_request;
-            //     const { realtime_host, fallback_hosts } = auth.settings;
-            //     const { client_id } = auth;
-            //     cb(null, auth.token_request)
-            // }).catch((err) => {
-            //     cb(err, null)
-            // })
+
         })
     })
 
@@ -251,25 +188,9 @@ export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost
 
     return realtime
 
-    // console.log(client)
-
-    // // // For a version of the library where async methods return promises if
-    // // // you don't pass a callback:
-    // // var client = new Ably.Realtime.Promise(options: string | ClientOptions);
-
-    // // // For the explicitly-callback-based variant (see 'Async API style' below):
-    // // var client = new Ably.Rest.Callbacks(options: string | ClientOptions);
-
-    
-    // return client
 }
 export async function getRealtime(roomName = defaultRoomName) {
-    // @TODO
-    // 1) get a csrftoken (cookie) by GET request at /projektmelody
-    // 2) POST /push_service/auth with form-data topics and form-data csrfmiddlewaretoken in order to recieve realtime_host URL, 
-    //    fallback_hosts URLs, and token_request keyName.
-    // 3) POST https://realtime.pa.highwebmedia.com/keys/${keyName}/requestToken?rnd=${random.number(16)} to get a token
-    // 3) GET wss://realtime.pa.highwebmedia.com/?access_token=KSKw2g.AL36ISgpwjjW7K8fAWu4LCBbjv1J_sCC6G5_IiuCaSMM8UrvKU&upgrade=86fAuDl_wBJfcg!PviQE7EMeWH4gqAO-40e2&format=json&heartbeats=true&v=1.2&agent=ably-js%2F1.2.13%20browser&remainPresentFor=0 to get a websocket connection which will give us realtime updates
+
     let realtime = await getAblyEvents()
     
     return realtime
@@ -323,24 +244,3 @@ export async function getCsrfToken(roomName = defaultRoomName) {
     return tokenCookie.value
 
 }
-
-// wss://realtime.pa.highwebmedia.com/?access_token=KSKw2g.AL36ISgtMkCiuAjjt6Y8KDPUQPp7KZZm54eWfSG-6j8vwVP7fM&upgrade=86fl8-f6wBJcGt!G3jqZK259OK5CKfa-887af&format=json&heartbeats=true&v=1.2&agent=ably-js/1.2.13 browser&remainPresentFor=0
-
-// here's the event we're interested in
-// let's hear directly from CB when Mel is live!
-//
-// {
-// 	"action": 15,
-// 	"id": "F-0ZurKr5P:0",
-// 	"connectionSerial": 180,
-// 	"channel": "room:status:Y8WX995:0",
-// 	"channelSerial": "86fyoBzKwBJeTo63853136:31",
-// 	"timestamp": 1672268208577,
-// 	"messages": [
-// 		{
-// 			"encoding": "json",
-// 			"data": "{\"tid\": \"16722682085:668\", \"ts\": 1672268208.559817, \"status\": \"offline\", \"message\": \"\", \"hash\": \"\", \"pub_ts\": 1672268208.5606508, \"method\": \"single\"}",
-// 			"name": "room:status:Y8WX995:0"
-// 		}
-// 	]
-// }
