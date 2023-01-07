@@ -1,0 +1,20 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=Futureporn Quality Assurance
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/env node /root/futureporn/qa/index.js
+WorkingDirectory=/root/futureporn/qa
+Restart=always
+RestartSec=5
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+Environment=DEBUG="futureporn/*"
+Environment=IPFS_CLUSTER_HTTP_API_USERNAME={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_USERNAME') }}
+Environment=IPFS_CLUSTER_HTTP_API_PASSWORD={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_PASSWORD') }}
+Environment=IPFS_CLUSTER_HTTP_API_MULTIADDR={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_MULTIADDR') }}
+Environment=PORT=5345
+Type=simple

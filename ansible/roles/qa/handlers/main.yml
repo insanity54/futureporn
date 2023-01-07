@@ -1,0 +1,6 @@
+---
+
+- name: restart qa
+  ansible.builtin.systemd:
+    name: qa
+    state: restarted

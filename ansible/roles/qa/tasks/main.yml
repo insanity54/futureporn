@@ -1,0 +1,46 @@
+---
+
+
+- name: Ensure futureporn is updated
+  git:
+    repo: https://github.com/insanity54/futureporn
+    dest: /root/futureporn
+    depth: 1
+    update: yes
+    force: yes
+
+- name: ensure yarn is installed
+  community.general.npm:
+    name: yarn
+    global: yes
+
+- name: install futureporn/qa
+  community.general.yarn:
+    path: /root/futureporn/qa
+  notify:
+    - restart qa
+
+- name: Install qa system service
+  ansible.builtin.template:
+    src: templates/qa.service.j2
+    dest: /etc/systemd/system/qa.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart qa
+
+- name: Enable qa system service
+  systemd:
+    name: qa
+    state: started
+    daemon_reload: yes
+    enabled: yes
+  notify:
+    - restart qa
+
+# - name: Close firewall so only acessible via reverse_proxy
+#   ufw:
+#     5345
+# # @todo
+

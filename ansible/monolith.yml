@@ -36,3 +36,5 @@
       tags: [capture]
     - role: scout
       tags: [scout]
+    - role: qa
+      tags: [qa]
