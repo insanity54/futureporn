@@ -6,7 +6,7 @@
   "Datastore": {
     "StorageMax": "{{ storage_gb }}GB",
     "StorageGCWatermark": 90,
-    "GCPeriod": "1h",
+    "GCPeriod": "12h",
     "Spec": {
       "mounts": [
         {
@@ -78,7 +78,7 @@
     "/ip4/104.131.131.82/udp/4001/quic/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ"
   ],
   "Gateway": {
-    "UseSubdomains": true,
+    "UseSubdomains": false,
     "HTTPHeaders": {
       "Access-Control-Allow-Headers": [
         "X-Requested-With",
@@ -96,7 +96,7 @@
     "Writable": false,
     "PathPrefixes": [],
     "APICommands": [],
-    "NoFetch": true,
+    "NoFetch": false,
     "NoDNSLink": true,
     "PublicGateways": null
     }

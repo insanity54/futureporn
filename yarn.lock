@@ -4990,6 +4990,14 @@ eleventy-plugin-purgecss@^0.3.0:
   dependencies:
     purgecss "^5.0.0"
 
+eleventy-plugin-sharp@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/eleventy-plugin-sharp/-/eleventy-plugin-sharp-0.1.1.tgz#65f1f74476bcfa508c0f1cb8ee4b35e2337c9816"
+  integrity sha512-GFrojQEb51dFGCUntBklxMkMEBKihyGmVQg0xUCn/C70f1Ws1D8I9U7NOkI0FIS2MTnI3N0ag5YH8CELzSCmZQ==
+  dependencies:
+    debug "^4.1.1"
+    sharp "^0.30.0"
+
 emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.npmjs.org/emoji-regex/-/emoji-regex-8.0.0.tgz"
@@ -6255,7 +6263,6 @@ header-case@^2.0.4:
 
 "headless@https://github.com/paulkernfeld/node-headless/tarball/master":
   version "1.1.0"
-  uid "0ded78103ce64e40d1ca65a57b95faebaa664dd1"
   resolved "https://github.com/paulkernfeld/node-headless/tarball/master#0ded78103ce64e40d1ca65a57b95faebaa664dd1"
 
 hexoid@^1.0.0:
@@ -11171,7 +11178,7 @@ shallow-clone@^3.0.0:
   dependencies:
     kind-of "^6.0.2"
 
-sharp@^0.30.3:
+sharp@^0.30.0, sharp@^0.30.3:
   version "0.30.7"
   resolved "https://registry.npmjs.org/sharp/-/sharp-0.30.7.tgz"
   integrity sha512-G+MY2YW33jgflKPTXXptVO28HvNOo9G3j0MybYAHeEmby+QuD2U98dT6ueht9cv/XDqZspSpIhoSW+BAKJ7Hig==

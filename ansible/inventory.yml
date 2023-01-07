@@ -13,6 +13,7 @@ monoliths:
         - QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
         - QmQ7kYMaeENoN5e55TTkRMjeq1va2W1BzMKteGvmsXM54U
       ipfs_kubo_version: v0.17.0
+      ipfs_kubo_checksum: sha256:7121f3e2d44a6a978d289a206cdbc7f10ba0348f7386c456ff1fdc4d4a8408d0
       ipfs_privkey: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_PRIVATE_KEY') }}"
       ipfs_peer_id: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_PEER_ID') }}"
       ipfs_cluster_privkey: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_CLUSTER_PRIVATE_KEY') }}"
@@ -20,3 +21,9 @@ monoliths:
       ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER_SECRET') }}"
       ipfs_cluster_service_version: v1.0.4
       ipfs_cluster_follow_version: v1.0.4
+    ipfs-cluster-2:
+      ansible_host: 45.32.201.82
+      ipfs_privkey: "{{ lookup('env', 'IPFS_CLUSTER2_IPFS_PRIVATE_KEY') }}"
+      ipfs_peer_id: QmRTrgx3PsUTszrpa5rVTVRaffNp9Go8GuYEkGXMgmxjqh
+      ipfs_kubo_version: v0.15.0
+      ipfs_kubo_checksum: sha256:c5ef6c393df26007e10e48e009d427f5bdbab14cbc82461c927529a3b840924d
