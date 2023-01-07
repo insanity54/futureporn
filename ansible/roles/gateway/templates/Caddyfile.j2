@@ -2,7 +2,10 @@
     email "cj@futureporn.net"
 }
 sbtp.xyz {
-    reverse_proxy /ipfs 127.0.0.1:8080
-    reverse_proxy /ipns 127.0.0.1:8080
-    reverse_proxy /qa 127.0.0.1:9094
+    handle_path /qa* {
+        reverse_proxy /qa* 127.0.0.1:5345
+    }
+    handle {
+        reverse_proxy 127.0.0.1:8080
+    }
 }
