@@ -22,7 +22,7 @@ async function main() {
 
 
     // Declare a route
-    fastify.get('/qc/v1/missing-pins', async function (request, reply) {
+    fastify.get('/qa/v1/missing-pins', async function (request, reply) {
         reply.type('application/json')
         const missing = await checkPins()
         return {
