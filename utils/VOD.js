@@ -22,9 +22,11 @@ const matter = require('gray-matter');
 const { ipfsClusterUpload } = require('./ipfsCluster');
 const { localTimeZone, later } = require('./constants');
 const { format, zonedTimeToUtc, utcToZonedTime, toDate } = dateFnsTz;
+const { convertToV1 } = require('./cid.js')
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const exoticTwitterDateFormat = "";
 
+	
 
 // const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 
@@ -123,6 +125,8 @@ module.exports = class VOD {
 		consumer_secret:      process.env.TWITTER_API_KEY_SECRET
 	})
 
+
+
 	// greetz https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
 	static fixedEncodeURIComponent(str) {
 	  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
@@ -155,6 +159,14 @@ module.exports = class VOD {
 		if (R.isNil(date)) return '';
 		if (R.is(Date, date)) return zonedTimeToUtc(date, localTimeZone);
 		if (R.is(String, date)) return new Date(date);
+	}
+
+
+
+	async function ensureCidV1 () {
+		if (cidV0Regex.test(this.videoSrcHash)) {
+			this.videoSrcHash = await convertToV1(this.videoSrcHash)
+		}
 	}
 
 
@@ -343,6 +355,9 @@ module.exports = class VOD {
 			R.prop('thiccHash')
 		)(this)
 	}
+
+
+
 	hasTmpFilePath () {
 		return R.not(this.isMissingTmpFilePath());
 	}
@@ -362,6 +377,7 @@ module.exports = class VOD {
 	hasThumbnail () {
 		return R.not(this.isMissingThumbnail());
 	}
+
 
 
 	/**
@@ -408,6 +424,7 @@ module.exports = class VOD {
 			await action.apply(this);
 		}
 	}
+
 
 	async ensureTmpFilePath () {
 		if (this.hasTmpFilePath()) return;

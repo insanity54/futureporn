@@ -1,5 +1,4 @@
 
-
 const chai = require('chai');
 const VOD = require('../utils/VOD.js');
 const path = require('path');
@@ -33,14 +32,17 @@ const mp4Fixture = path.join(__dirname, 'testvid.mp4');
 const mp4FixtureThiccHash = 'bafkreifb7opo6tqsftfnjmufo47e7nyuhnj2qcsd3bpqlbwwiyvot6ck5y';
 const mp4FixtureThinHash = 'bafkreig4n7tkww4uqkqpca7fbw7vm42nohyrixexd2klxbmrvrhawewyeq';
 const mkvFixture = path.join(__dirname, 'testvid.mkv');
+
+
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const mp4Regex = /\.mp4/;
 const doubleEncodedText = "Salutation%2520my%2520bruddas.%2520Gonna%2520be%2520along%2520fun%2520day%252C%2520starting%2520with%2520CB%2521%2521";
 const singleEncodedText = "Salutation%20my%20bruddas.%20Gonna%20be%20along%20fun%20day%2C%20starting%20with%20CB%21%21"
 const notEncodedText = "Salutation my bruddas. Gonna be along fun day, starting with CB!!";
 
-
 describe('VOD', function () {
+
+
 
     describe('instance', function () {
         it('should have a tmpFilePath property', function () {
