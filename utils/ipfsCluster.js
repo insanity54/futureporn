@@ -40,6 +40,14 @@ const getHttpsAgent = () => {
 }
 
 
+const fixInvalidJson = (invalidJson) => {
+	return invalidJson
+		.split('\n')
+		.filter((i) => i !== '')
+		.map((datum) => JSON.parse(datum))
+}
+
+
 /**
  * query the cluster for a list of all the pins
  * 
@@ -58,6 +66,32 @@ const ipfsClusterPinsQuery = async () => {
 	const d = c.filter((i) => i !== '')
 	const e = d.map((datum) => JSON.parse(datum))
 	return e
+}
+
+
+const ipfsClusterStatus = async (pin) => {
+	const httpsAgent = getHttpsAgent()
+	const res = await fetch(`${ipfsClusterUri}/pins/${pin}`, {
+		headers: {
+			'Authorization': `Basic ${Buffer.from(IPFS_CLUSTER_HTTP_API_USERNAME+':'+IPFS_CLUSTER_HTTP_API_PASSWORD, "utf-8").toString("base64")}`
+		},
+		agent: httpsAgent
+	})
+	const b = await res.text()
+	return fixInvalidJson(b)
+}
+
+
+const ipfsClusterStatusAll = async (pin) => {
+	const httpsAgent = getHttpsAgent()
+	const res = await fetch(`${ipfsClusterUri}/pins`, {
+		headers: {
+			'Authorization': `Basic ${Buffer.from(IPFS_CLUSTER_HTTP_API_USERNAME+':'+IPFS_CLUSTER_HTTP_API_PASSWORD, "utf-8").toString("base64")}`
+		},
+		agent: httpsAgent
+	})
+	const b = await res.text()
+	return fixInvalidJson(b)
 }
 
 
@@ -103,5 +137,7 @@ const ipfsClusterUpload = async (filename, expiryDuration) => {
 module.exports = {
 	ipfsClusterUpload,
 	ipfsClusterPinsQuery,
-	ipfsClusterPinAdd
+	ipfsClusterPinAdd,
+	ipfsClusterStatus,
+	ipfsClusterStatusAll
 }
