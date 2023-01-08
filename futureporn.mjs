@@ -8,6 +8,7 @@ import fsp from 'fs/promises';
 import marked from 'gray-matter';
 import { fileURLToPath } from 'url';
 
+
 const __dirname = fileURLToPath(path.dirname(import.meta.url)); // esm workaround for missing __dirname
 const workDir = __dirname; 
 const workDirPattern = path.join(workDir, '*.mp4');
@@ -56,6 +57,7 @@ console.log(`
 		const ensuranceFunctions = [
 			// vod.ensureAnnounceUrl,   // idk why I commented this out
 			// vod.ensureAnnounceTitle, // idk why I commented this out
+			vod.ensureCidV1,            // no more Qm! https://github.com/insanity54/futureporn/issues/64
 			vod.ensureDate,             // get the date from twitter
 			//vod.ensureAudioOnly,      // feature creep
 			vod.ensureVideoSrc,         // make sure the VOD is uploaded to B2
