@@ -5,5 +5,5 @@ module.exports = {
         // greets stackoverflow, i think
         return new Promise(resolve => setTimeout(resolve, delay, value));
     },
-    cidV0Regex: /Qm[1-9A-Za-z]{44}[^OIl]/
+    cidV0Regex: /Qm[a-zA-Z0-9]{44}/
 }

@@ -1,7 +1,7 @@
 
 const chai = require('chai');
 
-const { convertToV1, ensureCidV1 } = require('../utils/cid.js')
+const { convertToV1, isCidV0 } = require('../utils/cid.js')
 
 
 const cidV0Fixture = "QmTYN7LXsTU3WV2cUndqK32Bd98TEiGqV2UgDQAfmYsU72"
@@ -20,3 +20,18 @@ describe('convertToV1', function () {
     })
 })
 
+
+describe('isCidV0', function() {
+    it('should return true when the CID is v0', function () {
+        chai.expect(isCidV0(cidV0Fixture)).to.be.true
+    })
+    it('should handle a v0 CID with querystring', function () {
+        chai.expect(isCidV0(cidV0FixtureWithPath)).to.be.true
+    })
+    it('should return false when teh CID is v1', function () {
+        chai.expect(isCidV0(cidV1Fixture)).to.be.false
+    })
+    it('should handle a v1 CID with querystring', function () {
+        chai.expect(isCidV0(cidV1FixtureWithPath)).to.be.false
+    })
+})

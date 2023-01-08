@@ -1,6 +1,6 @@
 
 const execa = require('execa')
-const cidV0Regex = require('./constants.js')
+const { cidV0Regex } = require('./constants.js')
 
 
 

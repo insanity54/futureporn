@@ -22,7 +22,7 @@ const matter = require('gray-matter');
 const { ipfsClusterUpload } = require('./ipfsCluster');
 const { localTimeZone, later } = require('./constants');
 const { format, zonedTimeToUtc, utcToZonedTime, toDate } = dateFnsTz;
-const { convertToV1 } = require('./cid.js')
+const { convertToV1, isCidV0 } = require('./cid.js')
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 const exoticTwitterDateFormat = "";
 
@@ -163,10 +163,10 @@ module.exports = class VOD {
 
 
 
-	async function ensureCidV1 () {
+	async ensureCidV1 () {
 	  const hashProperties = ['videoSrcHash', 'video240Hash', 'video480Hash', 'video720Hash', 'thiccHash', 'thinHash']
 	  for (const property of hashProperties) {
-	    if (cidV0Regex.test(this[property])) {
+	    if (isCidV0(this[property])) {
 	      this[property] = await convertToV1(this[property])
 	    }
 	  }
