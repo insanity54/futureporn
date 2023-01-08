@@ -2,7 +2,12 @@ import fetch from 'node-fetch'
 import Fastify from 'fastify'
 import * as data from './package.json' assert { type: "json" }
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
-import { ipfsClusterPinsQuery, ipfsClusterPinAdd } from '../utils/ipfsCluster.js'
+import { 
+    ipfsClusterPinsQuery, 
+    ipfsClusterPinAdd,
+    ipfsClusterStatus,
+    ipfsClusterStatusAll
+} from '../utils/ipfsCluster.js'
 // import { addMissingPins } from './src/missingPinsTask'
 
 const version = data.default.version
@@ -29,6 +34,35 @@ async function main() {
             complete: (missing.length === 0),
             message: 'These are the pins listed on the Futureporn API that are currently missing from the IPFS cluster'
         }
+    })
+
+    fastify.get('/qa/v1/pin-health', async function (request, reply) {
+        reply.type('application/json')
+        const pins = await ipfsClusterStatusAll()
+
+        // const status = await ipfsClusterStatus()
+        const counts = pins.reduce((acc, pin) => {
+          const lookup = { pinned: 'pinnedCount', pin_queued: 'queuedCount', pinning: 'pinningCount' }
+          Object.values(pin.peer_map).forEach(peer => {
+            acc[lookup[peer.status]]++
+          })
+          return acc
+        }, { pinnedCount: 0, queuedCount: 0, pinningCount: 0 })
+
+        console.log(counts)
+
+        return {
+            healthy: (counts.queuedCount === 0 && counts.pinningCount === 0) ? true : false,
+            pinned: counts.pinnedCount,
+            queued: counts.queuedCount,
+            pinning: counts.pinningCount,
+            message: 'Pin health of all the pins in the pinset'
+        }
+        // return {
+        //     healthy: false,
+        //     // status: status,
+        //     message: 'PIN status of a single CID'
+        // }
     })
 
 
