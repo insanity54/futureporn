@@ -164,9 +164,12 @@ module.exports = class VOD {
 
 
 	async function ensureCidV1 () {
-		if (cidV0Regex.test(this.videoSrcHash)) {
-			this.videoSrcHash = await convertToV1(this.videoSrcHash)
-		}
+	  const hashProperties = ['videoSrcHash', 'video240Hash', 'video480Hash', 'video720Hash', 'thiccHash', 'thinHash']
+	  for (const property of hashProperties) {
+	    if (cidV0Regex.test(this[property])) {
+	      this[property] = await convertToV1(this[property])
+	    }
+	  }
 	}
 
 
