@@ -1,14 +1,13 @@
 import fetch from 'node-fetch'
 import Fastify from 'fastify'
 import * as data from './package.json' assert { type: "json" }
-// import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
-import ipfsCluster from '../utils/ipfsCluster.js'
-import * as Diff from 'diff'
+import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
+import { ipfsClusterPinsQuery, ipfsClusterPinAdd } from '../utils/ipfsCluster.js'
+// import { addMissingPins } from './src/missingPinsTask'
 
-const { ipfsClusterPinsQuery } = ipfsCluster;
 const version = data.default.version
 const port = process.env.PORT || 5000
-// const scheduler = new ToadScheduler()
+const scheduler = new ToadScheduler()
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
 
 
@@ -42,17 +41,18 @@ async function main() {
       fastify.log.info(`QA server ${version} listening on ${address}`)
     })
 
-    // // schedule a regular check
-    // const task = new AsyncTask('check the pins', () => {
-    //  fastify.log.info('Task triggered')
-    //  return checkPins()
-    // }, (err) => {
-    //  fastify.log.error('there was an error while running the task')
-    //  fastify.log.error(err)
-    // })
+    // schedule a regular check
+    const task = new AsyncTask('add any missing pins to the cluster pinset', async () => {
+     fastify.log.info('Task triggered')
+     const missingPins = await checkPins()
+     await addMissingPins(missingPins)
+    }, (err) => {
+     fastify.log.error('there was an error while running the task')
+     fastify.log.error(err)
+    })
 
-    // const job = new SimpleIntervalJob({ minutes: 15, runImmediately: true }, task)
-    // scheduler.addSimpleIntervalJob(job)
+    const job = new SimpleIntervalJob({ minutes: 15, runImmediately: false }, task)
+    scheduler.addSimpleIntervalJob(job)
 
 
 
@@ -94,6 +94,14 @@ async function getExistingPins () {
 }
 
 
+async function addMissingPins (missingPins) {
+    for (const pin of missingPins) {
+        console.log(`  [*] pinning ${pin}`)
+        await ipfsClusterPinAdd(pin)
+    }
+}
+
+
 async function checkPins() {
     // download pinset from Futureporn IPFS cluster
     const existingPins = await getExistingPins()
@@ -101,12 +109,9 @@ async function checkPins() {
 
     // download VODs list from Futureporn API
     const requiredPins = await getRequiredPins()
-    console.log(` [*] there ${requiredPins.length} required pins`)
-
-    console.log(`1:${existingPins[0]}, 2:${requiredPins[0]}`)
 
     // compare
-    const difference = Diff.diffArrays(requiredPins, existingPins)
+    const difference = requiredPins.filter(x => !existingPins.includes(x)); // greets https://stackoverflow.com/a/33034768/1004931
     const missing = difference
         .filter((d) => d.removed === true)
         .map((m) => m.value.flat())

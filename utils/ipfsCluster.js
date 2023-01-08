@@ -8,10 +8,12 @@ const fetch = require('node-fetch')
 const https = require('https');
 
 const ipfsClusterExecutable = '/usr/local/bin/ipfs-cluster-ctl'
+const ipfsClusterUri = 'https://cluster.sbtp.xyz:9094'
 
 const IPFS_CLUSTER_HTTP_API_USERNAME = process.env.IPFS_CLUSTER_HTTP_API_USERNAME;
 const IPFS_CLUSTER_HTTP_API_PASSWORD = process.env.IPFS_CLUSTER_HTTP_API_PASSWORD;
 const IPFS_CLUSTER_HTTP_API_MULTIADDR = process.env.IPFS_CLUSTER_HTTP_API_MULTIADDR;
+
 
 if (typeof IPFS_CLUSTER_HTTP_API_USERNAME === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_USERNAME in env is undefined');
 if (typeof IPFS_CLUSTER_HTTP_API_PASSWORD === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_PASSWORD in env is undefined');
@@ -30,16 +32,22 @@ const getArgs = function () {
 }
 
 
+const getHttpsAgent = () => {
+	const httpsAgent = new https.Agent({
+		rejectUnauthorized: false
+	});
+	return httpsAgent
+}
+
+
 /**
  * query the cluster for a list of all the pins
  * 
  * @resolves {String}
  */
 const ipfsClusterPinsQuery = async () => {
-	const httpsAgent = new https.Agent({
-		rejectUnauthorized: false
-	});
-	const res = await fetch(`https://cluster.sbtp.xyz:9094/pins?stream-channels=false`, {
+	const httpsAgent = getHttpsAgent()
+	const res = await fetch(`${ipfsClusterUri}/pins?stream-channels=false`, {
 		headers: {
 			'Authorization': `Basic ${Buffer.from(IPFS_CLUSTER_HTTP_API_USERNAME+':'+IPFS_CLUSTER_HTTP_API_PASSWORD, "utf-8").toString("base64")}`
 		},
@@ -50,6 +58,20 @@ const ipfsClusterPinsQuery = async () => {
 	const d = c.filter((i) => i !== '')
 	const e = d.map((datum) => JSON.parse(datum))
 	return e
+}
+
+
+const ipfsClusterPinAdd = async (pin) => {
+	const httpsAgent = getHttpsAgent()
+	const res = await fetch(`${ipfsClusterUri}/pins/${pin}?stream-channels=false`, {
+		method: 'POST',
+		headers: {
+			'Authorization': `Basic ${Buffer.from(IPFS_CLUSTER_HTTP_API_USERNAME+':'+IPFS_CLUSTER_HTTP_API_PASSWORD, "utf-8").toString("base64")}`
+		},
+		agent: httpsAgent
+	})
+	const b = await res.json()
+	console.log(b)
 }
 
 
@@ -80,5 +102,6 @@ const ipfsClusterUpload = async (filename, expiryDuration) => {
 
 module.exports = {
 	ipfsClusterUpload,
-	ipfsClusterPinsQuery
+	ipfsClusterPinsQuery,
+	ipfsClusterPinAdd
 }
