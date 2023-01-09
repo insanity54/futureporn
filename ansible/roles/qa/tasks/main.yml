@@ -8,6 +8,8 @@
     depth: 1
     update: yes
     force: yes
+  notify:
+    - restart qa
 
 - name: ensure yarn is installed
   community.general.npm:
