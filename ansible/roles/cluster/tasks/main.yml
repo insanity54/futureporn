@@ -179,10 +179,5 @@
         state: present
       delegate_to: localhost
       run_once: yes
+      ignore_errors: yes
 
-
-    - name: set up monitoring
-      include_role:
-        name: monitoring
-      tags:
-        - monitoring
