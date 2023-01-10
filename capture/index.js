@@ -1,22 +1,34 @@
 #!/usr/bin/env node
 
 import "dotenv/config";
-import aedesClientFactory from './src/aedes.js'
 import Voddo from './src/voddo.js'
 import debugFactory from 'debug'
+import Redis from 'ioredis';
 
 const debug = debugFactory('futureporn/capture/index')
+const redisUsername = process.env.REDIS_USERNAME;
+const redisPassword = process.env.REDIS_PASSWORD;
+const redisHost = process.env.REDIS_HOST;
 
-if (typeof process.env.AEDES_HOST === 'undefined') throw new Error('AEDES_HOST')
-if (typeof process.env.AEDES_USERNAME === 'undefined') throw new Error('AEDES_USERNAME is undefined in env');
-if (typeof process.env.AEDES_PASSWORD === 'undefined') throw new Error('AEDES_PASSWORD is undefined in env');
+if (typeof redisHost === 'undefined') throw new Error('REDIS_HOST undef');
+if (typeof redisUsername === 'undefined') throw new Error('REDIS_USERNAME undef');
+if (typeof redisPassword === 'undefined') throw new Error('REDIS_PASSWORD undef');
 if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env');
 
-const aedesClient = aedesClientFactory(
-	process.env.AEDES_HOST, 
-	process.env.AEDES_USERNAME, 
-	process.env.AEDES_PASSWORD
-)
+
+const sub = new Redis({
+    port: 6379,
+    host: redisHost,
+    username: redisUsername,
+    password: redisPassword
+})
+
+const pub = new Redis({
+    port: 6379,
+    host: redisHost,
+    username: redisUsername,
+    password: redisPassword
+})
 
 const voddo = new Voddo({
 	url: 'https://chaturbate.com/projektmelody',
@@ -28,25 +40,30 @@ const voddo = new Voddo({
 voddo.start()
 
 
+// @TODO
+
 // voddo generates a report when it's done recording a stream
 voddo.on('report', (report) => {
-	aedesClient.publish('futureporn/capture/report', JSON.stringify(report))
+	pub.publish('futureporn/capture/report', JSON.stringify(report));
 })
 
 voddo.on('file', (file) => {
-	aedesClient.publish('futureporn/capture/file', JSON.stringify(file))
+	pub.publish('futureporn/capture/file', JSON.stringify(file))
 })
 
-// on connection event:
-aedesClient.on('connect', (data) => {
-    debug(`  [*] MQTT connected. topic:${data.topic}`);
-    aedesClient.subscribe('futureporn/scout/tweet');
-});
+sub.on('connect', (channel) => {
+	debug(`  [*] Redis subscription connected to channel ${channel}`)
+})
 
-aedesClient.on('message', (topic, message) => {
-	debug(`  [*] got message. topic:${topic}, message:${JSON.stringify(message)}`)
-	if (topic === 'futureporn/scout/tweet') {
-		debug(`  [*] Starting voddo (again)`)
+sub.on('message', (channel, message) => {
+	debug(`  [*] got message. channel:${channel}, message:${JSON.stringify(message)}`)
+	if (channel === 'futureporn/scout') {
+		debug(`  [*] Starting voddo`)
 		voddo.start()
 	}
 })
+
+sub.subscribe('futureporn/scout', () => {
+	pub.publish('futureporn/capture', )
+})
+
