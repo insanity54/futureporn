@@ -31,10 +31,14 @@
     depth: 1
     update: yes
     force: yes
+  notify:
+    - restart capture
 
 - name: Install futureporn
   community.general.yarn:
     path: /root/futureporn/capture
+  notify:
+    - restart capture
 
 - name: Install capture system service
   ansible.builtin.template:

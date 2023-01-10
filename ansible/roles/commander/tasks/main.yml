@@ -1,0 +1,43 @@
+---
+
+
+- name: install yarn
+  community.general.npm:
+    name: yarn
+    global: yes
+    state: present
+
+- name: Download futureporn
+  git:
+    repo: https://github.com/insanity54/futureporn
+    dest: /root/futureporn
+    depth: 1
+    update: yes
+    force: yes
+  notify:
+    - restart commander
+
+- name: Install futureporn commander
+  community.general.yarn:
+    path: /root/futureporn/commander
+  notify:
+    - restart commander
+
+- name: Install commander system service
+  ansible.builtin.template:
+    src: templates/commander.service.j2
+    dest: /etc/systemd/system/commander.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart commander
+
+- name: Enable commander system service
+  systemd:
+    name: commander
+    state: started
+    daemon_reload: yes
+    enabled: yes
+  notify:
+    - restart commander

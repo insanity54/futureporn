@@ -1,0 +1,19 @@
+---
+
+
+
+- name: provision commanders
+  hosts: commanders
+  gather_facts: no
+  pre_tasks:
+    - name: gather facts only if specific tag is used
+      gather_facts:
+      tags: 
+        - never
+        - commander
+  roles:
+    - role: base
+      tags: [base]
+    - role: commander
+      tags: [commander]
+
