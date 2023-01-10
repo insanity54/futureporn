@@ -19,11 +19,12 @@ const manifest = JSON.parse(
   fs.readFileSync(manifestPath, { encoding: "utf8" })
 );
 
-
-// const imageDownloader = (src) => {
-//   console.log(`imageDownloader. Oi mate, fak auff!`)
-//   console.log(src)
-// }
+// https://stackoverflow.com/a/1527820/1004931
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 const filterIpfsCompleted = (vods) => {
   let golo = [];
@@ -142,6 +143,10 @@ module.exports = function(eleventyConfig) {
 
 
   eleventyConfig.addShortcode("buildIpfsUrl", buildIpfsUrl);
+
+  eleventyConfig.addShortcode("randomIpfsPeername", function () {
+    return `futureporn-peer-${getRandomInt(699,6969)}`
+  })
 
   eleventyConfig.addShortcode("ipfsProgressComplete", function(vods) {
     return `${filterIpfsCompleted(vods)}`;
