@@ -1,0 +1,19 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description="futureporn commander"
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/env node /root/futureporn/commander/index.js
+WorkingDirectory=/root/futureporn/commander
+Type=simple
+Restart=always
+RestartSec=5
+Environment=AEDES_HOST={{ lookup('env', 'AEDES_HOST') }}
+Environment=AEDES_PASSWORD={{ lookup('env', 'AEDES_PASSWORD') }}
+Environment=AEDES_USERNAME={{ lookup('env', 'AEDES_USERNAME') }}
+Environment=FUTUREPORN_WORKDIR={{ lookup('env', 'FUTUREPORN_WORKDIR') }}
+Environment=COMMANDER_USERNAME={{ lookup('env', 'COMMANDER_USERNAME') }}
+Environment=COMMANDER_PASSWORD={{ lookup('env', 'COMMANDER_PASSWORD') }}

@@ -19,6 +19,7 @@
         - gateway
         - cluster
         - scout
+        - capture
   roles:
     - role: base
     - role: nvjacobo.caddy

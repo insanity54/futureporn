@@ -1,0 +1,7 @@
+---
+
+
+- name: restart commander
+  ansible.builtin.systemd:
+    name: commander
+    state: restarted
