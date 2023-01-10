@@ -4,11 +4,13 @@ import "dotenv/config";
 import Voddo from './src/voddo.js'
 import debugFactory from 'debug'
 import Redis from 'ioredis';
+import cuid from 'cuid';
 
 const debug = debugFactory('futureporn/capture/index')
 const redisUsername = process.env.REDIS_USERNAME;
 const redisPassword = process.env.REDIS_PASSWORD;
 const redisHost = process.env.REDIS_HOST;
+const workerId = cuid();
 
 if (typeof redisHost === 'undefined') throw new Error('REDIS_HOST undef');
 if (typeof redisUsername === 'undefined') throw new Error('REDIS_USERNAME undef');
@@ -64,6 +66,6 @@ sub.on('message', (channel, message) => {
 })
 
 sub.subscribe('futureporn/scout', () => {
-	pub.publish('futureporn/capture', )
+	pub.publish('futureporn/capture', { message: `${workerId} listening}` })
 })
 
