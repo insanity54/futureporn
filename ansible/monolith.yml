@@ -10,8 +10,8 @@
   pre_tasks:
     - name: de-boogie
       ansible.builtin.debug:
-        var: ipfs_peer_id
-      tags: [gateway]
+        msg: "REDIS_HOST:{{ lookup('env', 'REDIS_HOST') }}"
+      tags: [capture]
     - name: gather facts only if specific tag is used
       gather_facts:
       tags: 

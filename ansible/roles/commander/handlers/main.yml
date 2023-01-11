@@ -5,3 +5,9 @@
   ansible.builtin.systemd:
     name: commander
     state: restarted
+
+
+- name: reload postgresql
+  ansible.builtin.systemd:
+    name: postgresql
+    state: reloaded
