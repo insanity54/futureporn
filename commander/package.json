@@ -1,0 +1,25 @@
+{
+  "name": "commander",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "Unlicense",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "NODE_ENV=production node index",
+    "dev": "nodemon -w . index"
+  },
+  "dependencies": {
+    "@fastify/auth": "^4.2.0",
+    "@fastify/basic-auth": "^5.0.0",
+    "@fastify/redis": "^6.1.0",
+    "@fastify/view": "^7.3.0",
+    "aedes": "^0.48.1",
+    "fastify": "^4.11.0",
+    "mqtt": "^4.3.7",
+    "redis": "^4.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

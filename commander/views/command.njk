@@ -1,0 +1,75 @@
+<!doctype HTML>
+<html>
+	<head>
+		<title>Commander</title>
+		<link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
+		<style>
+			.message-list {
+				overflow-y: scroll;
+				height: 500px;
+			}
+		</style>
+		<script src="//unpkg.com/alpinejs" defer></script>
+		<script src="https://unpkg.com/mqtt/dist/mqtt.js"></script>
+		<script src="https://unpkg.com/htmx.org@1.5.0"></script>
+		<script>
+		  // document.addEventListener('alpine:init', () => {
+		  //   Alpine.store('count', 0)
+		  // })
+			document.addEventListener('alpine:init', () => {
+				Alpine.store('messages', {
+					init() {
+						this.list = [{
+							text: 'this is the first message which is a dummy', 
+							id: 1673303434218 
+						}]
+					},
+					list: [],
+					addMessage(msg) {
+						this.list.push(msg)
+					} 
+				})
+				console.log('connecting using password {{ mqttPassword }}')
+				const client = mqtt.connect('ws://commander.sbtp.xyz:3000', {
+					username: '{{ mqttUsername }}',
+					password: '{{ mqttPassword }}'
+				})
+
+				client.on('connect', function () {
+					console.log('connect event!')
+					client.subscribe('futureporn/capture', function (err) {
+						if (err) {
+							console.error('there was an errr')
+							console.error(err)
+						} else {
+							console.log('pubbing!')
+							client.publish('futureporn/commander/ui', 'Hello mqtt')
+						}
+					})
+				})
+
+				client.on('message', function (topic, message) {
+					Alpine.store('messages').addMessage({ text: message.toString(), id: new Date().valueOf() })
+					scrollIntoView()
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<div x-data="{}">
+			<h1>Command</h1>
+			<p>orders, pl0x</p>
+
+			<h2>Messages</h2>
+
+			<ul class="message-list">
+		    <template x-for="msg in $store.messages.list" :key="msg.id">
+		        <li x-init="$el.scrollIntoView()" x-text="msg.text"></li>
+		    </template>
+		    </ul>
+
+		</div>
+
+
+	</body>
+</html>
