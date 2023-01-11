@@ -7,6 +7,7 @@
     - ansible_user: root
     - storage_gb: 3000
     - ipfs_gc_period: 3h
+    - ipfs_cluster_service_version: v1.0.4
   pre_tasks:
     - name: de-boogie
       ansible.builtin.debug:
