@@ -1,9 +1,6 @@
 ---
 
 
-- include_tasks: ./db.yml
-- include_tasks: ./commander.yml
-
 - name: install yarn
   community.general.npm:
     name: yarn

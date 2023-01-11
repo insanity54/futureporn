@@ -3,8 +3,10 @@
 commanders:
   hosts:
     oboe:
+      ansible_user: root
       ansible_host: "{{ lookup('env', 'COMMANDER_HOST') }}"
-      
+      ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
+      ansible_become_method: su
 
 monoliths:
   hosts:

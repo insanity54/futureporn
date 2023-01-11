@@ -96,7 +96,7 @@
       "connect_swarms_delay": "30s",
       "ipfs_request_timeout": "5m",
       "repogc_timeout": "24h",
-      "pin_timeout": "300h",
+      "pin_timeout": "30s",
       "unpin_timeout": "3h",
       "unpin_disable": false
     }
@@ -104,7 +104,7 @@
   "pin_tracker": {
     "stateless": {
       "max_pin_queue_size": 1000000,
-      "concurrent_pins": 100,
+      "concurrent_pins": 20,
       "priority_pin_max_age" : "24h",
       "priority_pin_max_retries" : 5
     }
