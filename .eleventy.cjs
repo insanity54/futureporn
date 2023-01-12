@@ -127,6 +127,7 @@ module.exports = function(eleventyConfig) {
 
 
   eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
+  eleventyConfig.addPassthroughCopy({ "website/assets/img": "/img" });
 
   // eleventyConfig.addPlugin(imageDownloader);
   // eleventyConfig.addPlugin(sharpPlugin({
