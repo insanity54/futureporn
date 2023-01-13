@@ -44,7 +44,7 @@ const filterB2Completed = (vods) => {
 
 
 function buildIpfsUrl(urlFragment) {
-  return `https://sbtp.xyz/ipfs/${urlFragment}`;
+  return `https://ipfs.io/ipfs/${urlFragment}`;
 }
 
 
