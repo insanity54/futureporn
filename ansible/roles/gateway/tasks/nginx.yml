@@ -1,0 +1,39 @@
+---
+
+- ansible.builtin.systemd:
+    name: caddy
+    state: stopped
+  notify:
+    - disable caddy
+
+- name: install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: delete default nginx config
+  ansible.builtin.file:
+    dest: /etc/nginx/sites-enabled/default
+    state: absent
+  notify:
+    - reload nginx
+
+- name: Configure Nginx
+  ansible.builtin.template:
+    src: templates/nginx.j2
+    dest: /etc/nginx/sites-available/sbtp.xyz
+    owner: root
+    group: root
+    mode: '0755'
+  notify: restart nginx
+
+- name: Create symlink to sites-available
+  file:
+    dest: /etc/nginx/sites-enabled/sbtp.xyz
+    src: /etc/nginx/sites-available/sbtp.xyz
+    owner: root
+    group: root
+    state: link
+
+
+# /var/www/html/

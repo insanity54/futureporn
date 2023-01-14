@@ -1,5 +1,8 @@
 ---
 
-- include_tasks: ./ipfs.yml
-- include_tasks: ./caddy.yml #nvjacobo.caddy role handles this
-- include_tasks: ./dns.yml
+- include_tasks: sysctl.yml
+- include_tasks: certbot.yml
+- include_tasks: ipfs.yml
+- include_tasks: nginx.yml
+- include_tasks: dns.yml
+- include_tasks: firewall.yml

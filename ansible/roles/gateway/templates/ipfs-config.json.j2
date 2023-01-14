@@ -45,26 +45,9 @@
     ],
     "Announce": [],
     "AppendAnnounce": [],
-    "NoAnnounce": {
-        "": "/ip4/10.0.0.0/ipcidr/8",
-        "": "/ip4/100.64.0.0/ipcidr/10",
-        "": "/ip4/169.254.0.0/ipcidr/16",
-        "": "/ip4/172.16.0.0/ipcidr/12",
-        "": "/ip4/192.0.0.0/ipcidr/24",
-        "": "/ip4/192.0.2.0/ipcidr/24",
-        "": "/ip4/192.168.0.0/ipcidr/16",
-        "": "/ip4/198.18.0.0/ipcidr/15",
-        "": "/ip4/198.51.100.0/ipcidr/24",
-        "": "/ip4/203.0.113.0/ipcidr/24",
-        "": "/ip4/240.0.0.0/ipcidr/4",
-        "": "/ip6/100::/ipcidr/64",
-        "": "/ip6/2001:2::/ipcidr/48",
-        "": "/ip6/2001:db8::/ipcidr/32",
-        "": "/ip6/fc00::/ipcidr/7",
-        "": "/ip6/fe80::/ipcidr/10"
-    },
+    "NoAnnounce": [],
     "API": "/ip4/127.0.0.1/tcp/5001",
-    "Gateway": "/ip4/0.0.0.0/tcp/8080"
+    "Gateway": "/ip4/127.0.0.1/tcp/8080"
   },
   "Mounts": {
     "IPFS": "/ipfs",
@@ -73,7 +56,7 @@
   },
   "Discovery": {
     "MDNS": {
-      "Enabled": false
+      "Enabled": true
     }
   },
   "Routing": {
@@ -116,32 +99,14 @@
     "NoFetch": true,
     "NoDNSLink": true,
     "PublicGateways": null
-    }
   },
   "API": {
     "HTTPHeaders": {}
   },
   "Swarm": {
-    "AddrFilters": [
-      "/ip4/10.0.0.0/ipcidr/8",
-      "/ip4/100.64.0.0/ipcidr/10",
-      "/ip4/169.254.0.0/ipcidr/16",
-      "/ip4/172.16.0.0/ipcidr/12",
-      "/ip4/192.0.0.0/ipcidr/24",
-      "/ip4/192.0.2.0/ipcidr/24",
-      "/ip4/192.168.0.0/ipcidr/16",
-      "/ip4/198.18.0.0/ipcidr/15",
-      "/ip4/198.51.100.0/ipcidr/24",
-      "/ip4/203.0.113.0/ipcidr/24",
-      "/ip4/240.0.0.0/ipcidr/4",
-      "/ip6/100::/ipcidr/64",
-      "/ip6/2001:2::/ipcidr/48",
-      "/ip6/2001:db8::/ipcidr/32",
-      "/ip6/fc00::/ipcidr/7",
-      "/ip6/fe80::/ipcidr/10"
-    ],
+    "AddrFilters": null,
     "DisableBandwidthMetrics": true,
-    "DisableNatPortMap": true,
+    "DisableNatPortMap": false,
     "RelayClient": {},
     "RelayService": {},
     "Transports": {
@@ -151,12 +116,13 @@
     },
     "ConnMgr": {},
     "ResourceMgr": {
+      "Enabled": false,
       "Limits": {
         "System": {
-          "Memory": 1073741824,
+          "Memory": {{ ipfs_max_memory }},
           "FD": 4096,
           "Conns": 4096,
-          "ConnsInbound": 2048,
+          "ConnsInbound": 1000,
           "ConnsOutbound": 2048,
           "Streams": 8192,
           "StreamsInbound": 4096,
@@ -171,7 +137,9 @@
     "DisableSigning": false
   },
   "Peering": {
-    "Peers": null
+    "Peers": [
+      
+    ]
   },
   "DNS": {
     "Resolvers": {}
