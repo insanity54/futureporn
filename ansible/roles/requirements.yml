@@ -2,6 +2,7 @@
 
 roles:
   - geerlingguy.nodejs
+  - geerlingguy.certbot
   - nvjacobo.caddy
   - jeffbr13.ipfs
   - name: madoke.ansible-ipfs-cluster

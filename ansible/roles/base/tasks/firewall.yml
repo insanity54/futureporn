@@ -1,5 +1,15 @@
 ---
 
+- name: Allow everything and enable UFW
+  community.general.ufw:
+    state: enabled
+    policy: allow
+
+
+- name: Set logging
+  community.general.ufw:
+    logging: 'on'
+
 
 - name: create ufw exception for mosh
   community.general.ufw:
@@ -7,10 +17,3 @@
     port: 60000:61000
     proto: udp
 
-
-
-# - name: create ufw exception for et
-#   community.general.ufw:
-#     rule: allow
-#     port: 2022
-#     proto: tcp

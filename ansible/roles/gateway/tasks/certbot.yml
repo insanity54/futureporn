@@ -1,0 +1,27 @@
+---
+
+  - name: Install certbot-dns-luadns
+    ansible.builtin.pip:
+      name: certbot-dns-luadns
+
+    # shell: "cd /opt/certbot/certbot-dns-luadns && python setup.py install"
+
+  - name: Create certbot settings folder
+    file:
+      path: /etc/letsencrypt
+      state: directory
+      owner: root
+      group: root
+      mode: '0700'
+
+  - name: Create Certbot ini files
+    template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      owner: root
+      group: root
+      mode: '0600'
+    with_items:
+      - { src: 'certbot_luadns.ini.j2', dest: '/etc/letsencrypt/luadns.ini' }
+      - { src: 'letsencrypt_cli.ini.j2', dest: '/etc/letsencrypt/cli.ini' }
+

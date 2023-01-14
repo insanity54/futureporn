@@ -1,0 +1,8 @@
+---
+
+# https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size
+- name: increase UDP Receive Buffer Size
+  ansible.posix.sysctl:
+    name: net.core.rmem_max
+    value: 2500000
+    sysctl_set: yes

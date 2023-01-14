@@ -7,6 +7,11 @@
     state: reloaded
     daemon_reload: yes
 
+- name: disable caddy
+  ansible.builtin.systemd:
+    state: disabled
+    daemon_reload: yes
+
 - name: init ipfs
   ansible.builtin.command:
     args: ipfs init
@@ -15,4 +20,16 @@
   ansible.builtin.systemd:
     name: ipfs
     state: restarted
+    daemon_reload: yes
+
+- name: restart nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    daemon_reload: yes
+
+- name: reload nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: reloaded
     daemon_reload: yes

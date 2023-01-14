@@ -1,0 +1,51 @@
+---
+
+
+- name: Allow everything and enable UFW
+  community.general.ufw:
+    state: enabled
+    policy: allow
+
+
+- name: Set logging
+  community.general.ufw:
+    logging: 'on'
+
+
+# ufw supports connection rate limiting, which is useful for protecting
+# against brute-force login attacks. ufw will deny connections if an IP
+# address has attempted to initiate 6 or more connections in the last
+# 30 seconds. See  http://www.debian-administration.org/articles/187
+# for details. Typical usage is:
+- community.general.ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+
+- community.general.ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+
+
+
+
+- name: Disallow direct IPFS daemon access
+  community.general.ufw:
+    rule: reject
+    port: '8080'
+    log: true
+
+
+# - name: Disallow direct metrics access
+#   community.general.ufw:
+#     rule: reject
+#     port: '8888'
+#     log: true
+
+- name: Allow IPFS api access only on localhost
+  ufw:
+    rule: allow
+    port: '5001'
+    proto: tcp
+    src: 127.0.0.1
