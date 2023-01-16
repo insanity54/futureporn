@@ -50,9 +50,9 @@
         {% endif %}
       </h2>
 
-      <h2 class="heading">IPFS Content IDs</h2>
+      <h2 class="heading">Download Links</h2>
 
-      <ul>
+      <ul class="mb-5">
       {%- if videoSrcHash %}
       <li><span>Source: <a href="{% buildIpfsUrl videoSrcHash %}">{% buildIpfsUrl videoSrcHash %}</a></span></li>
       {% else %}
@@ -71,6 +71,27 @@
       {%- if video240Hash %}
       <li><span>240p: <a href="{% buildIpfsUrl video240Hash %}">{% buildIpfsUrl video240Hash %}</a></span></li>
       {% endif %}
+      </ul>
+
+
+      <h2 class="heading">IPFS Content IDs</h2>
+
+      <ul class="mb-5">
+        {%- if videoSrcHash %}
+          <li><span>Source: <span class="tag">{{ videoSrcHash | stripQueryString }}</span></span></li>
+        {% endif %}
+        {%- if video720Hash %}
+          <li><span>Source: <span class="tag">{{ video720Hash | stripQueryString }}</span></span></li>
+        {% endif %}
+        {%- if video480Hash %}
+          <li><span>Source: <span class="tag">{{ video480Hash | stripQueryString }}</span></span></li>
+        {% endif %}
+        {%- if video360Hash %}
+          <li><span>Source: <span class="tag">{{ video360Hash | stripQueryString }}</span></span></li>
+        {% endif %}
+        {%- if video240Hash %}
+          <li><span>240p: <span class="tag">{{ video240Hash | stripQueryString }}</span></span></li>
+        {% endif %}
       </ul>
 
 
