@@ -179,6 +179,10 @@ module.exports = function(eleventyConfig) {
     return manifest[name];
   });
 
+
+  eleventyConfig.addFilter("stripQueryString", text => {
+    return text.split(/[?#]/)[0];
+  });
   eleventyConfig.addFilter("urlDecode", text => {
     return decodeUriComponent(text);
   });
