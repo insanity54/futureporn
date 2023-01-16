@@ -52,11 +52,10 @@
     "OSE ",
     "Subject",
     "TheSlimiestKing",
+    "RettichDerGeile",
     "Delques1843",
     "polarknight 537",
-    "K ",
-    "Das Tardlii",
-    "LaoPao"
+    "Das Tardlii"
   ],
   "allPatronNames": [
     "i subscribe to things",
@@ -72,24 +71,24 @@
     "Subject",
     "Molotover ",
     "TheSlimiestKing",
+    "RettichDerGeile",
     "Delques1843",
     "polarknight 537",
     "K ",
     "Das Tardlii",
     "Chio",
-    "catboxL",
-    "LaoPao"
+    "catboxL"
   ],
   "goals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 84,
+      "completed_percentage": 86,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 47,
+      "completed_percentage": 48,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
@@ -97,13 +96,13 @@
   "incompleteGoals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 84,
+      "completed_percentage": 86,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 47,
+      "completed_percentage": 48,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
