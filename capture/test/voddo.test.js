@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import Voddo from '../src/voddo.js'
-import { getRandomRoom } from '../src/cb.js'
 import { expect } from 'chai'
 import sinon from 'sinon'
 import sinonTest from 'sinon-test'
@@ -14,17 +13,9 @@ describe('voddo', function () {
 	let room;
 	let server;
 
-	before(async function () {
-		this.timeout(1000*10)
-		// room = await getRandomRoom()
-		// server = sinon.fakeServer.create();
-	})
-
-	after(function () {
-		// server.restore();
-	})
 
 	xit('should download a stream', function (done) {
+		// @todo this test makes network requests so I disabled it
 		this.timeout(1000*30)
 	  const voddo = new Voddo({
 			url: `https://chaturbate.com/projektmelody`,
