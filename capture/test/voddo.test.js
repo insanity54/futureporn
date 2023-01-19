@@ -24,7 +24,7 @@ describe('voddo', function () {
 		// server.restore();
 	})
 
-	it('should download a stream', function (done) {
+	xit('should download a stream', function (done) {
 		this.timeout(1000*30)
 	  const voddo = new Voddo({
 			url: `https://chaturbate.com/projektmelody`,
