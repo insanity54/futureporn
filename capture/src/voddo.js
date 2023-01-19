@@ -1,10 +1,10 @@
+import 'dotenv/config'
 import YoutubeDlWrap from "youtube-dl-wrap";
 import debugFactory from 'debug';
 import { EventEmitter } from 'node:events';
+import { AbortController } from "node-abort-controller";
 
-const debug = debugFactory('futureporn/capture/voddo');
-const ytdl = new YoutubeDlWrap();
-
+const debug = debugFactory('voddo');
 
 
 export default class Voddo extends EventEmitter {
@@ -16,21 +16,17 @@ export default class Voddo extends EventEmitter {
 		this.format = opts.format;
 		this.cwd = opts.cwd;
 		this.ytdlee; // event emitter for ytdlwrap
-		this.stats = { filePaths: [] };
+		this.stats = {};
+		this.abortController = new AbortController();
+		this.ytdl = opts.ytdl || new YoutubeDlWrap();
+		if (process.env.YOUTUBE_DL_BINARY) this.ytdl.setBinaryPath(process.env.YOUTUBE_DL_BINARY)
 	}
 
 	isDownloading() {
 		// if there are event emitter listeners for the progress event,
 		// we are probably downloading.
-
-
-		// @todo this needs to be reset after stream completion!
-		//       [x] progress listeners are automatically reset
-		//       [x] this.stats.filePaths gets cleared by getReport
-		//           
 		return (
-			this.ytdlee?.listeners('progress').length !== undefined &&
-			this.stats.filePaths.length > 0
+			this.ytdlee?.listeners('progress').length !== undefined
 		)
 	}
 
@@ -53,23 +49,35 @@ export default class Voddo extends EventEmitter {
 		this.retryCount = 0
 		clearTimeout(this.courtesyTimer)
 
-
+		// create new abort controller
+		//this.abortController = new AbortController() // @todo do i need this?
 
 		this.download()
+	}
+
+	stop() {
+		debug('  [*] Received stop(). Stopping.')
+		clearTimeout(this.courtesyTimer)
+		this.abortController.abort()
 	}
 
 	/** generate a report **/
 	getReport(error) {
 		let report = {}
 		report.stats = Object.assign({}, this.stats)
-		report.reason = error ? error : 'close'
-		// reset the filePaths
-		this.stats.filePaths = []
+		report.reason = (() => { 
+			if (error) return error;
+			else if (this.abortController.signal.aborted) return 'aborted';
+			else return 'close';
+		})()
+		// clear stats to prepare for next run
+		this.stats = {}
 		return report
 	}
 
 	emitReport(report) {
-		this.emit('report', report)
+		debug('  [*] EMITTING REPORT')
+		this.emit('stop', report)
 	}
 
 	getCourtesyTimer(callback) {
@@ -109,25 +117,40 @@ export default class Voddo extends EventEmitter {
 			if (type === 'download' && data.includes('Destination:')) {
 				let filePath = /Destination:\s(.*)$/.exec(data)[1]
 				debug(`  [*] Destination file detected: ${filePath}`)
-				this.emit('file', { file: filePath })
-				this.stats.filePaths.push(filePath)
+				this.emit('start', { file: filePath, timestamp: ''+new Date().valueOf() })
+				this.stats.filePath = filePath
 			}
 		}
 
 		const handleClose = () => {
-	        debug('  [*] got a close event');
+	    debug('  [*] got a close event. handling!');
+
 			this.ytdlee.off('progress', handleProgress)
 			this.ytdlee.off('handleYtdlEvent', handleYtdlEvent)
-			// restart the download after the courtesyTimeout
-			this.courtesyTimer = this.getCourtesyTimer(this.download)
+
+			// restart Voddo only if the close was not due to stop()
+			if (!this.abortController.signal.aborted) {
+				// restart the download after the courtesyTimeout
+				this.courtesyTimer = this.getCourtesyTimer(() => this.download())
+			}
+
 			this.emitReport(this.getReport())
 		}
 
-		this.ytdlee = ytdl.exec([this.url, '-f', this.format], { cwd: this.cwd });
+		debug(`  [*] Downloading url:${this.url} format:${this.format}`)
+		debug(this.ytdl)
+
+		this.ytdlee = this.ytdl.exec(
+			[this.url, '-f', this.format], 
+			{ 
+				cwd: this.cwd
+			}, 
+			this.abortController.signal
+		);
 		this.ytdlee.on('progress', handleProgress);
 		this.ytdlee.on('youtubeDlEvent', handleYtdlEvent);
-	    this.ytdlee.once('error', handleError);
-	    this.ytdlee.once('close', handleClose);
+    this.ytdlee.once('error', handleError);
+    this.ytdlee.once('close', handleClose);
 	}
 
 
