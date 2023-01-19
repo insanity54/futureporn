@@ -7,17 +7,24 @@
   "type": "module",
   "scripts": {
     "start": "node index",
-    "test": "mocha",
+    "test": "DEBUG=\"voddo\" FUTUREPORN_WORKDIR=/home/chris/Downloads mocha",
     "dev": "DEBUG=\"futureporn/*\" FUTUREPORN_WORKDIR=/home/chris/Downloads nodemon index"
   },
   "dependencies": {
     "cuid": "^2.1.8",
     "ioredis": "^5.2.4",
     "minimatch": "^5.1.1",
+    "postgres": "^3.3.3",
     "rxjs": "^7.8.0",
-    "youtube-dl-wrap": "^2.1.1"
+    "youtube-dl-wrap": "git+https://github.com/insanity54/youtube-dl-wrap.git"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "cheerio": "^1.0.0-rc.12",
+    "mocha": "^10.2.0",
+    "node-abort-controller": "^3.0.1",
+    "node-fetch": "^3.3.0",
+    "nodemon": "^2.0.20",
+    "sinon": "^15.0.1",
+    "sinon-test": "^3.1.5"
   }
 }
