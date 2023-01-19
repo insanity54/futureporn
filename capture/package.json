@@ -20,6 +20,7 @@
     "youtube-dl-wrap": "git+https://github.com/insanity54/youtube-dl-wrap.git"
   },
   "devDependencies": {
+    "chai": "^4.3.7",
     "cheerio": "^1.0.0-rc.12",
     "mocha": "^10.2.0",
     "node-abort-controller": "^3.0.1",
