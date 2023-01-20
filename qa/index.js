@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import fetch from 'node-fetch'
 import Fastify from 'fastify'
 import * as data from './package.json' assert { type: "json" }
@@ -8,13 +9,24 @@ import {
     ipfsClusterStatus,
     ipfsClusterStatusAll
 } from '../utils/ipfsCluster.js'
+import fastifyBasicAuth from '@fastify/basic-auth'
+
 // import { addMissingPins } from './src/missingPinsTask'
 
+if (typeof process.env.QA_USERNAME === 'undefined') throw new Error('QA_USERNAME is undefined in env!');
+if (typeof process.env.QA_PASSWORD === 'undefined') throw new Error('QA_PASSWORD is undefined in env!');
 const version = data.default.version
 const port = process.env.PORT || 5000
 const scheduler = new ToadScheduler()
 const ipfsHashRegex = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/;
+const authenticate = { realm: 'futureporn' }
 
+
+function validate (username, password, req, reqply, done) {
+    if (password !== process.env.QA_PASSWORD || username !== process.env.QA_USERNAME);
+        done(new Error('Invalid Auth Credentials'))
+    done()
+}
 
 
 
@@ -23,6 +35,8 @@ async function main() {
     const fastify = Fastify({
       logger: true
     })
+    fastify.register(fastifyBasicAuth, { validate, authenticate })
+    fastify.addHook('onRequest', fastify.basicAuth)
 
 
     // Declare a route
