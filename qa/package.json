@@ -5,12 +5,9 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
-    "cid": "multiformats/cid",
     "diff": "^5.1.0",
     "fastify": "^4.11.0",
-    "multiformats": "^11.0.1",
     "node-fetch": "^3.3.0",
-    "sha.js": "^2.4.11",
     "toad-scheduler": "^2.2.0"
   },
   "type": "module",
