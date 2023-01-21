@@ -20,7 +20,6 @@ if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTU
 
 
 
-let files = []
 
 
 
@@ -42,29 +41,45 @@ let actionTimer;
 	    userName: postgresUsername
 	})
 
+	/**
+	 * When scout signals that a stream has ended, 
+	 * we cancel any ongoing actionTimer and immediately process the VOD
+	 * 
+	 * @todo standardize the LISTEN/NOTIFY spec
+	 */
+	sql.on('futureporn/scout/end', (evt) => {
+
+		clearTimeout(actionTimer)
+	})
+
 
 	voddo.on('start', (data) => {
-
-		console.log('  [*] we are starting')
-		console.log(data)
-
-
-
-		// clearTimeout(actionTimer);
-		// actionTimer = setTimeout(() => {
-		// 	console.log(`  [*] no new file names have been emitted for ${idleTimeoutMinutes} minutes.`)
-		// 	saveMetadata()
-		// }, 1000*60*idleTimeoutMinutes)
-
-		// saveMetadata(metadata)
-		// pub.publish('futureporn/capture/file', JSON.stringify(file))
+		// pub.publish('futureporn/capture/file', JSON.stringify(file)) // @todo
 	})
 
 	voddo.on('stop', (data) => {
 
 		console.log('  [*] we have stopped')
 		console.log(data)
-		// saveMetadata()
+
+		// @todo detect stream end (scout signal?)
+		// @todo if stream is ended, combine if needed
+		// @todo upload
+
+
+		// process/upload if stream has been stopped for 15 minutes
+		clearTimeout(actionTimer)
+		actionTimer = setTimeout(() => {
+			console.log('  [*] 15 minute actionTimer elapsed. ')
+			if (!voddo.isDownloading()) {
+				console.log('  [*] stream is not being downloaded, so we are proceeding with VOD processing.')
+				doProcessVod(data)
+			} else {
+				console.log('  [*] stream is still being downloaded, so we are not processing VOD at this time.')
+			}
+		}, 1000*60*15)
+
+		// saveMetadata(data) // do we need this?
 	})
 
 	// voddo.delayedStart() // only for testing
