@@ -30,11 +30,8 @@
         - capture
   roles:
     - role: base
-    # - role: geerlingguy.certbot
-    #   tags:
-    #     - gateway
-    - role: gateway # also installs/configures IPFS
-      tags: [gateway]
+    - role: ipfs # also installs/configures IPFS
+      tags: [ipfs]
     - role: cluster
       tags: [cluster]
     - role: geerlingguy.nodejs

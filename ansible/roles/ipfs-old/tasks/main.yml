@@ -1,0 +1,76 @@
+---
+
+
+- name: Create the ipfs group
+  ansible.builtin.user:
+    name: ipfs
+
+- name: Create the ipfs user
+  ansible.builtin.user:
+    name: ipfs
+    groups: ipfs
+    create_home: yes
+    home: /home/ipfs
+
+
+
+
+- name: Install ipfs system service
+  ansible.builtin.template:
+    src: templates/ipfs.service.j2
+    dest: /etc/systemd/system/ipfs.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart ipfs
+
+- name: create ufw HTTP exception for IPFS gateway
+  community.general.ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+
+- name: create ufw HTTPS exception for IPFS gateway
+  community.general.ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+
+- name: create ufw exception for IPFS swarm
+  community.general.ufw:
+    rule: allow
+    port: 4000
+    proto: tcp
+
+
+
+
+- name: start ipfs
+  ansible.builtin.systemd:
+    name: ipfs
+    state: started
+    daemon_reload: yes
+
+
+- name: configure ipfs StorageMax
+  ansible.builtin.lineinfile:
+    dest: /home/ipfs/.ipfs/config
+    regexp: "StorageMax"
+    line: "\"StorageMax\": \"{{ ipfs_storage_max }}\","
+    state: present
+    owner: ipfs
+    group: ipfs
+  notify: restart ipfs
+
+
+- name: configure ipfs GCPeriod
+  ansible.builtin.lineinfile:
+    dest: /home/ipfs/.ipfs/config
+    regexp: "GCPeriod"
+    line: "\"GCPeriod\": \"{{ ipfs_gc_period }}\","
+    state: present
+    owner: ipfs
+    group: ipfs
+  notify: restart ipfs

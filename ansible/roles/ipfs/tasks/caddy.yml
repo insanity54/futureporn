@@ -20,6 +20,14 @@
 #     mode: '0600'
 #   notify: reload caddy
 
+
+- name: disable nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: stopped
+  notify:
+    - disable nginx
+
 - name: mkdir for caddy
   ansible.builtin.file:
     state: directory
@@ -31,7 +39,7 @@
 - name: mkdir for www
   file:
     state: directory
-    dest: /var/www/ipfs.sbtp.xyz
+    dest: /var/www/sbtp.xyz
     owner: caddy
     group: caddy
     mode: '0755'
@@ -40,7 +48,7 @@
   ansible.builtin.copy:
     remote_src: false
     src: files/index.html
-    dest: /var/www/ipfs.sbtp.xyz/index.html
+    dest: /var/www/sbtp.xyz/index.html
     owner: caddy
     group: caddy
     mode: '0744'
@@ -53,6 +61,11 @@
     group: root
     mode: '0755'
   notify: reload caddy
+
+- name: start caddy
+  ansible.builtin.systemd:
+    name: caddy
+    state: started
 
 # - name: Install caddy init file
 #   ansible.builtin.template:

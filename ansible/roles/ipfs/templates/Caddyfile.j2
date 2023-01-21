@@ -2,7 +2,12 @@
     email "cj@futureporn.net"
 }
 sbtp.xyz {
+
+
     handle /qa* {
+        basicauth / {
+            {{ lookup('env', 'QA_USERNAME') }} {{ lookup('env', 'QA_PASSWORD') | password_hash('bcrypt') }}
+        }
         reverse_proxy /qa* 127.0.0.1:5345
     }
     handle {
