@@ -12,6 +12,11 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node index"
+    "start": "node index",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "cid": "multiformats/cid",
+    "mocha": "^10.2.0"
   }
 }
