@@ -14,7 +14,7 @@ import { EventEmitter } from "node:events";
 chai.use(chaiEvents);
 
 
-describe('chaturbate', function () {
+xdescribe('chaturbate-integration', function () {
     describe('getInitialDossier', function () {
         it('should return a js object', async function () {
             const dossier = await getInitialRoomDossier()
@@ -74,7 +74,7 @@ describe('chaturbate', function () {
             const realtime = await requestRealtimeToken(token, auth.token_request, auth.settings.realtime_host, auth.settings.fallback_hosts)
 
 
-            console.log(realtime)
+            // console.log(realtime)
 
             await realtime.connect()
 
