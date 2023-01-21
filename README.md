@@ -1,6 +1,6 @@
 # futureporn
 
-![capture workflow](https://github.com/insanity54/futureporn/actions/workflows/capture.js.yml/badge.svg)
+![capture workflow](https://github.com/insanity54/futureporn/actions/workflows/capture.js.yml/badge.svg) ![scout workflow](https://github.com/insanity54/futureporn/actions/workflows/scout.js.yml/badge.svg) ![qa workflow](https://github.com/insanity54/futureporn/actions/workflows/qa.js.yml/badge.svg)
 
 Unofficial ProjektMelody Chaturbate VOD Archive. For Adults Only. (NSFW)
 
