@@ -18,8 +18,10 @@ var jar = new CookieJar(new FileCookieStore(path.join(datadir, "cookie.json")));
 
 // greets ChatGPT
 export function getRandomNumberString(n) {
-  return ''+Math.floor(Math.random() * 10 ** n);
+  let num = Math.floor(Math.random() * (10 ** n));
+  return num.toString().padStart(n, '0');
 }
+
 
 // greets ChatGPT
 function generateRandomString(seed) {
@@ -173,9 +175,9 @@ export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost
 
         
         authCallback: ((tokenParams, cb) => {
-            console.log(`   >>> authCallback I don't actually have antyhing i just wanted to see the tokenParams`)
-            console.log(tokenParams)
-            console.log(tokenRequest)
+            // console.log(`   >>> authCallback I don't actually have antyhing i just wanted to see the tokenParams`)
+            // console.log(tokenParams)
+            // console.log(tokenRequest)
 
             cb(null, tokenRequest)
 

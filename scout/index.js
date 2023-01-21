@@ -33,8 +33,8 @@ const tweetConsumer = (tweet) => {
  *   - connect to chaturbate chat and watch for spikes in messages per minute 
  */
 async function main () {
-	twitter(tweetConsumer)
-
+	// twitter(tweetConsumer)
+  
 }
 
 main()
