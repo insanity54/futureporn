@@ -5,7 +5,7 @@ import { EventEmitter } from 'node:events';
 import { AbortController } from "node-abort-controller";
 
 const debug = debugFactory('voddo');
-
+const defaultStats = {files:[],reason:null,lastUpdatedAt:null}
 
 export default class Voddo extends EventEmitter {
 	constructor(opts) {
@@ -13,13 +13,38 @@ export default class Voddo extends EventEmitter {
 		this.courtesyTimer = setTimeout(() => {}, 0);
 		this.retryCount = 0;
 		this.url = opts.url;
-		this.format = opts.format;
+		this.format = opts.format || 'best';
 		this.cwd = opts.cwd;
 		this.ytdlee; // event emitter for ytdlwrap
-		this.stats = {};
+		this.stats = Object.assign({}, defaultStats);
 		this.abortController = new AbortController();
 		this.ytdl = opts.ytdl || new YoutubeDlWrap();
 		if (process.env.YOUTUBE_DL_BINARY) this.ytdl.setBinaryPath(process.env.YOUTUBE_DL_BINARY)
+	}
+
+
+	/**
+	 * getFilenames
+	 * 
+	 * get the filenames of the files captured
+	 * for only the most recent stream
+	 */
+	getFilenames() {
+		// greets ChatGPT
+		const groupThreshold = 1000*60*60*16; // 16 hours
+		const groupedFiles = this.stats.files
+		    .sort((a, b) => a.timestamp - b.timestamp)
+		    .reduce((acc, file) => {
+		        const lastGroup = acc[acc.length - 1];
+		        if (!lastGroup || file.timestamp - lastGroup[lastGroup.length - 1].timestamp > groupThreshold) {
+		            acc.push([file]);
+		        } else {
+		            lastGroup.push(file);
+		        }
+		        return acc;
+		    }, []);
+
+		return groupedFiles[groupedFiles.length-1]
 	}
 
 	isDownloading() {
@@ -50,7 +75,7 @@ export default class Voddo extends EventEmitter {
 		clearTimeout(this.courtesyTimer)
 
 		// create new abort controller
-		//this.abortController = new AbortController() // @todo do i need this?
+		//this.abortController = new AbortController() // @todo do i need this? Can't I reuse the existing this.abortController?
 
 		this.download()
 	}
@@ -62,16 +87,16 @@ export default class Voddo extends EventEmitter {
 	}
 
 	/** generate a report **/
-	getReport(error) {
+	getReport(errorMessage) {
 		let report = {}
 		report.stats = Object.assign({}, this.stats)
 		report.reason = (() => { 
-			if (error) return error;
+			if (errorMessage) return errorMessage;
 			else if (this.abortController.signal.aborted) return 'aborted';
 			else return 'close';
 		})()
 		// clear stats to prepare for next run
-		this.stats = {}
+		this.stats = Object.assign({}, defaultStats) 
 		return report
 	}
 
@@ -117,8 +142,10 @@ export default class Voddo extends EventEmitter {
 			if (type === 'download' && data.includes('Destination:')) {
 				let filePath = /Destination:\s(.*)$/.exec(data)[1]
 				debug(`  [*] Destination file detected: ${filePath}`)
-				this.emit('start', { file: filePath, timestamp: ''+new Date().valueOf() })
-				this.stats.filePath = filePath
+				let datum = { file: filePath, timestamp: new Date().valueOf() }
+				this.emit('start', datum)
+				let files = this.stats.files
+				files.push(datum) && files.length > 64 && files.shift(); // limit the size of the files array
 			}
 		}
 
