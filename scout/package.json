@@ -13,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "ably": "1.2.13",
+    "cheerio": "^1.0.0-rc.12",
     "date-fns": "^2.29.3",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
