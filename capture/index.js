@@ -3,6 +3,7 @@
 import "dotenv/config"
 import Voddo from './src/voddo.js'
 import debugFactory from 'debug'
+import sql from 'sql'
 
 const debug = debugFactory('futureporn/capture/index')
 
@@ -34,14 +35,15 @@ let actionTimer;
 	 * 
 	 * @todo standardize the LISTEN/NOTIFY spec
 	 */
-	sql.on('futureporn/scout/end', (evt) => {
+	// sql.on('futureporn/scout/end', (evt) => {
 
-		clearTimeout(actionTimer)
-	})
+	// 	clearTimeout(actionTimer)
+	// })
 
 
 	voddo.on('start', (data) => {
 		// pub.publish('futureporn/capture/file', JSON.stringify(file)) // @todo
+		console.log(data)
 	})
 
 	voddo.on('stop', (report) => {
