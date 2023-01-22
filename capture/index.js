@@ -3,19 +3,11 @@
 import "dotenv/config"
 import Voddo from './src/voddo.js'
 import debugFactory from 'debug'
-import postgres from 'postgres'
-import cuid from 'cuid'
 
 const debug = debugFactory('futureporn/capture/index')
-const postgresUsername = process.env.POSTGRES_USERNAME;
-const postgresPassword = process.env.POSTGRES_PASSWORD;
-const postgresHost = process.env.POSTGRES_HOST;
-const idleTimeoutMinutes = 15
-const workerId = cuid();
 
-if (typeof postgresHost === 'undefined') throw new Error('POSTGRES_HOST undef');
-if (typeof postgresUsername === 'undefined') throw new Error('POSTGRES_USERNAME undef');
-if (typeof postgresPassword === 'undefined') throw new Error('POSTGRES_PASSWORD undef');
+const idleTimeoutMinutes = 15
+
 if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env');
 
 
@@ -35,11 +27,6 @@ let actionTimer;
 	})
 
 
-	const sql = postgres({
-	    host: postgresHost,
-	    password: postgresPassword,
-	    userName: postgresUsername
-	})
 
 	/**
 	 * When scout signals that a stream has ended, 
@@ -57,29 +44,32 @@ let actionTimer;
 		// pub.publish('futureporn/capture/file', JSON.stringify(file)) // @todo
 	})
 
-	voddo.on('stop', (data) => {
+	voddo.on('stop', (report) => {
 
 		console.log('  [*] we have stopped')
-		console.log(data)
+		console.log(report)
+
+		// saveMetadata(report) // do we need this?
 
 		// @todo detect stream end (scout signal?)
-		// @todo if stream is ended, combine if needed
-		// @todo upload
 
+		if (report.reason !== 'close') {
+			console.warn('Voddo stopped irregularly.')
+			console.warn(report.reason)
+		} else {
+			// process/upload if stream has been stopped for 15 minutes
+			clearTimeout(actionTimer)
+			actionTimer = setTimeout(() => {
+				console.log('  [*] 15 minute actionTimer elapsed. ')
+				if (!voddo.isDownloading()) {
+					console.log('  [*] stream is not being downloaded, so we are proceeding with VOD processing.')
+					doProcessVod(voddo.getFilenames())
+				} else {
+					console.log('  [*] stream is still being downloaded, so we are not processing VOD at this time.')
+				}
+			}, 1000*60*15)
+		}
 
-		// process/upload if stream has been stopped for 15 minutes
-		clearTimeout(actionTimer)
-		actionTimer = setTimeout(() => {
-			console.log('  [*] 15 minute actionTimer elapsed. ')
-			if (!voddo.isDownloading()) {
-				console.log('  [*] stream is not being downloaded, so we are proceeding with VOD processing.')
-				doProcessVod(data)
-			} else {
-				console.log('  [*] stream is still being downloaded, so we are not processing VOD at this time.')
-			}
-		}, 1000*60*15)
-
-		// saveMetadata(data) // do we need this?
 	})
 
 	// voddo.delayedStart() // only for testing
