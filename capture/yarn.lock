@@ -812,6 +812,11 @@ lodash.isarguments@^3.1.0:
   resolved "https://registry.yarnpkg.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
   integrity sha512-chi4NHZlZqZD18a0imDHnZPrDeBbTtVN7GXMwuGdRH9qotxAjYs3aVLKc7zNOG9eddR5Ksd8rvFEBc9SsggPpg==
 
+lodash@4.1.x:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.1.0.tgz#299894283de01a9eefbedff4c4b9b00a6a2e6e96"
+  integrity sha512-B9sgtKUlz0xe7lkYb80BcOpwwJJw5iOiz4HkBDzF0+i5nJLiwfBnL08m7bBkCOPBfi+0aqvrJDMdZDfAvs8vYg==
+
 log-symbols@4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/log-symbols/-/log-symbols-4.1.0.tgz#3fbdbb95b4683ac9fc785111e792e558d4abd503"
@@ -1297,6 +1302,11 @@ sinon@^15.0.1:
     nise "^5.1.2"
     supports-color "^7.2.0"
 
+sliced@0.0.x:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/sliced/-/sliced-0.0.5.tgz#5edc044ca4eb6f7816d50ba2fc63e25d8fe4707f"
+  integrity sha512-9bYT917D6H3+q8GlQBJmLVz3bc4OeVGfZ2BB12wvLnluTGfG6/8UdOUbKJDW1EEx9SZMDbjnatkau5/XcUeyOw==
+
 sonic-boom@^3.1.0:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/sonic-boom/-/sonic-boom-3.2.1.tgz#972ceab831b5840a08a002fa95a672008bda1c38"
@@ -1308,6 +1318,14 @@ split2@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/split2/-/split2-4.1.0.tgz#101907a24370f85bb782f08adaabe4e281ecf809"
   integrity sha512-VBiJxFkxiXRlUIeyMQi8s4hgvKCSjtknJv/LVYbrgALPwf5zSKmEwV9Lst25AkvMDnvxODugjdl6KZgwKM1WYQ==
+
+sql@^0.78.0:
+  version "0.78.0"
+  resolved "https://registry.yarnpkg.com/sql/-/sql-0.78.0.tgz#894585d56111dbb1768741a4d9935c82c8595949"
+  integrity sha512-+If27aF3UQxmnuF5JgTJKd/X6TiELa1f58Zo5TX9ULbPnqs1fBDODwwbtU0WwM5H3lSiwx2En4m2lB1rCoIhvQ==
+  dependencies:
+    lodash "4.1.x"
+    sliced "0.0.x"
 
 standard-as-callback@^2.1.0:
   version "2.1.0"
