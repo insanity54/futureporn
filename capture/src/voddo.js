@@ -5,7 +5,7 @@ import { EventEmitter } from 'node:events';
 import { AbortController } from "node-abort-controller";
 
 const debug = debugFactory('voddo');
-const defaultStats = {files:[],reason:null,lastUpdatedAt:null}
+const defaultStats = {files:[],lastUpdatedAt:null}
 
 export default class Voddo extends EventEmitter {
 	constructor(opts) {
@@ -90,8 +90,9 @@ export default class Voddo extends EventEmitter {
 	getReport(errorMessage) {
 		let report = {}
 		report.stats = Object.assign({}, this.stats)
+		report.error = errorMessage
 		report.reason = (() => { 
-			if (errorMessage) return errorMessage;
+			if (errorMessage) return 'error';
 			else if (this.abortController.signal.aborted) return 'aborted';
 			else return 'close';
 		})()
