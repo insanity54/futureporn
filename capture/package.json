@@ -20,6 +20,7 @@
     "minimatch": "^5.1.1",
     "postgres": "^3.3.3",
     "rxjs": "^7.8.0",
+    "sql": "^0.78.0",
     "youtube-dl-wrap": "git+https://github.com/insanity54/youtube-dl-wrap.git"
   },
   "devDependencies": {
