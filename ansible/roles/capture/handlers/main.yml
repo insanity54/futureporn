@@ -5,3 +5,8 @@
   ansible.builtin.systemd:
     name: capture
     state: restarted
+
+- name: restart capture-monitor
+  ansible.builtin.systemd:
+    name: capture-monitor
+    state: restarted
