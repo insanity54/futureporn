@@ -37,9 +37,11 @@
   </div>
 
 
+
   <div class="block">
 
     <div class="box">
+
       <h2 class="subtitle">
         {%- if announceTitle %}
         {{ announceTitle | urlDecode }}
@@ -96,8 +98,17 @@
 
 
       {%- if announceUrl %}
-        <h2 class="mt-3 heading">Stream Annoucement URL</h2>
-        <a href="{{ announceUrl }}">{{ announceUrl }}</a>
+        <div class="mb-5">
+          <h2 class="mt-3 heading">Stream Annoucement URL</h2>
+          <a href="{{ announceUrl }}">{{ announceUrl }}</a>
+        </div>
+      {% endif %}
+
+      {%- if note %}
+        <div class="mb-3">
+          <h2 class="heading">Note</h2>
+          <p>{{ note }}</p>
+        </div>
       {% endif %}
 
       <hr>
