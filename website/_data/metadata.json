@@ -47,6 +47,7 @@
     "i subscribe to things",
     "Cjyoubusta",
     "LzyAsn",
+    "Logan Gagnepain",
     "AverageYuriEnjoyer",
     "LEONKA11",
     "OSE ",
@@ -63,6 +64,7 @@
     "jax4you ",
     "LzyAsn",
     "Torben Bott",
+    "Logan Gagnepain",
     "AverageYuriEnjoyer",
     "LEONKA11",
     "Lesate",
@@ -76,19 +78,18 @@
     "polarknight 537",
     "K ",
     "Das Tardlii",
-    "Chio",
-    "catboxL"
+    "Chio"
   ],
   "goals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 86,
+      "completed_percentage": 88,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 48,
+      "completed_percentage": 50,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
@@ -96,13 +97,13 @@
   "incompleteGoals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 86,
+      "completed_percentage": 88,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 48,
+      "completed_percentage": 50,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
