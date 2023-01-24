@@ -1,10 +1,21 @@
----
 
 # greets https://grafana.com/docs/grafana-cloud/infrastructure-as-code/ansible/ansible-grafana-agent-linux/
 
+- name: ensure unzip is installed
+  apt:
+    name: unzip
+    state: present
+
+- name: Create directory for config
+  file:
+    path: "{{ agent_config_location }}"
+    state: directory
+    mode: '0755'
+
+
 - name: Download Grafana Agent binary
   get_url:
-    url: "https://github.com/grafana/agent/releases/download/{{ agent_version }}/agent-{{ linux_architecture }}.zip"
+    url: "https://github.com/grafana/agent/releases/download/{{ agent_version }}/agent-linux-{{ linux_architecture }}.zip"
     dest: "/tmp/agent-linux.zip"
     mode: '0644'
 
@@ -13,26 +24,22 @@
   unarchive:
     src: "/tmp/agent-linux.zip"
     dest: "{{ agent_binary_location }}"
-    remote_src: yes
+    remote_src: true
     mode: '0755'
 
 
-- name: Create directory for Grafana Agent
-  file:
-    path: "{{ agent_config_location }}"
-    state: directory
-    mode: '0755'
+
 
 - name: Create config file for Grafana Agent
   template:
-    src: agent-config.yaml.j2
-    dest: "{{ agent_config_location }}/agent-config.yaml"
+    src: grafana-agent.yml.j2
+    dest: "{{ agent_config_location }}/grafana-agent.yml"
   notify: restart grafana-agent
 
 - name: Add user 'grafana-agent'
   user:
     name: grafana-agent
-    create_home: yes
+    create_home: true
     shell: /bin/false
 
 
@@ -44,7 +51,7 @@
 
 - name: Start Grafana Agent service
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
     name: grafana-agent
-    enabled: yes
+    enabled: true
     state: restarted

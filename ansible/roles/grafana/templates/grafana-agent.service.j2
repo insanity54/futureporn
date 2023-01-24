@@ -1,0 +1,13 @@
+[Unit]
+Description=Grafana Agent
+
+[Service]
+User=grafana-agent
+ExecStart={{ agent_binary_location }}/agent-linux-{{ linux_architecture }} --config.file={{ agent_config_location }}/grafana-agent.yml -server.http.address=127.0.0.1:9090 -server.grpc.address=127.0.0.1:9091
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+

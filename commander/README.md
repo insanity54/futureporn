@@ -3,20 +3,31 @@
 listens to messages and coordinates actions
 
 
-## Redis Pub/Sub Message Specifications
+## Pub/Sub Message Specifications
 
 All messages include
 
-  * sender ID
-  * timestamp
+  * sender    {String} cuid
+  * timestamp {Number} ms since epoch
 
 
 
 ### Scout
 
-Says, "I see a CB invite tweet. Here is the link." 
-Says, "I see a CB stream that just started."
-Says, "I see a CB stream that just stopped."
+
+#### scout/twitter/link
+
+> "I see a CB invite tweet. Here is the link." 
+
+
+#### scout/stream/start
+
+> "I see a CB stream that just started."
+
+
+#### scout/stream/stop
+
+> "I see a CB stream that just stopped."
 
 
 
@@ -38,6 +49,10 @@ Says, "I am stopping capture, here is the metadata."
 	videoSrcHash: 'bafybeibmpishntx3kv6lckeewixuvrghzclmn47b4723akalhdpjmblhaa'
 }
 ```
+
+#### capture/vod/upload
+
+> "I uploaded a VOD. here is the CID."
 
 
 ### Commander

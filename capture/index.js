@@ -3,7 +3,24 @@
 import "dotenv/config"
 import Voddo from './src/voddo.js'
 import debugFactory from 'debug'
-import sql from 'sql'
+import dbFactory from './src/db.js'
+
+import postgres from 'postgres'
+if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
+if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
+if (typeof process.env.POSTGRES_PASSWORD === 'undefined') throw new Error('POSTGRES_PASSWORD undef');
+if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env');
+
+
+const sql = postgres({
+    host: process.env.POSTGRES_HOST,
+    password: process.env.POSTGRES_PASSWORD,
+    username: process.env.POSTGRES_USERNAME,
+    database: 'futureporn'
+})
+
+const db = dbFactory(sql)
+
 
 const debug = debugFactory('futureporn/capture/index')
 
@@ -20,13 +37,14 @@ let actionTimer;
 (async function main () {
 
 
+	const res = await db.notify('futureporn/capture', {message: 'idk!??!?!?'})
+	console.log(res)
 
 	const voddo = new Voddo({
 		url: 'https://chaturbate.com/projektmelody',
 		format: 'best',
 		cwd: process.env.FUTUREPORN_WORKDIR
 	})
-
 
 
 	/**

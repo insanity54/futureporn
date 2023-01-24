@@ -1,0 +1,27 @@
+integrations:
+  node_exporter:
+    enabled: true
+    enable_collectors:
+    - systemd
+    - filesystem
+    relabel_configs:
+    - replacement: {{ inventory_hostname }}
+      target_label: instance
+  prometheus_remote_write:
+  - basic_auth:
+      username: {{ lookup('env', 'GRAFANA_AGENT_USERNAME') }}
+      password: {{ lookup('env', 'GRAFANA_AGENT_PASSWORD') }}
+    url: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
+
+metrics:
+  configs:
+  - name: integrations
+    remote_write:
+    - basic_auth:
+        username: {{ lookup('env', 'GRAFANA_AGENT_USERNAME') }}
+        password: {{ lookup('env', 'GRAFANA_AGENT_PASSWORD') }}
+      url: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
+  global:
+    scrape_interval: 60s
+  wal_directory: /tmp/grafana-agent-wal
+

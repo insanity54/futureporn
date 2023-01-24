@@ -10,6 +10,7 @@ import Fastify from 'fastify'
 import fastifyBasicAuth from '@fastify/basic-auth'
 import fastifyAuth from '@fastify/auth'
 import fastifyView from '@fastify/view'
+import postgres from 'postgres'
 // import fastifyLeveldb from '@fastify/leveldb'
 import nunjucks from 'nunjucks'
 // import Redis from 'ioredis';
@@ -37,8 +38,8 @@ const authenticate = {
 // init
 if (typeof commanderUsername === 'undefined') throw new Error('COMMANDER_USERNAME was undefined in env');
 if (typeof commanderPassword === 'undefined') throw new Error('COMMANDER_PASSWORD was undefined in env');
-if (typeof mqttPassword === 'undefined') throw new Error('MQTT_PASSWORD was undefined in env');
-if (typeof mqttUsername === 'undefined') throw new Error('MQTT_USERNAME was undefined in env');
+// if (typeof mqttPassword === 'undefined') throw new Error('MQTT_PASSWORD was undefined in env');
+// if (typeof mqttUsername === 'undefined') throw new Error('MQTT_USERNAME was undefined in env');
 if (typeof postgresHost === 'undefined') throw new Error('POSTGRES_HOST undef');
 if (typeof postgresUsername === 'undefined') throw new Error('POSTGRES_USERNAME undef');
 if (typeof postgresPassword === 'undefined') throw new Error('POSTGRES_PASSWORD undef')

@@ -1,0 +1,6 @@
+---
+
+- template:
+    src: grafana-agent.yml.j2
+    dest: "{{ agent_config_location }}/grafana-agent.yml"
+  notify: restart grafana-agent

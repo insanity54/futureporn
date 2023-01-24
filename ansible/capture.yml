@@ -4,7 +4,7 @@
   hosts: localhost
   vars:
     - instance_plan: vc2-1c-2gb
-    - instance_count: 3
+    - instance_count: 1
     - instance_type: capture
   roles:
     - role: spinup
@@ -20,8 +20,8 @@
     - ipfs_private_key: "{{ lookup('env', 'IPFS_PRIVATE_KEY') }}"
     - ipfs_peer_id: "{{ lookup('env', 'IPFS_PEER_ID') }}"
     - nodejs_version: "16.x"
-    - storage_gb: 40 # minimum 40GB
-    - ipfs_storage_max: "40GB" 
+    - storage_gb: 100 # minimum 40GB
+    - ipfs_storage_max: "100GB" 
   roles:
     - role: base
     - role: geerlingguy.nodejs
@@ -29,18 +29,21 @@
     - role: capture
       tags: [capture]
 
+    - role: grafana
+      tags: [grafana]
+
     - role: jeffbr13.ipfs 
 
     # important that manager comes after jeffbr13.ipfs
     # as we monkey patch the ipfs.service file
-    - role: manager 
+    # - role: manager 
 
 
-- name: install futureporn-scout just on one VPS
-  hosts: futureporn-capture1
-  gather_facts: no # just for speed
-  vars:
-    - ansible_user: root
-  roles:
-    - role: scout
-      tags: [scout]
+# - name: install futureporn-scout just on one VPS
+#   hosts: futureporn-capture1
+#   gather_facts: no # just for speed
+#   vars:
+#     - ansible_user: root
+#   roles:
+#     - role: scout
+#       tags: [scout]
