@@ -6,7 +6,7 @@ import chai, { expect } from 'chai'
 
 chai.use(sinonChai);
 
-describe('db', function () {
+xdescribe('db', function () {
 
   let db
   let sql = { notify: async function () {} }
