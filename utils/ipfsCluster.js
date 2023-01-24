@@ -109,7 +109,7 @@ const ipfsClusterPinAdd = async (pin) => {
 }
 
 
-const ipfsClusterUpload = async (filename, expiryDuration) => {
+const ipfsClusterUpload = async (filename, expiryDuration = false) => {
 	try {
 		let args = getArgs()
 

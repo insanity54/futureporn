@@ -1,15 +1,11 @@
 ---
 
-commanders:
+all:
   hosts:
-    oboe:
+    futureporn-capture1:
+      ansible_host: 149.28.240.33
       ansible_user: root
-      ansible_host: "{{ lookup('env', 'COMMANDER_HOST') }}"
-      ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
-      ansible_become_method: su
 
-monoliths:
-  hosts:
     baba:
       ansible_host: 38.242.216.6
       # ansible_host: fe80::250:56ff:fe49:6cd3
@@ -29,7 +25,7 @@ monoliths:
       ipfs_cluster_follow_version: v1.0.4
       ipfs_max_memory: 16000000000
 
-    ipfs-cluster-2:
+    ipfs-cluster2:
       ansible_host: 45.32.201.82
       cluster_peers: 
         - /ip4/127.0.0.1/tcp/9096/ipfs/QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
@@ -46,3 +42,23 @@ monoliths:
       ipfs_cluster_service_version: v1.0.4
       ipfs_cluster_follow_version: v1.0.4
       ipfs_max_memory: 1000000000
+
+    oboe:
+      ansible_user: root
+      ansible_host: "{{ lookup('env', 'COMMANDER_HOST') }}"
+      ansible_ssh_extra_args: "-o IdentitiesOnly=yes"
+      ansible_become_method: su
+
+
+  children:
+    monoliths:
+      hosts:
+        baba:
+        ipfs-cluster2:
+        futureporn-capture1:
+    capturers:
+      hosts:
+        futureporn-capture1:
+    commanders:
+      hosts:
+        oboe:

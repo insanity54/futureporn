@@ -1,0 +1,17 @@
+---
+
+- name: ensure node_exporter is installed
+  apt:
+    name: prometheus-node-exporter
+    state: present
+
+- name: ensure node_exporter is running
+  systemd:
+    name: prometheus-node-exporter
+    state: started
+
+- name: open firewall for prometheus metrics
+  ufw:
+    port: 9100
+    proto: tcp
+    rule: allow

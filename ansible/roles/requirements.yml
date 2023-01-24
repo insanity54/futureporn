@@ -13,6 +13,7 @@ roles:
 collections:
   - ngine_io.vultr
   - vultr.cloud
+  - grafana.grafana
   # In the mean time, I'm using my vultr.cloud fork
   # - name: https://github.com/insanity54/ansible-collection-vultr.git
   #   type: git

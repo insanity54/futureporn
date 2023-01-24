@@ -28,8 +28,10 @@
         - cluster
         - scout
         - capture
+        - grafana
   roles:
     - role: base
+      tags: [base]
     - role: ipfs # also installs/configures IPFS
       tags: [ipfs]
     - role: cluster
@@ -44,3 +46,5 @@
       tags: [scout]
     - role: qa
       tags: [qa]
+    - role: grafana
+      tags: [grafana]

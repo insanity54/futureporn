@@ -12,12 +12,8 @@
   "dependencies": {
     "@fastify/auth": "^4.2.0",
     "@fastify/basic-auth": "^5.0.0",
-    "@fastify/redis": "^6.1.0",
     "@fastify/view": "^7.3.0",
-    "aedes": "^0.48.1",
-    "fastify": "^4.11.0",
-    "mqtt": "^4.3.7",
-    "redis": "^4.5.1"
+    "fastify": "^4.11.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
