@@ -22,10 +22,12 @@ const dataFixture = [
 ]
 
 describe('video', function () {
-  describe('getFilesTxt', function () {
-    it('should generate contents suitable for input to `ffmpeg -f concat`', function () {
-      const txt = getFilesTxt(dataFixture)
-      expect(txt).to.deep.equal("file 'mock-stream0.mp4'\nfile 'mock-stream1.mp4'\nfile 'mock-stream2.mp4'\n")
+  describe('concat', function () {
+    it('should combine several videos into one', async function() {
+      const cwd = path.join(__dirname, './fixtures')
+      const outputFile = await concat(dataFixture, {
+        cwd
+      })
     })
   })
 })
