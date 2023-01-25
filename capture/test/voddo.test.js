@@ -4,7 +4,6 @@ import {
     expect
 } from 'chai'
 import sinon from 'sinon'
-import sinonTest from 'sinon-test'
 import YoutubeDlWrap from 'youtube-dl-wrap'
 import {
     AbortController
@@ -15,7 +14,6 @@ import {
 import debugFactory from 'debug'
 const debug = debugFactory('voddo')
 
-let test = sinonTest(sinon)
 
 describe('voddo', function() {
     let clock;
