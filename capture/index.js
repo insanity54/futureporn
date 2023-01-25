@@ -4,6 +4,9 @@ import "dotenv/config"
 import Voddo from './src/voddo.js'
 import debugFactory from 'debug'
 import dbFactory from './src/db.js'
+import Capture from './src/Capture.js'
+import { ipfsClusterUpload } from '../utils/ipfsCluster.js'
+import Video from './src/Video.js'
 
 import postgres from 'postgres'
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
@@ -24,7 +27,6 @@ const db = dbFactory(sql)
 
 const debug = debugFactory('futureporn/capture/index')
 
-const idleTimeoutMinutes = 15
 
 if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env');
 
@@ -33,11 +35,35 @@ if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTU
 
 
 
-let actionTimer;
-(async function main () {
+async function ttt () {
+	const foo = sql.listen('capture/taco', (idk) => {
+		console.log('[ttt] idk!')
+		console.log(idk)
+	})
+	console.log('[ttt] foo')
+	console.log(foo)
+	const bar = await foo
+	console.log('[ttt] bar')
+	console.log(bar)
+}
+
+async function rrr () {
+	const foo = sql.notify('capture/taco', 'EEEEEEEEEEEEEEEEEEEeee (?)', (idk) => {
+		console.log('  idk?')
+		console.log(idk)
+	})
+	console.log('[rrr] ff')
+	console.log(foo)
+	const bar = await foo
+	console.log('[rrr] rr')
+	console.log(bar)
+}
 
 
-	const res = await db.notify('futureporn/capture', {message: 'idk!??!?!?'})
+async function main () {
+
+
+	const res = await db.notify('futureporn/capture', { message: 'idk!??!?!?' })
 	console.log(res)
 
 	const voddo = new Voddo({
@@ -46,56 +72,23 @@ let actionTimer;
 		cwd: process.env.FUTUREPORN_WORKDIR
 	})
 
-
-	/**
-	 * When scout signals that a stream has ended, 
-	 * we cancel any ongoing actionTimer and immediately process the VOD
-	 * 
-	 * @todo standardize the LISTEN/NOTIFY spec
-	 */
-	// sql.on('futureporn/scout/end', (evt) => {
-
-	// 	clearTimeout(actionTimer)
-	// })
-
-
-	voddo.on('start', (data) => {
-		// pub.publish('futureporn/capture/file', JSON.stringify(file)) // @todo
-		console.log(data)
+	const capture = new Capture({
+		voddo,
+		sql,
+		ipfsClusterUpload
 	})
 
-	voddo.on('stop', (report) => {
+	capture.begin()
+}
 
-		console.log('  [*] we have stopped')
-		console.log(report)
 
-		// saveMetadata(report) // do we need this?
+// main()
 
-		// @todo detect stream end (scout signal?)
 
-		if (report.reason !== 'close') {
-			console.warn('Voddo stopped irregularly.')
-			console.warn(report.reason)
-		} else {
-			// process/upload if stream has been stopped for 15 minutes
-			clearTimeout(actionTimer)
-			actionTimer = setTimeout(() => {
-				console.log('  [*] 15 minute actionTimer elapsed. ')
-				if (!voddo.isDownloading()) {
-					console.log('  [*] stream is not being downloaded, so we are proceeding with VOD processing.')
-					doProcessVod(voddo.getFilenames())
-				} else {
-					console.log('  [*] stream is still being downloaded, so we are not processing VOD at this time.')
-				}
-			}, 1000*60*15)
-		}
-
-	})
-
-	// voddo.delayedStart() // only for testing
-	voddo.start()
-
-})()
+// ttt()
+// setInterval(() => {
+// 	rrr()
+// }, 1000)
 
 
 
