@@ -57,7 +57,7 @@
     "Delques1843",
     "polarknight 537",
     "geniesser",
-    "Das Tardlii"
+    "Limes499"
   ],
   "allPatronNames": [
     "i subscribe to things",
@@ -78,19 +78,19 @@
     "Delques1843",
     "polarknight 537",
     "geniesser",
-    "K ",
-    "Das Tardlii"
+    "Limes499",
+    "K "
   ],
   "goals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 90,
+      "completed_percentage": 92,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 51,
+      "completed_percentage": 52,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
@@ -98,13 +98,13 @@
   "incompleteGoals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 90,
+      "completed_percentage": 92,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 51,
+      "completed_percentage": 52,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
