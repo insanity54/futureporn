@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import Voddo from '../src/voddo.js'
+import Voddo from '../src/Voddo.js'
 import {
     expect
 } from 'chai'
