@@ -27,6 +27,7 @@
     "chai": "^4.3.7",
     "cheerio": "^1.0.0-rc.12",
     "mocha": "^10.2.0",
+    "multiformats": "^11.0.1",
     "node-abort-controller": "^3.0.1",
     "node-fetch": "^3.3.0",
     "nodemon": "^2.0.20",
