@@ -45,6 +45,7 @@
   ],
   "activePatronNames": [
     "i subscribe to things",
+    "Jschllat ",
     "Cjyoubusta",
     "LzyAsn",
     "Logan Gagnepain",
@@ -61,6 +62,7 @@
   ],
   "allPatronNames": [
     "i subscribe to things",
+    "Jschllat ",
     "Cjyoubusta",
     "jax4you ",
     "LzyAsn",
@@ -78,19 +80,18 @@
     "Delques1843",
     "polarknight 537",
     "geniesser",
-    "Limes499",
-    "K "
+    "Limes499"
   ],
   "goals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 92,
+      "completed_percentage": 94,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 52,
+      "completed_percentage": 53,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
@@ -98,13 +99,13 @@
   "incompleteGoals": [
     {
       "amount_cents": 13000,
-      "completed_percentage": 92,
+      "completed_percentage": 94,
       "description": "This goal would cover my minimum operating cost of Futureporn.net.",
       "title": ""
     },
     {
       "amount_cents": 23000,
-      "completed_percentage": 52,
+      "completed_percentage": 53,
       "description": "This goal would improve Futureporn video serving speed by paying for the bandwidth required to run a Futureporn IPFS gateway.<br>",
       "title": ""
     }
