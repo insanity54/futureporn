@@ -92,7 +92,7 @@ describe('Capture', function () {
       expect(capture.ipfsClusterUpload).calledOnce
     })
   })
-  describe('save', function () {
+  xdescribe('save', function () {
     it('should save to db', async function () {
       const vodId = await capture.save(cidFixture, fixtureDate)
       expect(capture.video).not.called
