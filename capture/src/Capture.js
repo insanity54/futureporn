@@ -3,13 +3,14 @@
 
 export default class Capture {
 
-  constructor({ opts }) {
+  constructor(opts) {
     this.date = opts?.date
     this.sql = opts.sql
     this.ipfsClusterUpload = opts.ipfsClusterUpload
     this.idleTimeout = opts.idleTimeout || 1000*60*15
     this.actionTimer
-    this.concat = opts
+    this.video = opts.video
+    this.voddo = opts.voddo
 
     return this
   }
@@ -21,8 +22,9 @@ export default class Capture {
    * @return {Promise}
    * @resolves {String} cid
    */
-  async upload () {
-    this.ipfsCluster.add()
+  async upload (filename) {
+    const cid = await this.ipfsClusterUpload(filename)
+    return cid
   }
 
 
@@ -30,8 +32,9 @@ export default class Capture {
   /**
    * save Vod data to db
    */
-  async save (cid) {
-
+  async save (cid, timestamp) {
+    this.date = timestamp
+    return await this.sql`INSERT INTO vod ( videoSrcHash, lastUpdatedAt ) values (${cid}, ${timestamp}) returning *`
   }
 
 
@@ -63,6 +66,8 @@ export default class Capture {
    * @returns {void}
    */
   async process (filenames) {
+    this.date = filenames[0].timestamp
+
     console.log('  [*] concatenation in progress...')
     const file = await this.video.concat(filenames)
 
@@ -77,8 +82,10 @@ export default class Capture {
   /**
    * download a livestream
    * 
-   * @return {Promise}
-   * @resolve {String[]} filenames
+   *   - initializes Voddo
+   *   - invokes this.process() as side effect
+   * 
+   * @return {void}
    */
   async download () {
     this.voddo.on('start', (data) => {
@@ -96,7 +103,7 @@ export default class Capture {
         console.warn(report.reason)
       } else {
         // process/upload if stream has been stopped for 15 minutes
-        clearTimeout(actionTimer)
+        clearTimeout(this.actionTimer)
         this.actionTimer = setTimeout(() => {
           console.log('  [*] 15 minute actionTimer elapsed. ')
           if (!this.voddo.isDownloading()) {
@@ -108,6 +115,7 @@ export default class Capture {
         }, this.idleTimeout)
       }
     })
+    console.log('  [*] starting voddo')
     this.voddo.start()
   }
 
