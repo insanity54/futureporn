@@ -309,10 +309,15 @@ describe('voddo', function() {
       expect(this).to.have.property('abortController')
       debug('ey cool, voddo started')
       setTimeout(() => {
-        this.stop() // this is Voddo
+        this.stop() // 'this' is Voddo
       }, 500)
     })
     voddo.start()
+
+    clock.next()
+    clock.next()
+    clock.next()
+
   })
 
 
@@ -369,6 +374,11 @@ describe('voddo', function() {
 
     voddo.start()
 
+    clock.next()
+    clock.next()
+    clock.next()
+    clock.next()
+    clock.next()
 
   })
 
