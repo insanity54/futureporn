@@ -25,6 +25,7 @@ export default class Video {
   }
 
 
+
   getFilesTxt () {
     return this.filePaths
       .sort((a, b) => a.timestamp - b.timestamp)
