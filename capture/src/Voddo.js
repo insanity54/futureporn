@@ -108,7 +108,8 @@ export default class Voddo extends EventEmitter {
 
 	getCourtesyTimer(callback) {
 		// 600000ms = 10m
-		const waitTime = Math.min(600000, (Math.pow(2, this.retryCount) * 1000));
+		// const waitTime = Math.min(600000, (Math.pow(2, this.retryCount) * 1000));
+		const waitTime = 5000;
 		this.retryCount += 1;
 		debug(`  [*] courtesyWait for ${waitTime/1000} seconds. (retryCount: ${this.retryCount})`)
 		return setTimeout(callback, waitTime)
@@ -144,9 +145,9 @@ export default class Voddo extends EventEmitter {
 				let filePath = /Destination:\s(.*)$/.exec(data)[1]
 				debug(`  [*] Destination file detected: ${filePath}`)
 				let datum = { file: filePath, timestamp: new Date().valueOf() }
-				this.emit('start', datum)
 				let files = this.stats.files
 				files.push(datum) && files.length > 64 && files.shift(); // limit the size of the files array
+				this.emit('start', datum)
 			}
 		}
 

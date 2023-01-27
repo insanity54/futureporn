@@ -6,7 +6,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node index",
+    "start": "node --trace-warnings index",
     "test": "DEBUG=\"voddo\" FUTUREPORN_WORKDIR=/home/chris/Downloads mocha",
     "dev": "DEBUG=\"futureporn/*\" FUTUREPORN_WORKDIR=/home/chris/Downloads nodemon index"
   },
