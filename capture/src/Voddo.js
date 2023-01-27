@@ -108,8 +108,7 @@ export default class Voddo extends EventEmitter {
 
 	getCourtesyTimer(callback) {
 		// 600000ms = 10m
-		// const waitTime = Math.min(600000, (Math.pow(2, this.retryCount) * 1000));
-		const waitTime = 5000;
+		const waitTime = Math.min(600000, (Math.pow(2, this.retryCount) * 1000));
 		this.retryCount += 1;
 		debug(`  [*] courtesyWait for ${waitTime/1000} seconds. (retryCount: ${this.retryCount})`)
 		return setTimeout(callback, waitTime)

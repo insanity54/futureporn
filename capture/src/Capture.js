@@ -33,9 +33,9 @@ export default class Capture {
    * save Vod data to db
    */
   async save (cid, timestamp) {
-    console.log(`  saving ${cid} w/ timestamp ${timestamp}`)
+    console.log(`  [*] saving ${cid} \n      w/ captureDate ${timestamp}`)
     this.date = timestamp
-    return await this.sql`INSERT INTO vod ( videoSrcHash, lastUpdatedAt ) values (${cid}, ${timestamp}) returning *`
+    return await this.sql`INSERT INTO vod ( videoSrcHash, captureDate ) values (${cid}, ${timestamp}) returning *`
   }
 
 
@@ -66,11 +66,11 @@ export default class Capture {
     console.log('  [*] concatenation in progress...')
     const file = await this.video.concat(filenames)
 
-    console.log('  [*] upload in progress')
+    console.log(`  [*] uploading ${file}`)
     const cid = await this.ipfsClusterUpload(file)
 
     console.log('  [*] db save in progress')
-    await this.save(cid)
+    await this.save(cid, this.date)
   }
 
 
@@ -80,7 +80,7 @@ export default class Capture {
     this.actionTimer = setTimeout(() => {
       console.log('  [*] 15 minute actionTimer elapsed. ')
       if (!this.voddo.isDownloading()) {
-        console.log('  [*] stream is not being downloaded, so we are proceeding with VOD processing. (end of stream is assumed)')
+        console.log('  [*] End of stream is assumed. Processing vod.')
         this.process(this.voddo.getFilenames())
       } else {
         console.log('  [*] stream is still being downloaded, so we are not processing VOD at this time.')
@@ -108,12 +108,6 @@ export default class Capture {
       if (report.reason === 'close') {
         this.refreshActionTimer()
       }
-      // if (report.reason !== 'close' && !report.error.match(/currently offline/)) {
-      //   console.error(report.error)
-      // } else {
-      //   // process/upload if stream has been stopped for 15 minutes
-        
-      // }
     })
     console.log('  [*] starting voddo')
     this.voddo.start()
