@@ -22,7 +22,7 @@ const inputFixture = 'projektmelody 3021-10-16 06-16.mp4'
 const outputFixture = 'projektmelody-chaturbate-30211016T000000Z.mp4'
 const timestampFixture = 33191316900000
 
-describe('integration', function () {
+describe('Capture integration', function () {
 
   let clock
 
@@ -46,6 +46,8 @@ describe('integration', function () {
     const sql = postgres({
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
+      host: process.env.POSTGRES_HOST,
+      database: 'futureporn',
       idle_timeout: 1
     })
 
@@ -100,12 +102,20 @@ describe('integration', function () {
       expect(ipfsClusterUpload).calledOnce
     })
 
-    // const row = await sql`INSERT INTO vod (title) values ('just a test!') returning title`
-    const rows = await sql`SELECT videoSrcHash FROM vod WHERE videoSrcHash = ${cidFixture}`
+    // Capture.save is called as a side effect
+    // of Capture.process
+    // which is called as a side effect of Capture.download
+    // so we have to wait for it to complete
+    // this is not ideal because there is potential
+    // to not wait long enough
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000)
+    })
 
-    console.log(`  [*] rows:${JSON.stringify(rows)}`)
+    const rows = await sql`SELECT "videoSrcHash" FROM vod WHERE "videoSrcHash" = ${cidFixture}`
 
-    expect(rows[0].videosrchash).to.equal(cidFixture)
+    expect(rows[0]).to.exist
+    expect(rows[0]).to.have.property('videoSrcHash', cidFixture)
 
 
 
