@@ -1,6 +1,7 @@
 
 import Video from '../src/Video.js'
 import Capture from '../src/Capture.js'
+import Ipfs from '../src/Ipfs.js'
 import chai, { expect } from 'chai'
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -76,11 +77,11 @@ describe('Capture', function () {
     // }, 1000*60*60*3)
     
 
-    const ipfsClusterUpload = sinon.stub()
-    ipfsClusterUpload.withArgs('/tmp/mycoolfile.mp4').resolves(cidFixture)
+    const ipfs = sinon.createStubInstance(Ipfs)
+    ipfs.upload.withArgs('/tmp/mycoolfile.mp4').resolves(cidFixture)
     capture = new Capture({
       sql,
-      ipfsClusterUpload,
+      ipfs,
       video,
       voddo
     })
@@ -105,7 +106,7 @@ describe('Capture', function () {
     it('should upload a video to ipfs', async function () {
       const cid = await capture.upload('/tmp/mycoolfile.mp4')
       expect(() => CID.parse(cid), `The IPFS CID '${cid}' is invalid.`).to.not.throw()
-      expect(capture.ipfsClusterUpload).calledOnce
+      expect(capture.ipfs.upload).calledOnce
     })
   })
   describe('save', function () {

@@ -6,7 +6,7 @@ export default class Capture {
   constructor(opts) {
     this.date = opts?.date
     this.sql = opts.sql
-    this.ipfsClusterUpload = opts.ipfsClusterUpload
+    this.ipfs = opts.ipfs
     this.idleTimeout = opts.idleTimeout || 1000*60*15
     this.actionTimer
     this.video = opts.video
@@ -23,7 +23,7 @@ export default class Capture {
    * @resolves {String} cid
    */
   async upload (filename) {
-    const cid = await this.ipfsClusterUpload(filename)
+    const cid = await this.ipfs.upload(filename)
     return cid
   }
 
@@ -67,7 +67,7 @@ export default class Capture {
     const file = await this.video.concat(filenames)
 
     console.log(`  [*] uploading ${file}`)
-    const cid = await this.ipfsClusterUpload(file)
+    const cid = await this.ipfs.upload(file)
 
     console.log('  [*] db save in progress')
     await this.save(cid, this.date)
