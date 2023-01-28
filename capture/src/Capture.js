@@ -35,7 +35,7 @@ export default class Capture {
   async save (cid, timestamp) {
     console.log(`  [*] saving ${cid} \n      w/ captureDate ${timestamp}`)
     this.date = timestamp
-    return await this.sql`INSERT INTO vod ( videoSrcHash, captureDate ) values (${cid}, ${timestamp}) returning *`
+    return await this.sql`INSERT INTO vod ( "videoSrcHash", "captureDate" ) values (${cid}, ${timestamp}) returning *`
   }
 
 
