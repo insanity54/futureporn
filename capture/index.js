@@ -4,7 +4,7 @@ import "dotenv/config"
 import Voddo from './src/Voddo.js'
 import debugFactory from 'debug'
 import Capture from './src/Capture.js'
-import { ipfsClusterUpload } from '../utils/ipfsCluster.js'
+import Ipfs from './src/Ipfs.js'
 import Video from './src/Video.js'
 import cuid from 'cuid'
 
@@ -49,10 +49,16 @@ async function main () {
 		cwd: process.env.FUTUREPORN_WORKDIR
 	})
 
+	const ipfs = new Ipfs({
+		multiaddr: process.env.IPFS_CLUSTER_HTTP_API_MULTIADDR,
+		username: process.env.IPFS_CLUSTER_HTTP_API_USERNAME,
+		password: process.env.IPFS_CLUSTER_HTTP_API_PASSWORD,
+	})
+
 	const capture = new Capture({
 		voddo,
 		sql,
-		ipfsClusterUpload
+		ipfs
 	})
 
 	capture.listen().download()
