@@ -3,18 +3,18 @@ import {execa} from 'execa'
 
 
 
-
 export default class Ipfs {
   constructor(opts) {
-    this.IPFS_CLUSTER_HTTP_API_MULTIADDR = opts.IPFS_CLUSTER_HTTP_API_MULTIADDR
-    this.IPFS_CLUSTER_HTTP_API_USERNAME = opts.IPFS_CLUSTER_HTTP_API_USERNAME
-    this.IPFS_CLUSTER_HTTP_API_PASSWORD = opts.IPFS_CLUSTER_HTTP_API_PASSWORD
+    this.multiaddr = opts.IPFS_CLUSTER_HTTP_API_MULTIADDR
+    this.username = opts.IPFS_CLUSTER_HTTP_API_USERNAME
+    this.password = opts.IPFS_CLUSTER_HTTP_API_PASSWORD
+    this.ctlExecutable = opts.ctlExecutable || '/usr/local/bin/ipfs-cluster-ctl'
   }
   getArgs () {
     let args = [
       '--no-check-certificate',
-      '--host', this.IPFS_CLUSTER_HTTP_API_MULTIADDR,
-      '--basic-auth', `${this.IPFS_CLUSTER_HTTP_API_USERNAME}:${this.IPFS_CLUSTER_HTTP_API_PASSWORD}`
+      '--host', this.multiaddr,
+      '--basic-auth', `${this.username}:${this.password}`
     ]
     return args
   }
@@ -34,7 +34,7 @@ export default class Ipfs {
 
       args.push(filename)
 
-      const { stdout } = await execa(ipfsClusterExecutable, args)
+      const { stdout } = await execa(this.ctlExecutable, args)
       return stdout
     } catch (e) {
       console.error('Error while adding file to ipfs')
