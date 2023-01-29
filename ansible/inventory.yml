@@ -2,6 +2,7 @@
 
 all:
   hosts:
+
     futureporn-capture1:
       ansible_host: 149.28.240.33
       ansible_user: root
@@ -25,7 +26,7 @@ all:
       ipfs_cluster_follow_version: v1.0.4
       ipfs_max_memory: 16000000000
 
-    ipfs-cluster2:
+    futureporn-cluster2:
       ansible_host: 45.32.201.82
       cluster_peers: 
         - /ip4/127.0.0.1/tcp/9096/ipfs/QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
@@ -41,7 +42,7 @@ all:
       ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER_SECRET') }}"
       ipfs_cluster_service_version: v1.0.4
       ipfs_cluster_follow_version: v1.0.4
-      ipfs_max_memory: 1000000000
+      ipfs_max_memory: 2147483648
 
     oboe:
       ansible_user: root
@@ -54,7 +55,7 @@ all:
     monoliths:
       hosts:
         baba:
-        ipfs-cluster2:
+        futureporn-cluster2:
         futureporn-capture1:
     capturers:
       hosts:

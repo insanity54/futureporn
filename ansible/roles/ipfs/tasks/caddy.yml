@@ -1,32 +1,33 @@
 ---
 
-# - name: Create the caddy group
-#   ansible.builtin.group:
-#     name: caddy
+- name: Create the caddy group
+  ansible.builtin.group:
+    name: caddy
 
-# - name: Create the caddy user
-#   ansible.builtin.user:
-#     name: caddy
-#     groups: caddy
-#     create_home: yes
-#     home: /home/caddy
+- name: Create the caddy user
+  ansible.builtin.user:
+    name: caddy
+    groups: caddy
+    create_home: yes
+    home: /home/caddy
 
-# - name: Create /var/www
-#   ansible.builtin.file:
-#     path: /var/www
-#     state: directory
-#     owner: caddy
-#     group: caddy
-#     mode: '0600'
-#   notify: reload caddy
+- name: Create /var/www
+  ansible.builtin.file:
+    path: /var/www
+    state: directory
+    owner: caddy
+    group: caddy
+    mode: '0600'
+  notify: reload caddy
 
 
-- name: disable nginx
+- name: stop nginx
   ansible.builtin.systemd:
     name: nginx
     state: stopped
   notify:
     - disable nginx
+  ignore_errors: true
 
 - name: mkdir for caddy
   ansible.builtin.file:
@@ -56,7 +57,7 @@
 - name: Configure Caddy
   ansible.builtin.template:
     src: templates/Caddyfile.j2
-    dest: /etc/caddy/Caddyfile
+    dest: /usr/local/etc/caddy/Caddyfile
     owner: root
     group: root
     mode: '0755'
