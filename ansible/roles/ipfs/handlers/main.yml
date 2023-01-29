@@ -9,13 +9,17 @@
 
 - name: disable caddy
   ansible.builtin.systemd:
-    state: disabled
-    daemon_reload: yes
+    state: stopped
+    enabled: false
+    daemon_reload: true
+  ignore_errors: true
 
 - name: disable nginx
   ansible.builtin.systemd:
     state: disabled
-    daemon_reload: yes
+    enabled: false
+    daemon_reload: true
+  ignore_errors: true
 
 - name: init ipfs
   ansible.builtin.command:

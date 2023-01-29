@@ -78,7 +78,6 @@
     "/ip4/104.131.131.82/udp/4001/quic/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ"
   ],
   "Gateway": {
-    "UseSubdomains": false,
     "HTTPHeaders": {
       "Access-Control-Allow-Headers": [
         "X-Requested-With",
@@ -116,7 +115,7 @@
     },
     "ConnMgr": {},
     "ResourceMgr": {
-      "Enabled": false,
+      "Enabled": true,
       "Limits": {
         "System": {
           "Memory": {{ ipfs_max_memory }},

@@ -8,8 +8,16 @@
   ansible.builtin.user:
     name: ipfs
     groups: ipfs
-    create_home: yes
+    create_home: false
     home: /home/ipfs
+
+- name: Create ipfs home directory
+  ansible.builtin.file:
+    state: directory
+    path: /home/ipfs
+    owner: ipfs
+    group: ipfs
+    mode: '0750'
 
 - name: Download kubo
   ansible.builtin.get_url:
@@ -69,6 +77,8 @@
     owner: ipfs
     group: ipfs
     mode: '0600'
+  notify: 
+    - restart ipfs
 
 - name: init IPFS
   become: yes

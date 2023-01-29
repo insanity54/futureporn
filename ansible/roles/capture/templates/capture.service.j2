@@ -11,9 +11,9 @@ WorkingDirectory=/root/futureporn/capture
 Type=simple
 Restart=always
 RestartSec=5
-Environment=REDIS_HOST={{ lookup('env', 'REDIS_HOST') }}
-Environment=REDIS_PASSWORD={{ lookup('env', 'REDIS_PASSWORD') }}
-Environment=REDIS_USERNAME={{ lookup('env', 'REDIS_USERNAME') }}
+Environment=POSTGRES_HOST={{ lookup('env', 'POSTGRES_HOST') }}
+Environment=POSTGRES_PASSWORD={{ lookup('env', 'POSTGRES_PASSWORD') }}
+Environment=POSTGRES_USERNAME={{ lookup('env', 'POSTGRES_USERNAME') }}
 Environment=FUTUREPORN_WORKDIR={{ lookup('env', 'FUTUREPORN_WORKDIR') }}
 Environment=IPFS_CLUSTER_HTTP_API_MULTIADDR={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_MULTIADDR') }}
 Environment=IPFS_CLUSTER_HTTP_API_USERNAME={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_USERNAME') }}
