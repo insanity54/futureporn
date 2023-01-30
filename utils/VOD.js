@@ -88,7 +88,7 @@ class VideoMissingError extends Error {
 }
 
 
-
+if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env.')
 
 module.exports = class VOD {
 	
@@ -150,8 +150,7 @@ module.exports = class VOD {
 	}
 
 	static _getTmpDownloadPath (filename) {
-		const tmpDir = path.join(os.homedir(), 'futureporn_tmp');
-		return path.join(tmpDir, filename);
+		return path.join(process.env.FUTUREPORN_WORKDIR, filename);
 	}
 
 	static _parseDate (date) {
