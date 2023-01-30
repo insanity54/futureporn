@@ -52,7 +52,7 @@ console.log(`
 
 	for (const vod of vods) {
 
-		console.log(`  [*] vod:${vod.getDatestamp()} processing begin`);
+		// console.log(`  [*] vod:${vod.getDatestamp()} processing begin`);
 
 		const ensuranceFunctions = [
 			// vod.ensureAnnounceUrl,   // idk why I commented this out
@@ -104,7 +104,7 @@ console.log(`
 			}
 		}
 
-		console.log(`  [*] vod:${vod.getDatestamp()} complete`)
+		// console.log(`  [*] vod:${vod.getDatestamp()} complete`)
 
 	}
 
