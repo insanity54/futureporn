@@ -32,9 +32,7 @@
   roles:
     - role: base
       tags: [base]
-    - role: nvjacobo.caddy
-      tags: [caddy]
-    - role: ipfs # also installs/configures IPFS
+    - role: ipfs # also installs/configures IPFS, caddy
       tags: [ipfs]
     - role: cluster
       tags: [cluster]

@@ -14,7 +14,7 @@ all:
         - /ip4/127.0.0.1/tcp/9096/p2p/QmZSZJeo3o3q2q3M5VTtH6UrgWEodYLmhRwpaoU8uQzbrM
         - /ip4/45.32.201.82/tcp/9096/ipfs/QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
       trusted_peers:
-        - "{{ lookup('env', 'IPFS_CLUSTER2_IPFS_PEER_ID') }}"
+        - "{{ lookup('env', 'IPFS_CLUSTER2_IPFS_CLUSTER_ID') }}"
       ipfs_kubo_version: v0.17.0
       ipfs_kubo_checksum: sha256:7121f3e2d44a6a978d289a206cdbc7f10ba0348f7386c456ff1fdc4d4a8408d0
       ipfs_privkey: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_PRIVATE_KEY') }}"
@@ -32,7 +32,7 @@ all:
         - /ip4/127.0.0.1/tcp/9096/ipfs/QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
         - /ip4/38.242.216.6/tcp/9096/p2p/QmZSZJeo3o3q2q3M5VTtH6UrgWEodYLmhRwpaoU8uQzbrM
       trusted_peers:
-        - "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_PEER_ID') }}"
+        - "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_CLUSTER_ID') }}"
       ipfs_kubo_version: v0.17.0
       ipfs_kubo_checksum: sha256:7121f3e2d44a6a978d289a206cdbc7f10ba0348f7386c456ff1fdc4d4a8408d0
       ipfs_privkey: "{{ lookup('env', 'IPFS_CLUSTER2_IPFS_PRIVATE_KEY') }}"
