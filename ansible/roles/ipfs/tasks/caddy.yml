@@ -1,24 +1,27 @@
 ---
 
-- name: Create the caddy group
-  ansible.builtin.group:
-    name: caddy
 
-- name: Create the caddy user
-  ansible.builtin.user:
-    name: caddy
-    groups: caddy
-    create_home: yes
-    home: /home/caddy
+# nvjacobo.caddy takes care of the following 3 tasks. make sure that runs first.
 
-- name: Create /var/www
-  ansible.builtin.file:
-    path: /var/www
-    state: directory
-    owner: caddy
-    group: caddy
-    mode: '0600'
-  notify: reload caddy
+# - name: Create the caddy group
+#   ansible.builtin.group:
+#     name: caddy
+
+# - name: Create the caddy user
+#   ansible.builtin.user:
+#     name: caddy
+#     groups: caddy
+#     create_home: yes
+#     home: /home/caddy
+
+# - name: Create /var/www
+#   ansible.builtin.file:
+#     path: /var/www
+#     state: directory
+#     owner: caddy
+#     group: caddy
+#     mode: '0600'
+#   notify: reload caddy
 
 
 - name: stop nginx

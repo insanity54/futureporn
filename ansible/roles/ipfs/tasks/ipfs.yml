@@ -70,6 +70,14 @@
     proto: tcp
 
 
+- name: init IPFS
+  become: yes
+  become_user: ipfs
+  command: /usr/local/bin/ipfs init --empty-repo
+  args:
+    creates: "/home/ipfs/.ipfs/config"
+  notify: restart ipfs
+
 - name: install ipfs config
   template:
     src: templates/ipfs-config.json.j2
@@ -79,14 +87,6 @@
     mode: '0600'
   notify: 
     - restart ipfs
-
-- name: init IPFS
-  become: yes
-  become_user: ipfs
-  command: /usr/local/bin/ipfs init --empty-repo -- /home/ipfs/.ipfs/config
-  args:
-    creates: "/home/ipfs/.ipfs/config"
-  notify: restart ipfs
 
 - name: start ipfs
   ansible.builtin.systemd:
