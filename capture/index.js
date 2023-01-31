@@ -7,6 +7,7 @@ import Capture from './src/Capture.js'
 import Ipfs from './src/Ipfs.js'
 import Video from './src/Video.js'
 import cuid from 'cuid'
+import os from 'os'
 
 import postgres from 'postgres'
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
@@ -20,7 +21,7 @@ if (typeof process.env.IPFS_CLUSTER_HTTP_API_MULTIADDR === 'undefined') throw ne
 
 
 
-const workerId = cuid()
+const workerId = `${os.hostname}-${cuid()}`
 const sql = postgres({
     host: process.env.POSTGRES_HOST,
     password: process.env.POSTGRES_PASSWORD,
