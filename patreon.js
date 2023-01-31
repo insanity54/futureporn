@@ -115,7 +115,7 @@ async function sleep (ms) {
             console.log('----')
             const metadata = require(metadataFile);
 
-            const stortedPatrons = data.sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
+            const stortedPatrons = data.filter(patron => patron.attributes.lifetime_support_cents > 0).sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
             const allPatronNames = stortedPatrons.map(patron => patron.attributes.full_name).concat(metadata.donors);
             const activePatronNames = stortedPatrons.filter(patron => patron.attributes.patron_status === 'active_patron').map(patron => patron.attributes.full_name);
             // const currentSupportCents = data.reduce((acc, patron) => acc + patron.attributes.currently_entitled_amount_cents, 0)
