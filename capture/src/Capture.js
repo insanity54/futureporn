@@ -46,7 +46,7 @@ export default class Capture {
   async advertise () {
     const segments = this.voddo.getFilenames()
     debug(`  [*] Advertising our VOD segment(s) ${JSON.stringify(segments)}`)
-    this.sql.notify('capture/vod/advertisement', JSON.stringify(segments)
+    this.sql.notify('capture/vod/advertisement', JSON.stringify(segments))
   }
 
 
