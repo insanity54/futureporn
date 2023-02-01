@@ -7,7 +7,8 @@
     - ansible_user: root
     - storage_gb: 3000
     - ipfs_gc_period: 3h
-    - ipfs_cluster_service_version: v1.0.4
+    - ipfs_cluster_service_version: v1.0.5
+    - ipfs_cluster_service_checksum: sha256:842be4c780848e8d744ff0cdb410b3f88024af63f02d3d41cc040905fbcc6f8f
     - certbot_admin_email: "{{ lookup('env', 'LUA_DNS_EMAIL') }}"
     - certbot_create_command: "certbot certonly --noninteractive --dns-luadns --dns-luadns-credentials /etc/letsencrypt/luadns.ini --agree-tos --email {{ cert_item.email | default(certbot_admin_email) }} -d {{ cert_item.domains | join(',') }}"
     - certbot_create_standalone_stop_services: [nginx]

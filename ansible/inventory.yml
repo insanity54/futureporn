@@ -22,8 +22,8 @@ all:
       ipfs_cluster_privkey: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_CLUSTER_PRIVATE_KEY') }}"
       ipfs_cluster_id: "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_CLUSTER_ID') }}"
       ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER_SECRET') }}"
-      ipfs_cluster_service_version: v1.0.4
-      ipfs_cluster_follow_version: v1.0.4
+      ipfs_cluster_service_version: v1.0.5
+      ipfs_cluster_follow_version: v1.0.5
       ipfs_max_memory: 16000000000
 
     futureporn-cluster2:
@@ -40,8 +40,8 @@ all:
       ipfs_cluster_privkey: "{{ lookup('env', 'IPFS_CLUSTER2_IPFS_CLUSTER_PRIVATE_KEY') }}"
       ipfs_cluster_id: "{{ lookup('env', 'IPFS_CLUSTER2_IPFS_CLUSTER_ID') }}"
       ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER_SECRET') }}"
-      ipfs_cluster_service_version: v1.0.4
-      ipfs_cluster_follow_version: v1.0.4
+      ipfs_cluster_service_version: v1.0.5
+      ipfs_cluster_follow_version: v1.0.5
       ipfs_max_memory: 2147483648
 
     oboe:

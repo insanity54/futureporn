@@ -1,6 +1,6 @@
 
 import debugFactory from 'debug'
-const debug = debugFactory('capture')
+const debug = debugFactory('futureporn/capture')
 
 export default class Capture {
 
