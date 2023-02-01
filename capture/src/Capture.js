@@ -51,8 +51,8 @@ export default class Capture {
 
   listen () {
     this.sql.listen('scout/stream/stop', function (data) {
-      debug('  [*] Scout said the stream has stopped. I will advertize the vod segment(s) I have.')
-
+      debug('  [*] Scout said the stream has stopped. I will advertise the vod segment(s) I have.')
+      this.sql.notify('capture/vod/advertisement', JSON.stringify(this.voddo.getFilenames()))
     })
 
     this.sql.listen('commander/vod/election', function (data) {
