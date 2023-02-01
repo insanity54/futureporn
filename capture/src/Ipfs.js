@@ -5,10 +5,11 @@ import {execa} from 'execa'
 
 export default class Ipfs {
   constructor(opts) {
-    this.multiaddr = opts.IPFS_CLUSTER_HTTP_API_MULTIADDR
-    this.username = opts.IPFS_CLUSTER_HTTP_API_USERNAME
-    this.password = opts.IPFS_CLUSTER_HTTP_API_PASSWORD
-    this.ctlExecutable = opts.ctlExecutable || '/usr/local/bin/ipfs-cluster-ctl'
+    this.multiaddr = opts?.IPFS_CLUSTER_HTTP_API_MULTIADDR
+    this.username = opts?.IPFS_CLUSTER_HTTP_API_USERNAME
+    this.password = opts?.IPFS_CLUSTER_HTTP_API_PASSWORD
+    this.ctlExecutable = opts?.ctlExecutable || '/usr/local/bin/ipfs-cluster-ctl'
+    this.ipfsExecutable = opts?.ipfsExecutable || '/usr/local/bin/ipfs'
   }
   getArgs () {
     let args = [
@@ -38,6 +39,15 @@ export default class Ipfs {
       return stdout
     } catch (e) {
       console.error('Error while adding file to ipfs')
+      console.error(e)
+    }
+  }
+  async hash (filename) {
+    try {
+      const { stdout } = await execa(this.ipfsExecutable, ['add', '--quiet', '--cid-version=1', '--only-hash', filename])
+      return stdout
+    } catch (e) {
+      console.error('Error while hashing file')
       console.error(e)
     }
   }

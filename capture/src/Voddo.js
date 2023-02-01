@@ -5,7 +5,7 @@ import { EventEmitter } from 'node:events';
 import { AbortController } from "node-abort-controller";
 
 const debug = debugFactory('voddo');
-const defaultStats = {files:[],lastUpdatedAt:null}
+const defaultStats = {files:[],sizes:[],lastUpdatedAt:null}
 
 export default class Voddo extends EventEmitter {
 	constructor(opts) {
@@ -147,6 +147,12 @@ export default class Voddo extends EventEmitter {
 				let files = this.stats.files
 				files.push(datum) && files.length > 64 && files.shift(); // limit the size of the files array
 				this.emit('start', datum)
+			} else if (type === 'ffmpeg' && data.includes('bytes')) {
+				const bytes = /(\d*)\sbytes/.exec(data)[1]
+				debug(`  [*] ffmpeg reports ${bytes}`)
+				let mostRecentFile = this.stats.files[this.stats.files.length-1]
+				mostRecentFile['size'] = bytes
+				console.log(mostRecentFile)
 			}
 		}
 

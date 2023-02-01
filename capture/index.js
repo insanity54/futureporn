@@ -8,6 +8,7 @@ import Ipfs from './src/Ipfs.js'
 import Video from './src/Video.js'
 import cuid from 'cuid'
 import os from 'os'
+import { version } from './package.json' assert { type: 'json' };
 
 import postgres from 'postgres'
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
@@ -18,7 +19,7 @@ if (typeof process.env.IPFS_CLUSTER_HTTP_API_USERNAME === 'undefined') throw new
 if (typeof process.env.IPFS_CLUSTER_HTTP_API_PASSWORD === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_PASSWORD in env is undefined');
 if (typeof process.env.IPFS_CLUSTER_HTTP_API_MULTIADDR === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_MULTIADDR in env is undefined');
 
-
+console.log(`  [*] version: ${version}`)
 
 
 const workerId = `${os.hostname}-${cuid()}`
@@ -59,7 +60,8 @@ async function main () {
 	const capture = new Capture({
 		voddo,
 		sql,
-		ipfs
+		ipfs,
+		workerId
 	})
 
 	capture.listen().download()
