@@ -44,7 +44,7 @@ export default class Capture {
    * futureporn/commander uses this data to elect one worker to upload the VOD
    */
   async advertise () {
-    const segments = this.voddo.getFilenames()
+    const segments = await this.voddo.getFilenames()
     debug(`  [*] Advertising our VOD segment(s) ${JSON.stringify(segments)}`)
     this.sql.notify('capture/vod/advertisement', JSON.stringify(segments))
   }
@@ -56,10 +56,10 @@ export default class Capture {
       this.advertise()
     })
 
-    this.sql.listen('commander/vod/election', function (data) {
+    this.sql.listen('commander/vod/election', async (data) => {
       if (data.workerId === this.workerId) {
         debug('  [*] Commander elected me to process/upload')
-        this.process(this.voddo.getFilenames())
+        this.process(await this.voddo.getFilenames())
       } else {
         debug(`  [*] Commander elected ${data.workerId} to process/upload their vod segment(s)`)
       }

@@ -12,6 +12,12 @@ import {
   EventEmitter
 } from 'events'
 import debugFactory from 'debug'
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+
 const debug = debugFactory('voddo')
 
 
@@ -31,7 +37,18 @@ describe('voddo', function() {
 
 
   describe('getFilenames', function() {
-    it('should use Voddo\'s stats history to get filenames of only the most recent stream', function() {
+    it('should populate it\'s log if log is empty', async function () {
+      const voddo = new Voddo({
+        url: 'https://example.com',
+        cwd: join(__dirname, 'fixtures')
+      })
+      const filenames = await voddo.getFilenames()
+      expect(filenames.length).to.equal(3)
+      expect(filenames[0]).to.have.property('timestamp')
+      expect(filenames[0]).to.have.property('file')
+      expect(filenames[0]).to.have.property('size')
+    })
+    it('should use Voddo\'s stats history to get filenames of only the most recent stream', async function() {
       const voddo = new Voddo({
         url: 'https://example.com',
         cwd: '~/Downloads'
@@ -39,35 +56,44 @@ describe('voddo', function() {
       sinon.stub(voddo, 'stats').value({
         files: [{
           timestamp: 1674147647000,
+          size: 192627,
           file: 'projektmelody 2023-01-19 17_00-projektmelody.mp4'
         }, {
           timestamp: 1674151247000,
+          size: 192627,
           file: 'projektmelody 2023-01-19 18_00-projektmelody.mp4'
         }, {
           timestamp: 1674154847000,
+          size: 192627,
           file: 'projektmelody 2023-01-19 19_00-projektmelody.mp4'
         }, {
           file: 'projektmelody 2023-01-20 20_10-projektmelody.mp4',
+          size: 192627,
           timestamp: 1674245400000
         }, {
           file: 'projektmelody 2023-01-20 21_10-projektmelody.mp4',
+          size: 192627,
           timestamp: 1674249000000
         }, {
           file: 'projektmelody 2023-01-20 22_10-projektmelody.mp4',
+          size: 192627,
           timestamp: 1674252600000
         }]
       })
 
-      const filenames = voddo.getFilenames()
+      const filenames = await voddo.getFilenames()
       expect(filenames).to.have.lengthOf(3)
       expect(filenames).to.deep.equal([{
         file: 'projektmelody 2023-01-20 20_10-projektmelody.mp4',
+        size: 192627,
         timestamp: 1674245400000
       }, {
         file: 'projektmelody 2023-01-20 21_10-projektmelody.mp4',
+        size: 192627,
         timestamp: 1674249000000
       }, {
         file: 'projektmelody 2023-01-20 22_10-projektmelody.mp4',
+        size: 192627,
         timestamp: 1674252600000
       }])
     })
