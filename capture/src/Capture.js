@@ -51,7 +51,7 @@ export default class Capture {
 
 
   listen () {
-    this.sql.listen('scout/stream/stop', function (data) {
+    this.sql.listen('scout/stream/stop', (data) => {
       debug('  [*] Scout said the stream has stopped. I will advertise the vod segment(s) I have.')
       this.advertise()
     })
