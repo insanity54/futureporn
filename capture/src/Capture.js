@@ -44,8 +44,9 @@ export default class Capture {
    * futureporn/commander uses this data to elect one worker to upload the VOD
    */
   async advertise () {
-    debug('  [*] Advertising our VOD segment(s)')
-    this.sql.notify('capture/vod/advertisement', JSON.stringify(this.voddo.getFilenames()))
+    const segments = this.voddo.getFilenames()
+    debug(`  [*] Advertising our VOD segment(s) ${JSON.stringify(segments)}`)
+    this.sql.notify('capture/vod/advertisement', JSON.stringify(segments)
   }
 
 
