@@ -14,6 +14,15 @@ import { getRandomRoom } from '../src/cb.js'
 
 describe('voddo', function() {
 
+
+  describe('getVideoLength', function () {
+    it('should return the video length in ms', async function () {
+      const fixtureFile = path.join(__dirname, './fixtures', 'mock-stream0.mp4')
+      const length = await Voddo.getVideoLength(fixtureFile)
+      expect(length).to.equal(3819)
+    })
+  })
+
   it('aborted stream', function(done) {
     this.timeout(10000)
 
