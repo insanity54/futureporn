@@ -9,6 +9,7 @@ import Video from './src/Video.js'
 import cuid from 'cuid'
 import os from 'os'
 import fs from 'node:fs'
+import path from 'path'
 
 
 import postgres from 'postgres'
@@ -50,7 +51,7 @@ async function main () {
 	const voddo = new Voddo({
 		url: 'https://chaturbate.com/projektmelody',
 		format: 'best',
-		cwd: process.env.FUTUREPORN_WORKDIR
+		cwd: path.join(process.env.FUTUREPORN_WORKDIR, 'recordings')
 	})
 
 	const ipfs = new Ipfs({
