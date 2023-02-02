@@ -9,7 +9,9 @@ import {
   EventEmitter
 } from 'events'
 import { getRandomRoom } from '../src/cb.js'
-
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 
 describe('voddo', function() {
@@ -17,7 +19,7 @@ describe('voddo', function() {
 
   describe('getVideoLength', function () {
     it('should return the video length in ms', async function () {
-      const fixtureFile = path.join(__dirname, './fixtures', 'mock-stream0.mp4')
+      const fixtureFile = path.join(__dirname, '..', 'test', 'fixtures', 'mock-stream0.mp4')
       const length = await Voddo.getVideoLength(fixtureFile)
       expect(length).to.equal(3819)
     })

@@ -114,7 +114,7 @@ describe('Voddo', function() {
       const streams = await voddo.getRecordedSegments()
       console.log(streams)
       expect(streams.length).to.equal(3)
-      expect(streams[0]).to.have.property('timestamp')
+      expect(streams[0]).to.have.property('startTime')
       expect(streams[0]).to.have.property('file')
       expect(streams[0]).to.have.property('size')
     })

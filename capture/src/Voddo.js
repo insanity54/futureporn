@@ -69,7 +69,7 @@ export default class Voddo extends EventEmitter {
    */
   async getRecordedSegments() {
     let f = []
-    const files = await readdir(this.cwd).then((raw) => raw.filter((f) => f.includes('.mp4')))
+    const files = await readdir(this.cwd).then((raw) => raw.filter((f) => /\.mp4$/.test(f) ))
     for (const file of files) {
       const filePath = join(this.cwd, file)
       const s = await stat(filePath)
