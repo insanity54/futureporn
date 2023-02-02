@@ -55,6 +55,7 @@ describe('Video', function () {
   })
 
   afterEach(function() {
+    console.log('>> sinon.restore! (afterEach)')
     sinon.restore();
   })
 

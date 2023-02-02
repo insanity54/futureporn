@@ -1,6 +1,9 @@
 
 import debugFactory from 'debug'
+import Voddo from './Voddo.js'
+
 const debug = debugFactory('futureporn/capture')
+
 
 export default class Capture {
 
@@ -44,9 +47,10 @@ export default class Capture {
    * futureporn/commander uses this data to elect one worker to upload the VOD
    */
   async advertise () {
-    const segments = await this.voddo.getFilenames()
-    debug(`  [*] Advertising our VOD segment(s) ${JSON.stringify(segments)}`)
-    this.sql.notify('capture/vod/advertisement', JSON.stringify(segments))
+    const segments = await this.voddo.getRecordedSegments()
+    const streams = Voddo.groupStreamSegments(segments)
+    debug(`  [*] Advertising our VOD streams(s) ${JSON.stringify({segments, streams})}`)
+    this.sql.notify('capture/vod/advertisement', JSON.stringify({segments, streams}))
   }
 
 

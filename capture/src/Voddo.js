@@ -5,9 +5,10 @@ import { EventEmitter } from 'node:events';
 import { AbortController } from "node-abort-controller";
 import { readdir, stat } from 'node:fs/promises';
 import { join } from 'node:path'
+import ffmpeg from 'fluent-ffmpeg'
 
 const debug = debugFactory('voddo');
-const defaultStats = {files:[],sizes:[],lastUpdatedAt:null}
+const defaultStats = {segments:[],lastUpdatedAt:null}
 
 export default class Voddo extends EventEmitter {
   constructor(opts) {
@@ -21,48 +22,73 @@ export default class Voddo extends EventEmitter {
     this.stats = Object.assign({}, defaultStats);
     this.abortController = new AbortController();
     this.ytdl = opts.ytdl || new YoutubeDlWrap();
-    if (process.env.YOUTUBE_DL_BINARY) this.ytdl.setBinaryPath(process.env.YOUTUBE_DL_BINARY)
+    this.mediainfoBinary || '/usr/bin/mediainfo';
+    if (process.env.YOUTUBE_DL_BINARY) this.ytdl.setBinaryPath(process.env.YOUTUBE_DL_BINARY);
+  }
+
+  static async getVideoLength (filePath) {
+    return new Promise((resolve, reject) => {
+      ffmpeg.ffprobe(filePath, function(err, metadata) {
+        if (err) reject(err)
+        resolve(Math.floor(metadata.format.duration*1000))
+      });
+    })
+  }
+
+  // greets ChatGPT
+  static groupStreamSegments(segments, threshold = 1000*60*60) {
+    segments.sort((a, b) => a.startTime - b.startTime);
+    const streams = [];
+    let currentStream = [];
+
+    for (let i = 0; i < segments.length; i++) {
+      const currentSegment = segments[i];
+      const previousSegment = currentStream[currentStream.length - 1];
+
+      if (!previousSegment || currentSegment.startTime - previousSegment.endTime <= threshold) {
+        currentStream.push(currentSegment);
+      } else {
+        streams.push(currentStream);
+        currentStream = [currentSegment];
+      }
+    }
+
+    streams.push(currentStream);
+    return streams;
   }
 
 
+
+
+
+
+
   /**
-   * getFilenames
+   * getRecordedStreams
    * 
-   * get the filenames of the files captured
-   * for only the most recent stream
+   * get the metadata of the videos captured
    */
-  async getFilenames() {
-
-    // if we have no log history, we query the disk
-    if (this.stats.files.length === 0) {
-      let f = []
-      const files = await readdir(this.cwd).then((raw) => raw.filter((f) => f.includes('.mp4')))
-      for (const file of files) {
-        const s = await stat(join(this.cwd, file))
-        f.push({
-          timestamp: parseInt(s.ctimeMs),
-          file: file,
-          size: s.size
-        })
-      }
-      this.stats.files = f
+  async getRecordedSegments() {
+    let f = []
+    const files = await readdir(this.cwd).then((raw) => raw.filter((f) => f.includes('.mp4')))
+    for (const file of files) {
+      const filePath = join(this.cwd, file)
+      const s = await stat(filePath)
+      const videoDuration = await Voddo.getVideoLength(filePath)
+      const startTime = parseInt(s.ctimeMs)
+      const endTime = startTime+videoDuration
+      const size = s.size
+      f.push({
+        startTime,
+        endTime,
+        file,
+        size
+      })
     }
+    this.stats.segments = f
 
-    // greets ChatGPT
-    const groupThreshold = 1000*60*60*16; // 16 hours
-    const groupedFiles = this.stats.files
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .reduce((acc, file) => {
-          const lastGroup = acc[acc.length - 1];
-          if (!lastGroup || file.timestamp - lastGroup[lastGroup.length - 1].timestamp > groupThreshold) {
-              acc.push([file]);
-          } else {
-              lastGroup.push(file);
-          }
-          return acc;
-      }, []);
 
-    return groupedFiles[groupedFiles.length-1]
+    return this.stats.segments
   }
 
   isDownloading() {
@@ -158,17 +184,18 @@ export default class Voddo extends EventEmitter {
 
     const handleYtdlEvent = (type, data) => {
       debug(`  [*] handleYtdlEvent type: ${type}, data: ${data}`)
+      console.log(`  [*] handleYtdlEvent type: ${type}, data: ${data}`)
       if (type === 'download' && data.includes('Destination:')) {
         let filePath = /Destination:\s(.*)$/.exec(data)[1]
         debug(`  [*] Destination file detected: ${filePath}`)
         let datum = { file: filePath, timestamp: new Date().valueOf() }
-        let files = this.stats.files
-        files.push(datum) && files.length > 64 && files.shift(); // limit the size of the files array
+        let segments = this.stats.segments
+        segments.push(datum) && segments.length > 64 && segments.shift(); // limit the size of the segments array
         this.emit('start', datum)
       } else if (type === 'ffmpeg' && data.includes('bytes')) {
         const bytes = /(\d*)\sbytes/.exec(data)[1]
         debug(`  [*] ffmpeg reports ${bytes}`)
-        let mostRecentFile = this.stats.files[this.stats.files.length-1]
+        let mostRecentFile = this.stats.segments[this.stats.segments.length-1]
         mostRecentFile['size'] = bytes
         console.log(mostRecentFile)
       }
