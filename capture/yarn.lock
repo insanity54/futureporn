@@ -1308,6 +1308,11 @@ sinon-chai@^3.7.0:
   resolved "https://registry.yarnpkg.com/sinon-chai/-/sinon-chai-3.7.0.tgz#cfb7dec1c50990ed18c153f1840721cf13139783"
   integrity sha512-mf5NURdUaSdnatJx3uhoBOrY9dtL19fiOtAdT1Azxg3+lNJFiuN0uzaU3xX1LeAfL17kHQhTAJgpsfhbMJMY2g==
 
+sinon-test@^3.1.5:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/sinon-test/-/sinon-test-3.1.5.tgz#433029111c2e6b1b1510988e309d3f643cd4f1d5"
+  integrity sha512-uKwKebXEX1yMQ9vz25Q/uDAFwoTsO/AQc+2b+6ndOUoxj7MZWoptz38lFw9QEgfxDPkN6NN0m+Kbah60tn0ZZA==
+
 sinon@^15.0.1:
   version "15.0.1"
   resolved "https://registry.yarnpkg.com/sinon/-/sinon-15.0.1.tgz#ce062611a0b131892e2c18f03055b8eb6e8dc234"
