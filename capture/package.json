@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "node --trace-warnings index",
-    "test": "DEBUG=\"voddo\" FUTUREPORN_WORKDIR=/home/chris/Downloads mocha",
+    "test": "FUTUREPORN_WORKDIR=/home/chris/Downloads mocha",
     "integration": "DEBUG=\"voddo\" FUTUREPORN_WORKDIR=/home/chris/Downloads mocha ./integration/**/*.test.js",
     "dev": "DEBUG=\"futureporn/*\" FUTUREPORN_WORKDIR=/home/chris/Downloads nodemon index"
   },
@@ -33,7 +33,6 @@
     "node-fetch": "^3.3.0",
     "nodemon": "^2.0.20",
     "sinon": "^15.0.1",
-    "sinon-chai": "^3.7.0",
-    "sinon-test": "^3.1.5"
+    "sinon-chai": "^3.7.0"
   }
 }

@@ -22,27 +22,27 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('Capture', function () {
 
-  let capture
   let clock
-  let voddo
 
+  const sandbox = sinon.createSandbox()
 
   beforeEach(() => {
-    clock = sinon.useFakeTimers({
+
+    clock = sandbox.useFakeTimers({
       toFake: ["setTimeout", "setInterval"],
       shouldAdvanceTime: false
     });
 
-    // const sql = postgres({
-    //   idle_timeout: 1
-    // })
+    // // const sql = postgres({
+    // //   idle_timeout: 1
+    // // })
 
     // let pgStub = (opts) => {
     //   let sql = (args) => {}
     //   return sql
     // }
     const sqlRaw = postgres()
-    const sql = sinon.stub(sqlRaw)
+    const sql = sandbox.stub(sqlRaw)
     // sql.listen.resolves(fixtureDate)
     // sql.notify.resolves(92834)
     // sinon.stub(postgres, 'notify')
@@ -52,58 +52,54 @@ describe('Capture', function () {
     //   .resolves({ msg: 'idk' })
     // sinon.stub(sql, 'notify').returns()
 
-    const video = sinon.stub()
-    voddo = sinon.createStubInstance(Voddo)
-    voddo.on.callThrough()
-    voddo.emit.callThrough()
-    voddo.listeners.callThrough()
-    voddo.listenerCount.callThrough()
 
 
-    voddo.start.callsFake(() => {
-      voddo.emit('start', { file: '/tmp/burrito.mp4', timestamp: 1 })
-    })
-      
-    // this should be set at individual test level
-    // clock.setTimeout(() => {
-    //   voddo.emit('stop', {
-    //     reason: 'close',
-    //     stats: {
-    //       files: [
-    //         { timestamp: fixtureDate, filename: 'taco.mp4' }
-    //       ]
-    //     }
-    //   })
-    // }, 1000*60*60*3)
-    
 
-    const ipfs = sinon.createStubInstance(Ipfs)
-    ipfs.upload.withArgs('/tmp/mycoolfile.mp4').resolves(cidFixture)
-    capture = new Capture({
-      sql,
-      ipfs,
-      video,
-      voddo
-    })
-    sinon.stub(capture, 'process').resolves()
+    // const ipfs = sandbox.createStubInstance(Ipfs)
+    // ipfs.upload.withArgs('/tmp/mycoolfile.mp4').resolves(cidFixture)
+    // capture = new Capture({
+    //   sql,
+    //   ipfs,
+    //   video,
+    //   voddo
+    // })
+    // sandbox.stub(capture, 'process').resolves()
   })
 
   afterEach(() => {
-    sinon.restore()
+    sandbox.restore()
     clock.restore()
   })
 
-  xdescribe('listen', function () {
-    it('should listen for accurate stream end announcements from futureporn/scout', function () {
 
-      capture.listen()
-      expect(voddo.getFilenames).calledOnce
-      expect(capture.process).calledOnce
-    })
-  })
 
   describe('upload', function () {
     it('should upload a video to ipfs', async function () {
+
+      const sqlRaw = postgres()
+      const sql = sandbox.stub(sqlRaw)
+
+      const video = sandbox.stub()
+      const voddo = sandbox.createStubInstance(Voddo)
+      voddo.on.callThrough()
+      voddo.emit.callThrough()
+      voddo.listeners.callThrough()
+      voddo.listenerCount.callThrough()
+
+
+      voddo.start.callsFake(() => {
+        voddo.emit('start', { file: '/tmp/burrito.mp4', timestamp: 1 })
+      })
+
+      const ipfs = sandbox.createStubInstance(Ipfs)
+      ipfs.upload.withArgs('/tmp/mycoolfile.mp4').resolves(cidFixture)
+      const capture = new Capture({
+        sql,
+        ipfs,
+        video,
+        voddo
+      })
+
       const cid = await capture.upload('/tmp/mycoolfile.mp4')
       expect(() => CID.parse(cid), `The IPFS CID '${cid}' is invalid.`).to.not.throw()
       expect(capture.ipfs.upload).calledOnce
@@ -111,37 +107,40 @@ describe('Capture', function () {
   })
   describe('save', function () {
     it('should save to db', async function () {
+
+      const sqlRaw = postgres()
+      const sql = sandbox.stub(sqlRaw)
+
+      const video = sandbox.stub()
+      const voddo = sandbox.createStubInstance(Voddo)
+      voddo.on.callThrough()
+      voddo.emit.callThrough()
+      voddo.listeners.callThrough()
+      voddo.listenerCount.callThrough()
+
+
+      voddo.start.callsFake(() => {
+        voddo.emit('start', { file: '/tmp/burrito.mp4', timestamp: 1 })
+      })
+
+      const ipfs = sandbox.createStubInstance(Ipfs)
+      ipfs.upload.withArgs('/tmp/mycoolfile.mp4').resolves(cidFixture)
+      const capture = new Capture({
+        sql,
+        ipfs,
+        video,
+        voddo
+      })
+      
       // I can't stub sql`` because of that template string override so i'm just stubbing capture.save
       // I think this is an evergreen test ¯\_(ツ)_/¯
-      sinon.stub(capture, 'save').resolves([
+      sandbox.stub(capture, 'save').resolves([
         { id: 1, cid: cidFixture, captureDate: fixtureDate }
       ])
       const vod = await capture.save(cidFixture, fixtureDate)
     })
   })
-  describe('download', function () {
-    xit('should be a chad', function () {
-      const voddo = sinon.createStubInstance(Voddo)
-      voddo.on.callThrough()
-      voddo.listeners.callThrough()
-      voddo.listenerCount.callThrough()
-      expect(voddo).to.be.an.instanceof(EventEmitter)
-      const video = sinon.stub()
-      const capture = new Capture({
-        voddo,
-        video
-      })
 
-      capture.download()
-      expect(capture.voddo.start).calledOnce
-      expect(voddo.listeners('start').length).to.equal(1)
-      expect(voddo.listeners('stop').length).to.equal(1)
-    })
-
-
-
-
-  })
 
 
 

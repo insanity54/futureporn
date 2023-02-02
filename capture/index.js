@@ -34,7 +34,7 @@ const sql = postgres({
 
 
 
-const debug = debugFactory('futureporn/capture/index')
+const debug = debugFactory('futureporn/capture')
 
 
 if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env');
@@ -70,6 +70,7 @@ async function main () {
 }
 
 console.log(`capture version: ${pkg.version}`)
+debug(`  [*] my capture directory is ${process.env.FUTUREPORN_WORKDIR}`)
 main()
 
 
