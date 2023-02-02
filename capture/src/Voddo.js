@@ -22,7 +22,6 @@ export default class Voddo extends EventEmitter {
     this.stats = Object.assign({}, defaultStats);
     this.abortController = new AbortController();
     this.ytdl = opts.ytdl || new YoutubeDlWrap();
-    this.mediainfoBinary || '/usr/bin/mediainfo';
     if (process.env.YOUTUBE_DL_BINARY) this.ytdl.setBinaryPath(process.env.YOUTUBE_DL_BINARY);
   }
 

@@ -49,8 +49,9 @@ export default class Capture {
   async advertise () {
     const segments = await this.voddo.getRecordedSegments()
     const streams = Voddo.groupStreamSegments(segments)
-    debug(`  [*] Advertising our VOD streams(s) ${JSON.stringify({segments, streams})}`)
-    this.sql.notify('capture/vod/advertisement', JSON.stringify({segments, streams}))
+    const workerId = this.workerId
+    debug(`  [*] Advertising our VOD streams(s) ${JSON.stringify({segments, streams, workerId})}`)
+    this.sql.notify('capture/vod/advertisement', JSON.stringify({segments, streams, workerId}))
   }
 
 
