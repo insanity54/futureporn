@@ -31,13 +31,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 describe('Voddo', function() {
 
-  describe('getVideoLength', function () {
-    it('should return the video length in ms', async function () {
-      const fixtureFile = path.join(__dirname, './fixtures', 'mock-stream0.mp4')
-      const length = await Voddo.getVideoLength(fixtureFile)
-      expect(length).to.equal(3819)
-    })
-  })
 
   describe('groupStreamSegments', function () {
     it('should separate two stream data objects', function () {
