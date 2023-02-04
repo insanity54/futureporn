@@ -10,6 +10,7 @@ import os from 'os';
 import path from 'path';
 import FormData from 'form-data';
 
+
 const datadir = path.join(os.homedir(), '.local/share/futureporn-scout')
 const defaultRoomName = 'projektmelody';
 const defaultRoomUid = 'G0TWFS5';
@@ -43,17 +44,63 @@ export function chat(roomName) {
     let c = new Chat(roomName);
     c.listen();
 }
+
+
+export async function monitorRealtimeStatus (roomName, onStart, onStop) {
+    const token = await getCsrfToken()
+    const roomId = await getRoomId(roomName)
+    const auth = await getPushServiceAuth(token, roomName, roomId)
+    const statusChannelString = auth.channels[`RoomStatusTopic#RoomStatusTopic:${roomId}`]
+    const realtime = await getRealtime(token, auth.token_request, auth.settings.realtime_host, auth.settings.fallback_hosts)
+    realtime.connection.once('connected', (idk) => {
+        console.log(`  [*] CB Realtime Connected! ${JSON.stringify(idk, 0, 2)}`)
+    })
+    const statusChannel = realtime.channels.get(statusChannelString);
+    statusChannel.subscribe((message) => {
+        if (message.data.status === 'public') {
+            onStart(message)
+        } else if (message.data.status === 'offline') {
+            onStop(message)
+        }
+        console.log(`Received room:status:<roomId>:0`)
+        console.log(JSON.stringify(message, 0, 2));
+    });
+    await realtime.connect()
+}
+
+export async function getRoomId (room) {
+    const dossier = await getInitialRoomDossier(room)
+    return dossier.room_uid
+}
+
+export async function getRandomRoom () {
+    const res = await fetch('https://chaturbate.com/')
+    const body = await res.text()
+    const $ = cheerio.load(body)
+    let roomsRaw = $('a[data-room]')
+    let rooms = []
+    $(roomsRaw).each((_, e) => {
+        rooms.push($(e).attr('href'))
+    })
+
+    // greets https://stackoverflow.com/a/4435017/1004931
+    var randomIndex = Math.floor(Math.random() * rooms.length);
+    return rooms[randomIndex].replaceAll('/', '')
+}
+
 export async function getInitialRoomDossier(roomName = defaultRoomName) {
     const res = await fetch(`https://chaturbate.com/${roomName}`);
     const body = await res.text();
     // console.log(body);
     const $ = cheerio.load(body);
     let rawScript = $('script:contains(window.initialRoomDossier)').html();
+    if (!rawScript) throw new Error('window.initialRoomDossier is null. This could mean the channel is in password mode')
     let rawDossier = rawScript.slice(rawScript.indexOf('"'), rawScript.lastIndexOf('"')+1)
     let dossier = JSON.parse(JSON.parse(rawDossier));
     return dossier
-     // dossier.wschat_host contains the chat websocket url
+    // dossier.wschat_host contains the chat websocket url
 }
+
 export async function getViewerCount(roomName = defaultRoomName, presenceId = generateRandomString(millisecondsToHours(Date.now()))) {
     const res = await fetch(`https://chaturbate.com/push_service/room_user_count/${roomName}/?presence_id=${presenceId}`, {
         "credentials": "include",
@@ -88,7 +135,7 @@ export async function getViewerCount(roomName = defaultRoomName, presenceId = ge
  * 
  * more info-- https://ably.com/docs/core-features/authentication#token-authentication
  */
-export async function pushServiceAuth(csrfToken, roomName = defaultRoomName, roomUid = defaultRoomUid) {
+export async function getPushServiceAuth(csrfToken, roomName = defaultRoomName, roomUid = defaultRoomUid) {
     let form = new FormData();
     const topics = `{
         "RoomTipAlertTopic#RoomTipAlertTopic:${roomUid}":{
@@ -134,6 +181,7 @@ export async function pushServiceAuth(csrfToken, roomName = defaultRoomName, roo
             "broadcaster_uid":"${roomUid}"
         }
     }`
+
     
 
     form.append('topics', topics)
@@ -160,9 +208,7 @@ export async function pushServiceAuth(csrfToken, roomName = defaultRoomName, roo
     const json = await res.json()
     return json
 }
-export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost, fallbackHosts) {
-
-
+export async function getRealtime(csrfToken, tokenRequest, realtimeHost, fallbackHosts) {
     const realtime = new Ably.Realtime.Promise({
         autoConnect: false,
         closeOnUnload: true,
@@ -172,16 +218,12 @@ export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost
         realtimeHost: realtimeHost,
         restHost: realtimeHost,
         fallback_hosts: fallbackHosts,
-
-        
         authCallback: ((tokenParams, cb) => {
             // console.log(`   >>> authCallback I don't actually have antyhing i just wanted to see the tokenParams`)
             // console.log(tokenParams)
             // console.log(tokenRequest)
 
             cb(null, tokenRequest)
-
-
         })
     })
 
@@ -191,12 +233,7 @@ export async function requestRealtimeToken(csrfToken, tokenRequest, realtimeHost
     return realtime
 
 }
-export async function getRealtime(roomName = defaultRoomName) {
 
-    let realtime = await getAblyEvents()
-    
-    return realtime
-}
 
 
 export function getTokenCookie (cookies) {

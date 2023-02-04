@@ -1,7 +1,7 @@
 import chai from "chai";
 // import path from "path";
 // import chaiAsPromised from "chai-as-promised";
-import { containsCBInviteLink } from "../src/tweetProcess.js";
+import { containsCBInviteLink } from "../../src/tweetProcess.js";
 // chai.use(chaiAsPromised);
 const sampleTweet6 = {
     entities: {
