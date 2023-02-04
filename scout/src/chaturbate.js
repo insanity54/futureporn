@@ -11,7 +11,7 @@ import path from 'path';
 import FormData from 'form-data';
 
 
-const datadir = path.join(os.homedir(), '.local/share/futureporn-scout')
+const datadir = path.join(os.homedir(), '.local/share/futureporn/scout')
 const defaultRoomName = 'projektmelody';
 const defaultRoomUid = 'G0TWFS5';
 const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36';
