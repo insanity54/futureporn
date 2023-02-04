@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import 'dotenv/config';
-import debugFactory from 'debug';
-const debug = debugFactory('scout/twitter');
 import Twitter from 'twitter-v2';
+import logger from './logger.js'
+
+
 // import { processTweet } from './tweetProcess.js'; // @todo
 const twitterConsumerKey = process.env.TWITTER_API_KEY;
 const twitterConsumerSecret = process.env.TWITTER_API_KEY_SECRET;
@@ -12,7 +13,7 @@ if (typeof twitterConsumerKey === 'undefined')
 if (typeof twitterConsumerSecret === 'undefined')
     throw new Error('TWITTER_API_KEY_SECRET is undefined');
 async function delay(timeout) {
-    console.log(`  [*] delaying for ${timeout}ms`);
+    logger.log({ level: 'debug', message: `  [*] delaying for ${timeout}ms` });
     await new Promise(resolve => setTimeout(resolve, timeout));
 }
 var client = new Twitter({
@@ -31,9 +32,9 @@ async function setup() {
     // Delete all rules and add just the ones we want
     try {
         const { data: rules } = await client.get('tweets/search/stream/rules');
-        debug(rules);
+        logger.log({ level: 'debug', message: rules });
         const ruleIds = rules.map((r) => r.id);
-        debug(ruleIds);
+        logger.log({ level: 'debug', message: ruleIds });
         await client.post('tweets/search/stream/rules', {
             'delete': {
                 "ids": ruleIds
@@ -41,12 +42,12 @@ async function setup() {
         });
     }
     catch (e) {
-        console.error(e);
-        console.error('no big d.');
+        logger.log({ level: 'error', message: e });
+        logger.log({ level: 'error', message: 'no big d.' });
     }
-    debug(`creating rule.`);
+    logger.log({ level: 'debug', message: `creating rule.` });
     const ruleRes = await client.post('tweets/search/stream/rules', ruleBody);
-    debug(`rule created with response ${JSON.stringify(ruleRes)}`);
+    logger.log({ level: 'debug', message: `rule created with response ${JSON.stringify(ruleRes)}` });
 }
 async function listenForever(streamFactory, dataConsumer) {
     try {
@@ -54,7 +55,7 @@ async function listenForever(streamFactory, dataConsumer) {
             dataConsumer(data);
         }
         // The stream has been closed by Twitter. It is usually safe to reconnect.
-        console.log('Stream disconnected healthily. Reconnecting.');
+        logger.log({ level: 'debug', message: 'Stream disconnected healthily. Reconnecting.' });
         listenForever(streamFactory, dataConsumer);
         await delay(5000);
     }
@@ -62,7 +63,7 @@ async function listenForever(streamFactory, dataConsumer) {
         // An error occurred so we reconnect to the stream. Note that we should
         // probably have retry logic here to prevent reconnection after a number of
         // closely timed failures (may indicate a problem that is not downstream).
-        console.warn('Stream disconnected with error. Retrying.', error);
+        logger.log({ level: 'warn', message: `Stream disconnected with error. Retrying. ${error}` });
         listenForever(streamFactory, dataConsumer);
         await delay(5000);
     }
