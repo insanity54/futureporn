@@ -1,0 +1,18 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description="futureporn builder"
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/env node /home/futureporn/futureporn/builder/index.js
+WorkingDirectory=/home/futureporn/futureporn/builder
+Type=simple
+Restart=always
+RestartSec=5
+Environment=POSTGRES_HOST={{ lookup('env', 'POSTGRES_HOST') }}
+Environment=POSTGRES_PASSWORD={{ lookup('env', 'POSTGRES_PASSWORD') }}
+Environment=POSTGRES_USERNAME={{ lookup('env', 'POSTGRES_USERNAME') }}
+Environment=FUTUREPORN_WORKDIR={{ lookup('env', 'FUTUREPORN_WORKDIR') }}
+Environment=DEBUG="futureporn/*"

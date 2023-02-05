@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import Twitter from 'twitter-v2';
-import logger from './logger.js'
+import { loggerFactory } from 'futureporn-common/logger'
 
+const logger = loggerFactory({
+    defaultMeta: { service: "futureporn/scout" }
+})
 
 // import { processTweet } from './tweetProcess.js'; // @todo
 const twitterConsumerKey = process.env.TWITTER_API_KEY;

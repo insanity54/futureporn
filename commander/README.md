@@ -2,6 +2,18 @@
 
 listens to messages and coordinates actions
 
+## Database Schema Specification
+
+### VOD
+
+this is what we're familiar with, straight from the .md files
+
+* title
+* videoSrcHash
+* date
+
+etc.
+
 
 ## Pub/Sub Message Specifications
 
@@ -50,15 +62,54 @@ Says, "I am stopping capture, here is the metadata."
 }
 ```
 
+#### capture/presense
+
+> "I just started up. Hello!"
+
+
 #### capture/vod/upload
 
 > "I uploaded a VOD. here is the CID."
 
 
+#### capture/vod/advertisement
+
+> "I have a vod (or vod segments.) here is what I got."
+
+```js
+{
+	fileNames: [
+		'projektmelody 2023-01-09 22_32-projektmelody.mp4',
+		'projektmelody 2023-01-09 23_00-projektmelody.mp4'
+	],
+	workerId: 'zed-zed_cldkg64fa00006ykehpr00y9n',
+	fileSizes: [
+		4294967296,
+		1073741824
+	]
+}
+```
+
+
 ### Commander
 
+#### commander/vod/election
 
+> "I have elected a specific worker to process/upload their vod segment(s)"
 
+```js
+{
+	fileNames: [
+		'projektmelody 2023-01-09 22_32-projektmelody.mp4',
+		'projektmelody 2023-01-09 23_00-projektmelody.mp4'
+	],
+	workerId: 'zed-zed_cldkg64fa00006ykehpr00y9n',
+	fileSizes: [
+		4294967296,
+		1073741824
+	]
+}
+```
 
 
 ### Builder

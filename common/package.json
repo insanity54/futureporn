@@ -1,0 +1,14 @@
+{
+  "name": "futureporn-common",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "winston": "^3.8.2"
+  },
+  "type": "module",
+  "exports": {
+    "./logger": "./src/logger.js"
+  }
+}

@@ -11,6 +11,11 @@
     dest: /root/.screenrc
     remote_src: yes
 
+- name: create folder for recordings
+  file:
+    path: "{{ lookup('env', 'FUTUREPORN_WORKDIR') }}/recordings"
+    state: directory
+    mode: '0755'
 
 - name: install yarn
   community.general.npm:

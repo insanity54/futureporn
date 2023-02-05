@@ -3,13 +3,16 @@
 import twitter from './src/twitter.js'
 import { chat, getViewerCount, monitorRealtimeStatus } from './src/chaturbate.js'
 import { containsCBInviteLink } from "./src/tweetProcess.js"
-import logger from './src/logger.js'
+import { loggerFactory } from 'futureporn-common/logger'
 import postgres from 'postgres'
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
 if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
 if (typeof process.env.POSTGRES_PASSWORD === 'undefined') throw new Error('POSTGRES_PASSWORD undef');
 
+const logger = loggerFactory({
+  defaultMeta: { service: 'futureporn/scout' }
+})
 
 const sql = postgres({
   user: process.env.POSTGRES_USERNAME,

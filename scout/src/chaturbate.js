@@ -9,8 +9,12 @@ import { FileCookieStore } from "tough-cookie-file-store";
 import os from 'os';
 import path from 'path';
 import FormData from 'form-data';
+import { loggerFactory } from 'futureporn-common/logger'
 
 
+const logger = loggerFactory({
+    defaultMeta: { service: "futureporn/scout" }
+})
 const datadir = path.join(os.homedir(), '.local/share/futureporn/scout')
 const defaultRoomName = 'projektmelody';
 const defaultRoomUid = 'G0TWFS5';
@@ -53,7 +57,7 @@ export async function monitorRealtimeStatus (roomName, onStart, onStop) {
     const statusChannelString = auth.channels[`RoomStatusTopic#RoomStatusTopic:${roomId}`]
     const realtime = await getRealtime(token, auth.token_request, auth.settings.realtime_host, auth.settings.fallback_hosts)
     realtime.connection.once('connected', (idk) => {
-        console.log(`  [*] CB Realtime Connected! ${JSON.stringify(idk, 0, 2)}`)
+        logger.log({ level: 'info', message: 'CB Realtime Connected!' })
     })
     const statusChannel = realtime.channels.get(statusChannelString);
     statusChannel.subscribe((message) => {
@@ -62,8 +66,8 @@ export async function monitorRealtimeStatus (roomName, onStart, onStop) {
         } else if (message.data.status === 'offline') {
             onStop(message)
         }
-        console.log(`Received room:status:<roomId>:0`)
-        console.log(JSON.stringify(message, 0, 2));
+        logger.log({ level: 'debug', message: `Received room:status:<roomId>:0` })
+        logger.log({ level: 'debug', message: JSON.stringify(message, 0, 2) })
     });
     await realtime.connect()
 }
@@ -91,7 +95,6 @@ export async function getRandomRoom () {
 export async function getInitialRoomDossier(roomName = defaultRoomName) {
     const res = await fetch(`https://chaturbate.com/${roomName}`);
     const body = await res.text();
-    // console.log(body);
     const $ = cheerio.load(body);
     let rawScript = $('script:contains(window.initialRoomDossier)').html();
     if (!rawScript) throw new Error('window.initialRoomDossier is null. This could mean the channel is in password mode')
@@ -219,10 +222,6 @@ export async function getRealtime(csrfToken, tokenRequest, realtimeHost, fallbac
         restHost: realtimeHost,
         fallback_hosts: fallbackHosts,
         authCallback: ((tokenParams, cb) => {
-            // console.log(`   >>> authCallback I don't actually have antyhing i just wanted to see the tokenParams`)
-            // console.log(tokenParams)
-            // console.log(tokenRequest)
-
             cb(null, tokenRequest)
         })
     })
