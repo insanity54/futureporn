@@ -23,7 +23,7 @@
 
 - name: install scout
   community.general.yarn:
-    path: /home/futureporn/futureporn/scout
+    path: /home/futureporn/futureporn/packages/scout
   become: true
   become_user: futureporn
 

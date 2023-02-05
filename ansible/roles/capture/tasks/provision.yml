@@ -41,7 +41,7 @@
 
 - name: Install futureporn
   community.general.yarn:
-    path: /root/futureporn/capture
+    path: /root/futureporn/packages/capture
   notify:
     - restart capture
 
