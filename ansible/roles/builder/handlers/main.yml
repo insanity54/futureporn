@@ -1,0 +1,7 @@
+---
+
+
+- name: restart builder
+  ansible.builtin.systemd:
+    name: builder
+    state: restarted

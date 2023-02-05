@@ -1,15 +1,107 @@
+
+
 <!doctype HTML>
 <html>
 	<head>
-		<title>Commander</title>
+		<title>futureporn/commander</title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.36.3/dist/apexcharts.min.css">
 		<link rel="stylesheet" href="https://unpkg.com/sakura.css/css/sakura.css" type="text/css">
+		<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.36.3/dist/apexcharts.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.11.1/dist/cdn.min.js"></script>
+		<script>
+			window.onload = function() {
+
+
+				const adverts = {{ adverts | dump | safe }}
+
+				console.log(adverts)
+
+
+
+				const processedData = [];
+
+				adverts.forEach(d => {
+				  d.segments.forEach(s => {
+				    processedData.push({
+				    	name: s.file,
+				    	data: [
+					    	{
+						      x: d.workerId,
+						      y: [
+						      	new Date(s.startTime).getTime(),
+						      	new Date(s.endTime).getTime()
+						      ]
+						    }
+						  ]
+					  });
+				  });
+				});
+
+				console.log(processedData);
+
+
+
+
+				var options = {
+          series: processedData,
+          chart: {
+	          height: 350,
+	          type: 'rangeBar'
+	        },
+	        plotOptions: {
+	          bar: {
+	            horizontal: true,
+	            barHeight: '50%',
+	            rangeBarGroupRows: true
+	          }
+	        },
+	        colors: [
+	          "#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0",
+	          "#3F51B5", "#546E7A", "#D4526E", "#8D5B4C", "#F86624",
+	          "#D7263D", "#1B998B", "#2E294E", "#F46036", "#E2C044"
+	        ],
+	        fill: {
+	          type: 'solid'
+	        },
+	        xaxis: {
+	          type: 'datetime'
+	        },
+
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+      
+			}
+		</script>
+
 	</head>
-	<body>
-		<h1>Commander Centre</h1>
-		<p>env:{{ env }}</p>
-		<ul>
-			<li><a href="/command">command area</a></li>
-			<li><a href="/health">health check</a></li>
+	<body x-data="{ uploadResponse: '---', message: 'I ❤️ Alpine', textResponse: '---', responses: ['---', '---', '---'] }">
+		<h1>Futureporn Command Centre</h1>
+		<ul style="list-style-type: none; margin: 0; padding: 0;">
+			<li>
+				<button x-on:click="textResponse = '...'; textResponse = await (await fetch('/api/scout/stream/stop')).text()">NOTIFY scout/stream/stop</button> <span x-text="textResponse"></span>
+			</li>
+			<li>
+				<button x-on:click="uploadResponse = '...'; uploadResponse = await (await fetch('/api/capture/vod/upload')).text()">NOTIFY capture/vod/upload</button> <span x-text="uploadResponse"></span>
+			</li>
 		</ul>
+
+
+		<section>
+			<h2>streams</h2>
+			<div id="chart"></div>
+
+
+			{% for advert in adverts %}
+				<button x-on:click="responses[{{loop.index0}}] = '...'; responses[{{loop.index0}}] = await (await fetch('/api/commander/vod/election')).text()">{{ advert.workerId }} NOTIFY commander/vod/election</button> <span x-text="responses[{{loop.index0}}]"></span>
+			{% else %}
+				<p><i>There are no stream collections, yet</i></p>
+			{% endfor %}
+		</section>
+
+		<h3>Debug</h3>
+	<pre><code>{{ adverts | dump(2) }}</code></pre>
 	</body>
 </html>

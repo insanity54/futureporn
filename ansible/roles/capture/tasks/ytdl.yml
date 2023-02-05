@@ -1,0 +1,17 @@
+---
+
+
+- name: install deps
+  apt:
+    pkg:
+      - virtualenv
+    state: present
+
+
+- name: Install & update youtube-dl
+  pip:
+    name: youtube-dl
+    state: latest
+    virtualenv: "{{ lookup('env', 'FUTUREPORN_WORKDIR') }}"
+  notify:
+    - restart capture

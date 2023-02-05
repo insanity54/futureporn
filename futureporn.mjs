@@ -32,7 +32,7 @@ console.log(`
 		const mdRaw = await fsp.readFile(markdownFile);
 		const { data } = await marked(mdRaw);
 		const v = new VOD(data);
-		console.log(`VOD found with date:${v.date}`);
+		// console.log(`VOD found with date:${v.date}`);
 
 		vods.push(v);
 	}
@@ -52,7 +52,7 @@ console.log(`
 
 	for (const vod of vods) {
 
-		// console.log(`  [*] vod:${vod.getDatestamp()} processing begin`);
+		console.log(`  [*] vod:${vod.getDatestamp()} processing begin`);
 
 		const ensuranceFunctions = [
 			// vod.ensureAnnounceUrl,   // idk why I commented this out

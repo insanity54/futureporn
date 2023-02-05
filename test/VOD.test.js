@@ -667,6 +667,11 @@ describe('VOD', function () {
             const v = new VOD({ videoSrcHash: ipfsHashFixture, date: date });
             chai.expect(v.getIpfsUrl()).to.equal(`https://ipfs.io/ipfs/${ipfsHashFixture}?filename=projektmelody-chaturbate-${date}.mp4`)
         })
+        it('should add filename query param only if there isnt one already', function () {
+            const date = '30211016T000000Z';
+            const v = new VOD({ videoSrcHash: 'bafybeicsjevndzuummsd7mdrs6fpfdougcd6bc6ph7c72m5p2ju6u7pzgu?filename=projektmelody-chaturbate-20221216T003034Z-source.mp4', date: date });
+            chai.expect(v.getIpfsUrl()).to.equal(`https://ipfs.io/ipfs/${ipfsHashFixture}?filename=projektmelody-chaturbate-${date}.mp4`)
+        })
     })
 
     describe('ensureIpfs', function () {
