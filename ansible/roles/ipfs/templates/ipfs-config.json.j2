@@ -60,7 +60,7 @@
     }
   },
   "Routing": {
-    "Type": "dht",
+    "Type": "dhtclient",
     "Routers": null,
     "Methods": null
   },
@@ -113,7 +113,12 @@
       "Security": {},
       "Multiplexers": {}
     },
-    "ConnMgr": {},
+    "ConnMgr": {
+      "GracePeriod": "1m0s",
+      "HighWater": 40,
+      "LowWater": 20,
+      "Type": "basic"
+    },
     "ResourceMgr": {
       "Enabled": true,
       "Limits": {
@@ -130,7 +135,9 @@
       }
     }
   },
-  "AutoNAT": {},
+  "AutoNAT": {
+    "ServiceMode": "disabled"
+  },
   "Pubsub": {
     "Router": "",
     "DisableSigning": false
@@ -151,7 +158,7 @@
     "Strategy": ""
   },
   "Reprovider": {
-    "Interval": "12h",
+    "Interval": "0",
     "Strategy": "all"
   },
   "Experimental": {
