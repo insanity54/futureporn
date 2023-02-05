@@ -1,7 +1,7 @@
 // const VOD = require('./VOD.js');
 
 import { projektMelodyTwitterId } from './constants.js'
-import { loggerFactory } from 'futureporn-common/logger'
+import { loggerFactory } from 'workspace:common/logger'
 
 const logger = loggerFactory({
     defaultMeta: { service: "futureporn/scout" }

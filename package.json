@@ -128,5 +128,11 @@
   "main": "index.js",
   "dependencies": {
     "postgres": "^3.3.3"
-  }
+  },
+  "workspaces": [
+    "./common",
+    "./scout",
+    "./commander",
+    "./capture"
+  ]
 }
