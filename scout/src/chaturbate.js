@@ -9,7 +9,7 @@ import { FileCookieStore } from "tough-cookie-file-store";
 import os from 'os';
 import path from 'path';
 import FormData from 'form-data';
-import { loggerFactory } from 'futureporn-common/logger'
+import { loggerFactory } from 'workspace:common/logger'
 
 
 const logger = loggerFactory({

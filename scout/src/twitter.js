@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import Twitter from 'twitter-v2';
-import { loggerFactory } from 'futureporn-common/logger'
+import { loggerFactory } from 'workspace:common/logger'
 
 const logger = loggerFactory({
     defaultMeta: { service: "futureporn/scout" }

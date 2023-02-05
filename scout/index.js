@@ -3,7 +3,7 @@
 import twitter from './src/twitter.js'
 import { chat, getViewerCount, monitorRealtimeStatus } from './src/chaturbate.js'
 import { containsCBInviteLink } from "./src/tweetProcess.js"
-import { loggerFactory } from 'futureporn-common/logger'
+import { loggerFactory } from 'workspace:common/logger'
 import postgres from 'postgres'
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
