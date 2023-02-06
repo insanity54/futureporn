@@ -7,7 +7,9 @@ all:
       ansible_host: 149.28.240.33
       ansible_user: root
 
+
     baba:
+      # cluster peer 1
       ansible_host: 38.242.216.6
       # ansible_host: fe80::250:56ff:fe49:6cd3
       cluster_peers: 
@@ -27,6 +29,7 @@ all:
       ipfs_max_memory: 16000000000
 
     futureporn-cluster2:
+      # cluster peer 2
       ansible_host: 45.32.201.82
       cluster_peers: 
         - /ip4/127.0.0.1/tcp/9096/ipfs/QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
@@ -44,6 +47,28 @@ all:
       ipfs_cluster_follow_version: v1.0.5
       ipfs_max_memory: 2147483648
 
+    T1M5:
+      # cluster peer 3
+      ansible_host: 45.32.210.20
+      cluster_peers: 
+        - /ip4/127.0.0.1/tcp/9096/ipfs/QmUdgoP4kxH6QS38zs13655PhYyn1vVK9atv6HJReC2rKL
+        - /ip4/38.242.216.6/tcp/9096/p2p/QmZSZJeo3o3q2q3M5VTtH6UrgWEodYLmhRwpaoU8uQzbrM
+        - /ip4/45.32.201.82/tcp/9096/ipfs/QmUwRKEps2dWU1djy1iiWHkw5LfyCoiFFBt3BigMW9zEQ5
+      trusted_peers:
+        - "{{ lookup('env', 'IPFS_CLUSTER1_IPFS_CLUSTER_ID') }}"
+        - "{{ lookup('env', 'IPFS_CLUSTER2_IPFS_CLUSTER_ID') }}"
+      ipfs_kubo_version: v0.17.0
+      ipfs_kubo_checksum: sha256:7121f3e2d44a6a978d289a206cdbc7f10ba0348f7386c456ff1fdc4d4a8408d0
+      ipfs_privkey: "{{ lookup('env', 'IPFS_CLUSTER3_IPFS_PRIVATE_KEY') }}"
+      ipfs_peer_id: "{{ lookup('env', 'IPFS_CLUSTER3_IPFS_PEER_ID') }}"
+      ipfs_cluster_privkey: "{{ lookup('env', 'IPFS_CLUSTER3_IPFS_CLUSTER_PRIVATE_KEY') }}"
+      ipfs_cluster_id: "{{ lookup('env', 'IPFS_CLUSTER3_IPFS_CLUSTER_ID') }}"
+      ipfs_cluster_secret: "{{ lookup('env', 'IPFS_CLUSTER_SECRET') }}"
+      ipfs_cluster_service_version: v1.0.5
+      ipfs_cluster_follow_version: v1.0.5
+      ipfs_max_memory: 3246391296
+
+
     oboe:
       ansible_user: root
       ansible_host: "{{ lookup('env', 'COMMANDER_HOST') }}"
@@ -57,6 +82,7 @@ all:
         baba:
         futureporn-cluster2:
         futureporn-capture1:
+        T1M5:
     capturers:
       hosts:
         futureporn-capture1:
