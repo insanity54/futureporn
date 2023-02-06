@@ -276,8 +276,8 @@ export async function getCsrfToken(roomName = defaultRoomName) {
         try {
             await jar.setCookie(tokenCookie, cbUrl)
         } catch (e) {
-            console.error(`problem while setting cookie on disk. ${e}`)
-            console.error(e)
+            logger.log({ level: 'error', message: `problem while setting cookie on disk. ${e}` })
+            logger.log({ level: 'error', message: JSON.stringify(e) })
         }
     }
 

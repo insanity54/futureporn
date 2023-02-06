@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import 'dotenv/config';
 import Twitter from 'twitter-v2';
 import { loggerFactory } from 'common/logger'
 
