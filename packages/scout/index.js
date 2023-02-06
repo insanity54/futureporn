@@ -1,6 +1,7 @@
 
 
-import twitter from './src/twitter.js'
+// import twitter from './src/twitter.js'
+import 'dotenv/config'
 import { chat, getViewerCount, monitorRealtimeStatus } from './src/chaturbate.js'
 import { containsCBInviteLink } from "./src/tweetProcess.js"
 
@@ -57,7 +58,7 @@ const onCbStop = () => {
  *   - connect to chaturbate chat and watch for spikes in messages per minute 
  */
 async function main () {
-	twitter(tweetConsumer)
+	// twitter(tweetConsumer)
   monitorRealtimeStatus('projektmelody', onCbStart, onCbStop)
 }
 
