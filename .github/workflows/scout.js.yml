@@ -14,7 +14,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: scout
+        working-directory: futureporn-scout
 
     runs-on: ubuntu-latest
 
