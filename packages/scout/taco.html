@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <script>
+    (function() {
+    var tsQueue = [];
+    var tsWatcher = setInterval(function() {
+        var tsInstance = window['tsInstance'];
+        if (tsInstance !== undefined) {
+            clearInterval(tsWatcher);
+            while (tsQueue.length > 0) {
+                tsQueue.shift()(tsInstance);
+            }
+        }
+    }, 50);
+    window['tsExec'] = function(func) {
+        if (window['tsInstance'] !== undefined && tsQueue.length <= 0) {
+            func(window['tsInstance']);
+        } else {
+            tsQueue.push(func);
+        }
+    }
+    })();;
+
+    if (window.self !== window.top && window.top["onFrameLoad"] !== undefined) {
+        window.top["onFrameLoad"](window.self)
+    };
+  </script>
+  
+  <script>
+    window.tsInstance = {
+      sure: 'ok',
+      maybe: 'idk'
+    }
+  </script>
+  
+</head>
+<body>
+
+</body>
+</html>
+

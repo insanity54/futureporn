@@ -1,0 +1,36 @@
+{
+  "name": "scout",
+  "version": "0.0.1",
+  "description": "event emitter that detects start and end of stream",
+  "main": "index.js",
+  "license": "Unlicense",
+  "private": true,
+  "scripts": {
+    "start": "NODE_ENV=production node index",
+    "test": "mocha ./test/unit",
+    "dev": "FUTUREPORN_WORKDIR=/home/chris/Downloads yarn nodemon index"
+  },
+  "type": "module",
+  "dependencies": {
+    "ably": "1.2.13",
+    "cheerio": "^1.0.0-rc.12",
+    "common": "workspace:^0.0.1",
+    "date-fns": "^2.29.3",
+    "dotenv": "^16.0.3",
+    "fetch-blob": "^3.2.0",
+    "formdata-polyfill": "^4.0.10",
+    "node-fetch": "^3.3.0",
+    "postgres": "^3.3.3",
+    "seedrandom": "^3.0.5",
+    "tough-cookie": "^4.1.2",
+    "tough-cookie-file-store": "^2.0.3",
+    "twitter-v2": "^1.1.0",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-events": "^0.0.3",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.20"
+  }
+}
