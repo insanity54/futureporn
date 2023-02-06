@@ -1,0 +1,21 @@
+{
+  "name": "futureporn-builder",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Chris Grimmett <chris@grimtech.net>",
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "debug": "^4.3.4",
+    "fastq": "^1.15.0",
+    "postgres": "^3.3.3"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "DEBUG=futureporn/builder nodemon index.js"
+  },
+  "type": "module",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

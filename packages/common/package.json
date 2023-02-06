@@ -1,0 +1,13 @@
+{
+  "name": "common",
+  "version": "0.0.1",
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "winston": "^3.8.2"
+  },
+  "type": "module",
+  "exports": {
+    "./logger": "./src/logger.js"
+  }
+}

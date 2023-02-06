@@ -1,0 +1,27 @@
+{
+  "name": "futureporn-commander",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "Unlicense",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently npm:dev:db npm:dev:serve",
+    "dev:serve": "DEBUG=futureporn/commander nodemon -e \"js mjs njk\" index.js",
+    "dev:db": "node dev.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@fastify/auth": "^4.2.0",
+    "@fastify/basic-auth": "^5.0.0",
+    "@fastify/view": "^7.3.0",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.11.0",
+    "postgres": "^3.3.3"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "execa": "^6.1.0",
+    "nodemon": "^2.0.20"
+  }
+}
