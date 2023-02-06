@@ -6,7 +6,7 @@ Description=Futureporn Scout
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/env node /home/futureporn/futureporn/packages/scout/index.js
+ExecStart=/usr/bin/env yarn node index
 WorkingDirectory=/home/futureporn/futureporn/packages/scout
 Restart=always
 RestartSec=5

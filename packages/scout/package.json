@@ -6,7 +6,7 @@
   "license": "Unlicense",
   "private": true,
   "scripts": {
-    "start": "NODE_ENV=production node index",
+    "start": "node index",
     "test": "mocha ./test/unit",
     "dev": "FUTUREPORN_WORKDIR=/home/chris/Downloads yarn nodemon index"
   },

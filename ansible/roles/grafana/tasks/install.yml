@@ -13,6 +13,12 @@
     home: /home/grafana-agent
     shell: /bin/false
 
+- name: create cache dir
+  file:
+    path: /home/grafana-agent/.cache/
+    owner: grafana-agent
+    group: grafana-agent
+
 - name: ensure unzip is installed
   apt:
     name: unzip

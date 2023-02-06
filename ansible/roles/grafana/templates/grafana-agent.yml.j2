@@ -1,7 +1,9 @@
 integrations:
   node_exporter:
     enabled: true
-
+    enable_collectors:
+    - systemd
+    - filesystem
     relabel_configs:
     - replacement: {{ inventory_hostname }}
       target_label: instance
