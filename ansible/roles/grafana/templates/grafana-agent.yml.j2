@@ -1,9 +1,7 @@
 integrations:
   node_exporter:
     enabled: true
-    enable_collectors:
-    - systemd
-    - filesystem
+
     relabel_configs:
     - replacement: {{ inventory_hostname }}
       target_label: instance
@@ -12,6 +10,27 @@ integrations:
       username: {{ lookup('env', 'GRAFANA_AGENT_USERNAME') }}
       password: {{ lookup('env', 'GRAFANA_AGENT_PASSWORD') }}
     url: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
+
+logs:
+  positions_directory: /home/grafana-agent/positions
+  configs:
+  - name: futureporn-logs
+    clients:
+    - url: {{ lookup('env', 'GRAFANA_PROMTAIL_URL') }}
+    scrape_configs:
+    - job_name: systemd-journal
+      journal:
+        max_age: 24h
+        labels:
+          instance: {{ inventory_hostname }}
+          job: systemd-journal
+      relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
+      - source_labels: ['__journal__boot_id']
+        target_label: 'boot_id'
+      - source_labels: ['__journal__transport']
+        target_label: 'transport'
 
 metrics:
   configs:
@@ -23,5 +42,5 @@ metrics:
       url: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
   global:
     scrape_interval: 60s
-  wal_directory: /tmp/grafana-agent-wal
+  wal_directory: /home/grafana-agent
 

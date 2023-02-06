@@ -1,15 +1,6 @@
 ---
 
-- name: Download screen configuration
-  git:
-    repo: 'https://github.com/insanity54/dotfiles'
-    dest: /root/dotfiles
 
-- name: Configure screen
-  copy:
-    src: /root/dotfiles/.screenrc
-    dest: /root/.screenrc
-    remote_src: yes
 
 - name: create folder for recordings
   file:
