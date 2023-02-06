@@ -63,6 +63,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["dotenv", "npm:16.0.3"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1717,7 +1718,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         ["workspace:.", {\
           "packageLocation": "./",\
           "packageDependencies": [\
-            ["futureporn", "workspace:."]\
+            ["futureporn", "workspace:."],\
+            ["dotenv", "npm:16.0.3"]\
           ],\
           "linkType": "SOFT"\
         }]\
