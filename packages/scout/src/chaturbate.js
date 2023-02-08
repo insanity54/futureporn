@@ -223,13 +223,18 @@ export async function getRealtime(csrfToken, tokenRequest, realtimeHost, fallbac
         realtimeHost: realtimeHost,
         restHost: realtimeHost,
         fallback_hosts: fallbackHosts,
-        authCallback: ((tokenParams, cb) => {
+        authCallback: (async (tokenParams, cb) => {
+            logger.log({ level: 'debug', message: `Ably is attempting to authenticate with tokenRequest: ${JSON.stringify(tokenRequest) }` })
+            if (tokenRequest.timestamp+tokenRequest.ttl < new Date().valueOf()) {
+                logger.log({ level: 'debug', message: `tokenRequest is expired! let's get a new one.` })
+                const token = await getCsrfToken()
+                const roomId = await getRoomId(roomName)
+                const auth = await getPushServiceAuth(token, roomName, roomId)
+                tokenRequest = await getPushServiceAuth()
+            }
             cb(null, tokenRequest)
         })
     })
-
-
-
 
     return realtime
 
