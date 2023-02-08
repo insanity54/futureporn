@@ -2,7 +2,8 @@
 
 // import twitter from './src/twitter.js'
 import 'dotenv/config'
-import { chat, getViewerCount, monitorRealtimeStatus } from './src/chaturbate.js'
+// import { chat, getViewerCount, monitorRealtimeStatus } from './src/chaturbate.js'
+import Room from './src/Room.js'
 import { containsCBInviteLink } from "./src/tweetProcess.js"
 
 import { loggerFactory } from "common/logger"
@@ -59,7 +60,13 @@ const onCbStop = () => {
  */
 async function main () {
 	// twitter(tweetConsumer)
-  monitorRealtimeStatus('projektmelody', onCbStart, onCbStop)
+  // monitorRealtimeStatus('projektmelody', onCbStart, onCbStop)
+  const room = new Room({
+    roomName: 'projektmelody',
+    onStart: onCbStart,
+    onStop: onCbStop
+  })
+  room.monitorRealtime()
 }
 
 logger.log({ level: 'info', message: 'hello' })
