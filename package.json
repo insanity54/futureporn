@@ -9,7 +9,7 @@
     "build:assets": "NODE_ENV=production webpack --mode=production",
     "build:site": "NODE_ENV=production yarn dlx @11ty/eleventy --config=./.eleventy.cjs",
     "patreon": "npm run build:patrons",
-    "clean": "echo hi ## rm -rf ./_site",
+    "clean": "echo hi; ls -la ./_site; echo $PWD ## rm -rf ./_site",
     "deploy": "npm run build:assets && npm run build:site && node publish.cjs",
     "publish": "npm run deploy",
     "dev": "npm-run-all clean webpack:assets --parallel dev:*",
