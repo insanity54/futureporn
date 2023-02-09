@@ -139,8 +139,8 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.setDataDeepMerge(true);
 
-  eleventyConfig.addLayoutAlias("vod", "layouts/vod.njk");
-  eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
+  // eleventyConfig.addLayoutAlias("vod", "_includes/layouts/vod.njk");
+  // eleventyConfig.addLayoutAlias("base", "_includes/layouts/base.njk");
 
 
   eleventyConfig.addShortcode("buildIpfsUrl", buildIpfsUrl);

@@ -4,29 +4,8 @@
   "version": "0.0.1",
   "description": "https://futureporn.net",
   "scripts": {
-    "build": "npm run clean && npm run build:assets && npm run build:site",
-    "build:patrons": "node ./patreon.js",
-    "build:assets": "NODE_ENV=production webpack --mode=production",
-    "build:site": "NODE_ENV=production eleventy --config=./.eleventy.cjs",
-    "patreon": "npm run build:patrons",
-    "clean": "echo hi; ls -la .; echo $PWD ## rm -rf ./_site",
-    "deploy": "npm run build:assets && npm run build:site && node publish.cjs",
-    "publish": "npm run deploy",
-    "dev": "npm-run-all clean webpack:assets --parallel dev:*",
-    "ngrok": "ngrok http --region=us --hostname=futureporn.ngrok.io 8000",
-    "dev:assets": "echo \">>building assets (webpack)\" && pnpm run webpack:assets --watch",
-    "dev:site": "echo \">> builiding site (eleventy)\" NODE_ENV=development pnpm dlx @11ty/eleventy --serve --port 9898 --config=./.eleventy.cjs",
-    "webpack:assets": "NODE_ENV=development webpack --mode=development",
-    "test": "mocha",
-    "down": "ansible-playbook -i ./vultr.yml destroy.yml",
-    "capture": "./ansible-playbook.sh -i vultr.yml capture.yml",
-    "manager": "./ansible-playbook.sh -i vultr.yml manager.yml",
-    "cluster": "./ansible-playbook.sh -i vultr.yml cluster.yml",
-    "gateway": "./ansible-playbook.sh -i vultr.yml gateway.yml",
-    "uppy": "./ansible-playbook.sh -i vultr.yml uppy.yml",
-    "start": "node futureporn.mjs",
-    "light-server": "light-server -s ./_site/ -p 8888",
-    "lighthouse": "lighthouse localhost:8888"
+    "build": "npx webpack --mode=production && npm:build:site",
+    "build:site": "npx @11ty/eleventy --config ./.eleventy.cjs"
   },
   "repository": "git+https://github.com/insanity54/futureporn.git",
   "author": "Chris Grimmett <chris@grimtech.net>",
@@ -37,12 +16,15 @@
   "homepage": "https://github.com/insanity54/futureporn#readme",
   "private": true,
   "main": "index.js",
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
+    "@11ty/eleventy": "^2.0.0",
     "@11ty/eleventy-navigation": "^0.3.5",
     "@11ty/eleventy-plugin-rss": "^1.2.0",
     "@babel/core": "^7.20.12",
     "@fortawesome/fontawesome-free": "^6.3.0",
-    "@types/markdown-it": "^12.2.3",
     "babel-loader": "^9.1.2",
     "bulma": "^0.9.4",
     "bulma-prefers-dark": "^0.1.0-beta.1",
@@ -60,9 +42,8 @@
     "sass": "^1.58.0",
     "sass-loader": "^13.2.0",
     "sass-resources-loader": "^2.2.5",
-    "terser-webpack-plugin": "^5.3.6",
     "webpack": "^5.75.0",
-    "webpack-cli": "^4.10.0",
-    "webpack-manifest-plugin": "^3.1.1"
+    "webpack-cli": "^5.0.1",
+    "webpack-manifest-plugin": "^5.0.0"
   }
 }
