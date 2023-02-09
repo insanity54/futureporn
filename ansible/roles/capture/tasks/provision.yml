@@ -23,18 +23,19 @@
 - name: Download futureporn
   git:
     repo: https://github.com/insanity54/futureporn
-    dest: /root/futureporn
+    dest: /home/futureporn/futureporn
     depth: 1
     update: yes
     force: yes
   notify:
     - restart capture
 
-- name: Install futureporn
-  community.general.yarn:
-    path: /root/futureporn/packages/capture
-  notify:
-    - restart capture
+# not needed using yarn berry
+# - name: Install futureporn
+#   community.general.yarn:
+#     path: /root/futureporn/packages/capture
+#   notify:
+#     - restart capture
 
 - name: Install capture system service
   ansible.builtin.template:

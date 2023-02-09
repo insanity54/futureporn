@@ -15,7 +15,15 @@
 
 - name: create cache dir
   file:
+    state: directory
     path: /home/grafana-agent/.cache/
+    owner: grafana-agent
+    group: grafana-agent
+
+- name: create positions dir
+  file:
+    state: directory
+    path: /home/grafana-agent/positions/
     owner: grafana-agent
     group: grafana-agent
 

@@ -6,11 +6,14 @@ Description="futureporn capture-monitor"
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/env node /root/futureporn/capture/index.js
-WorkingDirectory=/root/futureporn/capture
-Type=simple
+ExecStart=/usr/bin/env yarn node index
+WorkingDirectory=/home/futureporn/futureporn/packages/capture
 Restart=always
 RestartSec=5
+User=futureporn
+Group=futureporn
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
 Environment=POSTGRES_HOST={{ lookup('env', 'POSTGRES_HOST') }}
 Environment=POSTGRES_PASSWORD={{ lookup('env', 'POSTGRES_PASSWORD') }}
 Environment=POSTGRES_USERNAME={{ lookup('env', 'POSTGRES_USERNAME') }}
@@ -18,5 +21,4 @@ Environment=FUTUREPORN_WORKDIR={{ lookup('env', 'FUTUREPORN_WORKDIR') }}
 Environment=IPFS_CLUSTER_HTTP_API_MULTIADDR={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_MULTIADDR') }}
 Environment=IPFS_CLUSTER_HTTP_API_USERNAME={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_USERNAME') }}
 Environment=IPFS_CLUSTER_HTTP_API_PASSWORD={{ lookup('env', 'IPFS_CLUSTER_HTTP_API_PASSWORD') }}
-Environment=DEBUG="futureporn/*"
 Environment=YOUTUBE_DL_BINARY={{ lookup('env', 'FUTUREPORN_WORKDIR') }}/bin/youtube-dl
