@@ -132,7 +132,8 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-# yarn v2
+# yarn berry
+
 .yarn/*
 !.yarn/cache
 !.yarn/patches
@@ -140,5 +141,3 @@ dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# End of https://www.toptal.com/developers/gitignore/api/node
