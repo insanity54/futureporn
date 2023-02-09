@@ -261,7 +261,7 @@ export default class Room {
         authCallback: (async (tokenParams, cb) => {
           logger.log({ level: 'debug', message: `Ably authCallback. Getting a fresh new Ably TokenRequest.`})
           this.tokenRequest = await this.getTokenRequest()
-          logger.log({ level: 'debug', message: `Got a new TokenRequest:${JSON.stringify(this.tokenRequest)}`})
+          logger.log({ level: 'debug', message: `Got a new TokenRequest`})
 
           cb(null, this.tokenRequest)
         })

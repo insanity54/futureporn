@@ -7,6 +7,16 @@
 - name: create futureporn user
   ansible.builtin.user:
     name: futureporn
+    group: futureporn
     groups: futureporn
     create_home: true
     home: /home/futureporn
+
+
+#   # greets https://stackoverflow.com/a/68445912/1004931
+# - name: remove futureporn user from users group
+#   become: true
+#   command: "gpasswd -d futureporn users"
+#   register: command_result
+#   changed_when: "not 'is not a member of' in command_result.stderr"
+#   failed_when: false

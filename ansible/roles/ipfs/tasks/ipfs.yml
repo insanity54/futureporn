@@ -7,7 +7,7 @@
 - name: Create the ipfs user
   ansible.builtin.user:
     name: ipfs
-    groups: ipfs
+    group: ipfs
     create_home: false
     home: /home/ipfs
 
