@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm run clean && pnpm run build:assets && pnpm run build:site",
     "build:patrons": "node ./patreon.js",
-    "build:assets": "NODE_ENV=production pnpm webpack --mode=production",
+    "build:assets": "NODE_ENV=production pnpm exec webpack --mode=production",
     "build:site": "NODE_ENV=production pnpm dlx @11ty/eleventy --config=./.eleventy.cjs",
     "patreon": "npm run build:patrons",
     "clean": "echo hi; ls -la .; echo $PWD ## rm -rf ./_site",
@@ -16,7 +16,7 @@
     "ngrok": "ngrok http --region=us --hostname=futureporn.ngrok.io 8000",
     "dev:assets": "echo \">>building assets (webpack)\" && pnpm run webpack:assets --watch",
     "dev:site": "echo \">> builiding site (eleventy)\" NODE_ENV=development pnpm dlx @11ty/eleventy --serve --port 9898 --config=./.eleventy.cjs",
-    "webpack:assets": "NODE_ENV=development pnpm webpack --mode=development",
+    "webpack:assets": "NODE_ENV=development pnpm exec webpack --mode=development",
     "test": "mocha",
     "down": "ansible-playbook -i ./vultr.yml destroy.yml",
     "capture": "./ansible-playbook.sh -i vultr.yml capture.yml",
