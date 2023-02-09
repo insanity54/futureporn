@@ -6,10 +6,10 @@
   "scripts": {
     "build": "yarn run clean && yarn run build:assets && yarn run build:site",
     "build:patrons": "node ./patreon.js",
-    "build:assets": "NODE_ENV=production webpack --mode=production",
+    "build:assets": "NODE_ENV=production yarn dlx webpack --mode=production",
     "build:site": "NODE_ENV=production yarn dlx @11ty/eleventy --config=./.eleventy.cjs",
     "patreon": "npm run build:patrons",
-    "clean": "echo hi; ls -la ./_site; echo $PWD ## rm -rf ./_site",
+    "clean": "echo hi; ls -la .; echo $PWD ## rm -rf ./_site",
     "deploy": "npm run build:assets && npm run build:site && node publish.cjs",
     "publish": "npm run deploy",
     "dev": "npm-run-all clean webpack:assets --parallel dev:*",
@@ -62,9 +62,7 @@
     "sass": "^1.58.0",
     "sass-loader": "^13.2.0",
     "sass-resources-loader": "^2.2.5",
-    "webpack": "^5.75.0"
-  },
-  "devDependencies": {
+    "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "webpack-manifest-plugin": "^5.0.0"
   }
