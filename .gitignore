@@ -54,9 +54,6 @@ jspm_packages/
 .env.production
 
 
-
-
-
 # yarn berry
 .pnp.*
 .yarn/*
