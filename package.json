@@ -15,7 +15,7 @@
     "dev": "npm-run-all clean webpack:assets --parallel dev:*",
     "ngrok": "ngrok http --region=us --hostname=futureporn.ngrok.io 8000",
     "dev:assets": "yarn run webpack:assets --watch",
-    "dev:site": "NODE_ENV=development yarn eleventy --serve --port 9898 --config=./.eleventy.cjs",
+    "dev:site": "NODE_ENV=development yarn dlx @11ty/eleventy --serve --port 9898 --config=./.eleventy.cjs",
     "webpack:assets": "NODE_ENV=development yarn webpack --mode=development",
     "test": "mocha",
     "down": "ansible-playbook -i ./vultr.yml destroy.yml",
