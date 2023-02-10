@@ -8,8 +8,6 @@
     name: yarn
     global: yes
     state: present
-  # become: yes
-  # become_user: futureporn
 
 - name: Download futureporn
   git:
@@ -23,13 +21,17 @@
   become: yes
   become_user: futureporn
 
-- name: Install futureporn commander
-  community.general.yarn:
-    path: /home/futureporn/futureporn/packages/commander
-  notify:
-    - restart commander
-  become: yes
-  become_user: futureporn
+# not needed because of berry zero-install
+# - name: Install futureporn commander
+#   command:
+#     yarn install
+#   community.general.yarn:
+#     path: /home/futureporn/futureporn/packages/commander
+#     production: yes
+#   notify:
+#     - restart commander
+#   become: yes
+#   become_user: futureporn
 
 - name: Install commander system service
   ansible.builtin.template:

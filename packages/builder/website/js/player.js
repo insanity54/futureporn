@@ -1,5 +1,5 @@
-import Plyr from 'plyr';
+const Plyr = require('plyr');
 new Plyr('#player');
 
-import '../css/player.scss';
+require('../css/player.scss');
 

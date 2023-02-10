@@ -2907,6 +2907,7 @@ __metadata:
     "@fastify/auth": ^4.2.0
     "@fastify/basic-auth": ^5.0.0
     "@fastify/view": ^7.3.0
+    common: "workspace:*"
     concurrently: ^7.6.0
     dotenv: ^16.0.3
     execa: ^6.1.0

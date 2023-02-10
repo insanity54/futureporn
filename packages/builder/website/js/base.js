@@ -1,4 +1,4 @@
-import '../css/base.scss';
+require('../css/base.scss');
 
 
 // handler for the burger menu
