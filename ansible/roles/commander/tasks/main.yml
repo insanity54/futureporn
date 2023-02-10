@@ -1,5 +1,6 @@
 ---
 
 
+- include_tasks: ./user.yml
 - include_tasks: ./db.yml
 - include_tasks: ./commander.yml

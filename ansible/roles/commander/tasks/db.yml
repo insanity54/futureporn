@@ -29,12 +29,13 @@
 
 - name: Grant futureporn user remote access to db
   community.postgresql.postgresql_pg_hba:
-    dest: /etc/postgresql/13/main/pg_hba.conf
+    dest: /etc/postgresql/14/main/pg_hba.conf
     contype: host
     users: futureporn
     address: all
     databases: futureporn
     method: md5
+    create: true
   notify:
     - reload postgresql
 

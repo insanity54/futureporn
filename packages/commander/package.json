@@ -17,6 +17,7 @@
     "@fastify/view": "^7.3.0",
     "dotenv": "^16.0.3",
     "fastify": "^4.11.0",
+    "nunjucks": "^3.2.3",
     "postgres": "^3.3.3"
   },
   "devDependencies": {

@@ -1,0 +1,13 @@
+---
+
+- name: create futureporn group
+  ansible.builtin.group:
+    name: futureporn
+
+- name: create futureporn user
+  ansible.builtin.user:
+    name: futureporn
+    group: futureporn
+    groups: futureporn
+    create_home: true
+    home: /home/futureporn
