@@ -2058,10 +2058,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decode-uri-component@npm:^0.2.1":
-  version: 0.2.2
-  resolution: "decode-uri-component@npm:0.2.2"
-  checksum: 95476a7d28f267292ce745eac3524a9079058bbb35767b76e3ee87d42e34cd0275d2eb19d9d08c3e167f97556e8a2872747f5e65cbebcac8b0c98d83e285f139
+"decode-uri-component@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "decode-uri-component@npm:0.4.1"
+  checksum: 0473924860986fb6ca19ee65a2af13e08801b4f3660475b058500ea8479ed715c919884a026b6bf4296dbb640d3cea74fadf45490b2439152fc548271d0201ec
   languageName: node
   linkType: hard
 
@@ -2253,16 +2253,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.284":
-  version: 1.4.291
-  resolution: "electron-to-chromium@npm:1.4.291"
-  checksum: e661fa9216625d26bee3241871e57848453a2ce3b5136b8881347b2d4e9ae52d2affc0c7c0ab0e8baed0d9f5aef4da8197717ee860c5d63c1800b31b4320f07e
-  languageName: node
-  linkType: hard
-
-"eleventy@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "eleventy@npm:1.0.6"
-  checksum: 6bed81a4df6dbb9fcf3bd10a86cc144946dc5345a0107606732e7d2d9a72d23037a723c52d7177069397b670c3dc11a3eccb1533ca02847b091cec5dd5933424
+  version: 1.4.293
+  resolution: "electron-to-chromium@npm:1.4.293"
+  checksum: d3f3727376500d03890c0352f00e105f14d312764c31608b25c5904cabf75d20424baa739935756e8894eada1f6f081859fa7e0b99528ef98fc37843c0866a14
   languageName: node
   linkType: hard
 
@@ -2846,10 +2839,34 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "futureporn-builder@workspace:packages/builder"
   dependencies:
-    debug: ^4.3.4
+    "@11ty/eleventy": ^2.0.0
+    "@11ty/eleventy-navigation": ^0.3.5
+    "@11ty/eleventy-plugin-rss": ^1.2.0
+    "@babel/core": ^7.20.12
+    "@fortawesome/fontawesome-free": ^6.3.0
+    babel-loader: ^9.1.2
+    bulma: ^0.9.4
+    bulma-prefers-dark: ^0.1.0-beta.1
+    common: "workspace:*"
+    css-loader: ^6.7.3
+    decode-uri-component: ^0.4.1
+    dotenv: ^16.0.3
     fastq: ^1.15.0
+    glob: ^8.1.0
+    luxon: ^3.2.1
+    markdown-it: ^13.0.1
+    markdown-it-anchor: ^8.6.6
+    mini-css-extract-plugin: ^2.7.2
     nodemon: ^2.0.20
+    plyr: ^3.7.3
     postgres: ^3.3.3
+    purgecss-webpack-plugin: ^5.0.0
+    sass: ^1.58.0
+    sass-loader: ^13.2.0
+    sass-resources-loader: ^2.2.5
+    webpack: ^5.75.0
+    webpack-cli: ^5.0.1
+    webpack-manifest-plugin: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -2903,32 +2920,6 @@ __metadata:
 "futureporn@workspace:.":
   version: 0.0.0-use.local
   resolution: "futureporn@workspace:."
-  dependencies:
-    "@11ty/eleventy": ^2.0.0
-    "@11ty/eleventy-navigation": ^0.3.5
-    "@11ty/eleventy-plugin-rss": ^1.2.0
-    "@babel/core": ^7.20.12
-    "@fortawesome/fontawesome-free": ^6.3.0
-    babel-loader: ^9.1.2
-    bulma: ^0.9.4
-    bulma-prefers-dark: ^0.1.0-beta.1
-    css-loader: ^6.7.3
-    decode-uri-component: ^0.2.1
-    dotenv: ^16.0.3
-    eleventy: ^1.0.6
-    glob: ^8.1.0
-    luxon: ^3.2.1
-    markdown-it: ^13.0.1
-    markdown-it-anchor: ^8.6.6
-    mini-css-extract-plugin: ^2.7.2
-    plyr: ^3.7.3
-    purgecss-webpack-plugin: ^5.0.0
-    sass: ^1.58.0
-    sass-loader: ^13.2.0
-    sass-resources-loader: ^2.2.5
-    webpack: ^5.75.0
-    webpack-cli: ^5.0.1
-    webpack-manifest-plugin: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -4168,9 +4159,9 @@ __metadata:
   linkType: hard
 
 "minimist@npm:^1.2.5, minimist@npm:^1.2.6, minimist@npm:^1.2.7":
-  version: 1.2.7
-  resolution: "minimist@npm:1.2.7"
-  checksum: 7346574a1038ca23c32e02252f603801f09384dd1d78b69a943a4e8c2c28730b80e96193882d3d3b22a063445f460e48316b29b8a25addca2d7e5e8f75478bec
+  version: 1.2.8
+  resolution: "minimist@npm:1.2.8"
+  checksum: 75a6d645fb122dad29c06a7597bddea977258957ed88d7a6df59b5cd3fe4a527e253e9bbf2e783e4b73657f9098b96a5fe96ab8a113655d4109108577ecf85b0
   languageName: node
   linkType: hard
 

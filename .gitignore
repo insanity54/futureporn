@@ -7,11 +7,12 @@
 *~
 
 # test VOD
-website/vods/3021-10-16T00\:30\:00.000Z.md
-website/vods/30211015T173000Z.md
+packages/builder/website/vods/3021-10-16T00\:30\:00.000Z.md
+packages/builder/website/vods/30211015T173000Z.md
 
-.env
 
+# build output
+_site
 
 
 ### Node ###

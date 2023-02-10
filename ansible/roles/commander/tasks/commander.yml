@@ -1,27 +1,35 @@
 ---
 
 
+
+
 - name: install yarn
   community.general.npm:
     name: yarn
     global: yes
     state: present
+  # become: yes
+  # become_user: futureporn
 
 - name: Download futureporn
   git:
     repo: https://github.com/insanity54/futureporn
-    dest: /root/futureporn
+    dest: /home/futureporn/futureporn
     depth: 1
     update: yes
     force: yes
   notify:
     - restart commander
+  become: yes
+  become_user: futureporn
 
 - name: Install futureporn commander
   community.general.yarn:
-    path: /root/futureporn/commander
+    path: /home/futureporn/futureporn/packages/commander
   notify:
     - restart commander
+  become: yes
+  become_user: futureporn
 
 - name: Install commander system service
   ansible.builtin.template:
