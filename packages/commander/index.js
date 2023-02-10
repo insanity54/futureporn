@@ -8,12 +8,11 @@ import Fastify from 'fastify'
 import fastifyView from '@fastify/view'
 import postgres from 'postgres'
 import nunjucks from 'nunjucks'
-import debugFactory from 'debug'
-
+import {loggerFactory} from 'common/logger'
 
 
 // constants
-const debug = debugFactory('futureporn/commander')
+const logger = loggerFactory({ service: 'futureporn/commander' })
 const __dirname = fileURLToPath(path.dirname(
     import.meta.url)); // esm workaround for missing __dirname
 const port = process.env.PORT || 1883;
@@ -57,12 +56,12 @@ function appendAdvert(newAdvert) {
 }
 
 
-debug('debug is working!')
+logger.log({ level: 'debug', message: 'debug is working!' })
 
 sql.listen('capture/vod/advertisement', (data) => {
-    debug(`  [*] advert`)
+    logger.log({ level: 'debug', message: `  [*] advert`})
     const d = JSON.parse(data)
-    debug(d.streams)
+    logger.log({ level: 'debug', message: d.streams})
     appendAdvert(d)
 })
 
@@ -89,7 +88,7 @@ fastify.after(() => {
         method: 'GET',
         url: '/command',
         handler: async(req, reply) => {
-            console.log('a commander has logged in')
+            console.log({ level: 'debug', message: 'a commander has logged in'})
             return reply.render("command.njk", { 
                 mqttPassword,
                 mqttUsername
@@ -102,8 +101,8 @@ fastify.after(() => {
         url: '/',
         handler: async(req, reply) => {
             const vods = await sql`SELECT * from vod`
-            console.log('>>')
-            console.log(adverts)
+            console.log({ level: 'debug', message: '>>'})
+            console.log({ level: 'debug', message: adverts})
             return reply.render("index.njk", { vods, adverts })
         }
     })
@@ -147,5 +146,5 @@ fastify.listen({
     port
 }, (err, address) => {
     if (err) throw err;
-    console.log(`Listening on ${address}`)
+    console.log({ level: 'info', message: `Listening on ${address}` })
 })

@@ -6,8 +6,8 @@ Description="futureporn commander"
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/env node /root/futureporn/commander/index.js
-WorkingDirectory=/root/futureporn/commander
+ExecStart=/usr/bin/env yarn node index
+WorkingDirectory=/home/futureporn/futureporn/packages/commander
 Type=simple
 Restart=always
 RestartSec=5

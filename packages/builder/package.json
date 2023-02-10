@@ -41,7 +41,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build": "yarn exec webpack --mode=production && npm run build:site",
-    "build:site": "yarn bin @11ty/eleventy --config ./.eleventy.cjs",
+    "build:site": "yarn dlx @11ty/eleventy --config ./.eleventy.cjs",
     "dev:serve": "yarn dlx @11ty/eleventy --config ./.eleventy.cjs --serve"
   },
   "type": "commonjs"
