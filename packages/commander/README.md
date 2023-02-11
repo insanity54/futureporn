@@ -21,7 +21,7 @@ All messages include
 
   * sender    {String} cuid
   * timestamp {Number} ms since epoch
-
+  * topic     {String} topic relating to the payload. example: "capture/vod/upload"
 
 
 ### Scout
