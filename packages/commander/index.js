@@ -88,7 +88,7 @@ fastify.after(() => {
         method: 'GET',
         url: '/command',
         handler: async(req, reply) => {
-            console.log({ level: 'debug', message: 'a commander has logged in'})
+            logger.log({ level: 'debug', message: 'a commander has logged in'})
             return reply.render("command.njk", { 
                 mqttPassword,
                 mqttUsername
@@ -101,8 +101,8 @@ fastify.after(() => {
         url: '/',
         handler: async(req, reply) => {
             const vods = await sql`SELECT * from vod`
-            console.log({ level: 'debug', message: '>>'})
-            console.log({ level: 'debug', message: adverts})
+            logger.log({ level: 'debug', message: '>>'})
+            logger.log({ level: 'debug', message: adverts})
             return reply.render("index.njk", { vods, adverts })
         }
     })
@@ -112,9 +112,10 @@ fastify.after(() => {
         url: '/api/scout/stream/stop',
         handler: async(req, reply) => {
             const payload = {
-                date: new Date().valueOf()
+                date: new Date().valueOf(),
+                topic: 'scout/stream/stop'
             }
-            await sql.notify('scout/stream/stop', JSON.stringify(payload))
+            await sql.notify('futureporn', JSON.stringify(payload))
             return 'OK'
         }
     })
@@ -126,9 +127,10 @@ fastify.after(() => {
             const [{id}] = await sql`SELECT id FROM vod WHERE "captureDate" IS NOT NULL ORDER BY "captureDate" DESC LIMIT 1`
             const payload = {
                 date: new Date().valueOf(),
+                topic: 'capture/vod/upload',
                 id
             }
-            await sql.notify('capture/vod/upload', JSON.stringify(payload))
+            await sql.notify('futureporn', JSON.stringify(payload))
             return 'OK'
         }
     })
@@ -146,5 +148,5 @@ fastify.listen({
     port
 }, (err, address) => {
     if (err) throw err;
-    console.log({ level: 'info', message: `Listening on ${address}` })
+    logger.log({ level: 'info', message: `Listening on ${address}:${port}` })
 })
