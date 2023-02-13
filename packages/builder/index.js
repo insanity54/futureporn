@@ -9,12 +9,14 @@ if (typeof process.env.POSTGRES_PASSWORD === 'undefined') throw new Error('POSTG
 if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env');
 // if (typeof process.env.GITHUB_DEPLOY_KEY === 'undefined') throw new Error('GITHUB_DEPLOY_KEY is undefined in env');
 
-(async () => {
+let logger
+
+async function setupLogger () {
   const { loggerFactory } = await import('common/logger')
-  const logger = loggerFactory({
+  logger = loggerFactory({
     service: 'futureporn/builder'
   })
-})()
+}
 
 
 const buildQueue = queueFactory.promise(worker, 1)
@@ -26,10 +28,10 @@ const sql = postgres({
 })
 
 
+
 async function worker (id) {
   
-  logger.log('  [*] worker got invoked!')
-  logger.log(id)
+  logger.log({ level: 'info', message: ` worker got invoked! id:${id}` })
 
   // // query db for capture data
   // const captureData = await sql`
@@ -120,23 +122,36 @@ async function worker (id) {
 
 
 async function buildSite() {
+  logger.log({ level: 'info', message: 'Building the site' })
   let options = {
     configPath: './.eleventy.cjs'
   }
   let elev = new Eleventy('./website', './_site', options);
-  await elev.write();
+
+  try {
+    await elev.write();
+  } catch (e) {
+    logger.log({ level: 'error', message: e })
+  }
+
+  logger.log({ level: 'info', message: '11ty build successful' })
+
 }
 
 
-function main() {
+async function main() {
+  await setupLogger()
+  logger.log({ level: 'info', message: 'it works'})
+
   sql.listen('futureporn', async (data) => {
-    logger({ level: 'info', message: `received notification on futureporn channel` })
+    logger.log({ level: 'info', message: `received notification on futureporn channel` })
 
-    const { id, date, channel } = JSON.parse(data)
+    const { id, date, topic } = JSON.parse(data)
 
-    if (channel === 'capture/vod/upload') {
-      logger({ level: 'info', message: `futureporn/capture said it just uploaded vod ${id}` })
-      buildQueue.push(id)
+    if (topic === 'capture/vod/upload') {
+      logger.log({ level: 'info', message: `futureporn/capture said it just uploaded vod ${id}` })
+      await buildQueue.push(id)
+      logger.log({ level: 'info', message: `build process complete.` })
     }
   })
 }

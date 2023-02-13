@@ -11,3 +11,10 @@
   ansible.builtin.systemd:
     name: postgresql
     state: reloaded
+
+
+- name: reload caddy
+  ansible.builtin.systemd:
+    name: caddy
+    state: reloaded
+    daemon_reload: yes

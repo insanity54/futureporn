@@ -21,7 +21,7 @@ eleventyExcludeFromCollections: true
     <link href="{{ absolutePostUrl }}"/>
     <updated>{{ vod.date | dateToRfc3339 }}</updated>
     <id>{{ absolutePostUrl }}</id>
-    <content type="text/plain">{% buildIpfsUrl vod.data.videoSrcHash %}</content>
+    <content type="text/plain">{{ vod.data.videoSrcHash | buildIpfsUrl }}</content>
   </entry>
   <hr />
   {%- endfor %}

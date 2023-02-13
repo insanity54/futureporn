@@ -16,9 +16,14 @@
     <meta property="og:image" content="{{ metadata.url }}favicon.ico" />
     <meta property="og:description" content="{{ metadata.description }}" />
     <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
-    <link rel="stylesheet" href="{% webpackAsset 'base.css' %}">
+    {# <link rel="stylesheet" href="{% webpackAsset 'base.css' %}"> #}
+    <link rel="stylesheet" href="/@includes/styles/base.scss">
+
+
+
     <link rel="canonical" href="{{ metadata.url }}">
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
+
     <title>{{ metadata.title }}</title>
     {% endblock %}
   </head>
@@ -119,8 +124,12 @@
   </div>
   {% endblock %}
 
+    {# {% clientOnlyIsland 'Base.vue' %}{% endclientOnlyIsland %} #}
+
     {% block scripts %}
-    <script src="{% webpackAsset 'base.js' %}"></script>
+
+    <script src="/@includes/js/base.js"></script>
+    <script src="/@root/node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
     <script data-goatcounter="https://futureporn.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
     {% endblock %}

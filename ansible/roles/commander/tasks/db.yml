@@ -39,27 +39,64 @@
   notify:
     - reload postgresql
 
-# - name: Grant ALL privs on postgres to futureporn user
-#   community.postgresql.postgresql_privs:
-#     db: postgres
-#     privs: ALL
-#     type: database
-#     role: futureporn
+- name: Grant ALL privs on postgres to futureporn user
+  community.postgresql.postgresql_privs:
+    db: postgres
+    privs: ALL
+    type: database
+    role: futureporn
+  become: yes
+  become_user: postgres
+  notify:
+    - reload postgresql
+
+- name: Grant ALL privs on futureporn to futureporn user
+  community.postgresql.postgresql_privs:
+    db: futureporn
+    privs: ALL
+    type: database
+    role: futureporn
+  become: yes
+  become_user: postgres
+  notify:
+    - reload postgresql
+
+
+
+- name: listen on all interfaces
+  community.postgresql.postgresql_set:
+    name: listen_addresses
+    value: '*'
+  register: set
+  become: yes
+  become_user: postgres
+  notify:
+    - reload postgresql
+
+
+# it's probably better to restore db from backup rather than create tables & columns
+
+# - name: Create vod table
+#   community.postgresql.postgresql_table:
+#     db: futureporn
+#     name: vod
+#     owner: futureporn
 #   become: yes
 #   become_user: postgres
 #   notify:
 #     - reload postgresql
 
-# - name: Grant ALL privs on futureporn to futureporn user
-#   community.postgresql.postgresql_privs:
+
+# - name: Create tweet table
+#   community.postgresql.postgresql_table:
 #     db: futureporn
-#     privs: ALL
-#     type: database
-#     role: futureporn
+#     name: tweet
+#     owner: futureporn
 #   become: yes
 #   become_user: postgres
 #   notify:
 #     - reload postgresql
+
 
 - name: ensure postgres is running
   systemd:

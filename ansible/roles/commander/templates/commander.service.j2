@@ -11,9 +11,10 @@ WorkingDirectory=/home/futureporn/futureporn/packages/commander
 Type=simple
 Restart=always
 RestartSec=5
-Environment=AEDES_HOST={{ lookup('env', 'AEDES_HOST') }}
-Environment=AEDES_PASSWORD={{ lookup('env', 'AEDES_PASSWORD') }}
-Environment=AEDES_USERNAME={{ lookup('env', 'AEDES_USERNAME') }}
+Environment=POSTGRES_HOST=localhost
+Environment=POSTGRES_PASSWORD={{ lookup('env', 'POSTGRES_PASSWORD') }}
+Environment=POSTGRES_USERNAME={{ lookup('env', 'POSTGRES_USERNAME') }}
 Environment=FUTUREPORN_WORKDIR={{ lookup('env', 'FUTUREPORN_WORKDIR') }}
 Environment=COMMANDER_USERNAME={{ lookup('env', 'COMMANDER_USERNAME') }}
 Environment=COMMANDER_PASSWORD={{ lookup('env', 'COMMANDER_PASSWORD') }}
+Environment=PORT=8080

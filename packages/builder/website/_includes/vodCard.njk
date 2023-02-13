@@ -2,47 +2,35 @@
 {# {% set imageUrl =  %} #}
 {# {% set imageData = await EleventyFetch(imageUrl).then(r => r.buffer()) %} #}
 
-{# {{ vod.data.thiccHash }} #}
+{{ vod.data.thiccHash }}
 <div class="column is-half-mobile is-one-third-tablet is-one-fifth-desktop">
   <div class="card">
     <div class="card-image">
-      <a href="{{ vod.url | url }}">
+      <a href="/vods/{{ vod.date | safeDate | url }}">
         <figure class="image is-16by9">
-          <picture>
-            <source 
-              type="image/avif" 
-              srcset="/favicon.png"
-              sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px"
-            >
-            <img 
-              class="image" 
-              alt="" 
-              loading="lazy" 
-              decoding="async" 
-              onerror="this.style.display='none'" 
-              src="/favicon.png"
-              width="64" 
-              height="65"
-            >
-          </picture>
-
+          {% set url = vod.thiccHash | buildIpfsUrl %}
+          {% image url, vod.announceTitle if vod.announceTitle or vod.title %}
         </figure>
       </a>
+      {# 
+        {% if vod.thiccHash %}
+          {{ vod.thiccHash | buildIpfsUrl }} 
+          {% getFigureHtml vod.thiccHash | buildIpfsUrl, vod.announceTitle or vod.title %}
+        {% endif %} 
+      #}
     </div>
-      <div class="card-content">
-        {# <p>imageUrl:{% buildIpfsUrl vod.data.thiccHash %}</p> #}
-        <a href="{{ vod.url | url }}">
-          <h3 class="heading">{{ vod.data.date | htmlDateString }}</h3>
-          <p class="description is-size-7">
-            {% if vod.data.announceTitle %}
-              {{ vod.data.announceTitle | urlDecode }}
-            {% elseif vod.data.title %}
-              {{ vod.data.title | urlDecode }}
-            {% endif %}
-          </p>
-        </a>
-      </div>
-    <div>
+    <div class="card-content">
+      <a href="{{ vod.url | url }}">
+        <h3 class="heading">{{ vod.title or vod.announceTitle }}</h3>
+        <h4 class="heading">DATE: {{ vod.date | htmlDateString }}</h3>
+        <p class="description is-size-7">
+          {% if vod.data.announceTitle %}
+            {{ vod.data.announceTitle | urlDecode }}
+          {% elseif vod.data.title %}
+            {{ vod.data.title | urlDecode }}
+          {% endif %}
+        </p>
+      </a>
     </div>
   </div>
 </div>
