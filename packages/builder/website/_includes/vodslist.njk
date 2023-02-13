@@ -24,7 +24,7 @@
             <td><a href="{{ vod.url | url }}">{{ vod.data.date | htmlDateString }}</a></td>
             <td>
               {% if vod.data.videoSrcHash %}
-                <a target="_blank" href="{% buildIpfsUrl vod.data.videoSrcHash %}">
+                <a target="_blank" href="{{ vod.data.videoSrcHash | buildIpfsUrl}}">
                     <span>
                       <i class="fas fa-video"></i>
                     </span>
@@ -35,48 +35,10 @@
               {% endif %}
             </td>
 
-            {#<td>
-              {% if vod.data.video720Hash %}
-                <a target="_blank" href="{% buildIpfsUrl vod.data.video720Hash %}">
-                    <span>
-                      <i class="fas fa-video"></i>
-                    </span>
-                    <span class="icon">
-                      <i class="fas fa-external-link-alt"></i>
-                    </span>
-                </a>
-              {% endif %}
-            </td>#}
-
-            {#<td>
-              {% if vod.data.video480Hash %}
-                <a target="_blank" href="{% buildIpfsUrl vod.data.video480Hash %}">
-                    <span>
-                      <i class="fas fa-video"></i>
-                    </span>
-                    <span class="icon">
-                      <i class="fas fa-external-link-alt"></i>
-                    </span>
-                </a>
-              {% endif %}
-            </td>#}
-
-            {#<td>
-              {% if vod.data.video360Hash %}
-                <a target="_blank" href="{% buildIpfsUrl vod.data.video360Hash %}">
-                    <span>
-                      <i class="fas fa-video"></i>
-                    </span>
-                    <span class="icon">
-                      <i class="fas fa-external-link-alt"></i>
-                    </span>
-                </a>
-              {% endif %}
-            </td>#}
 
             <td>
               {% if vod.data.video240Hash %}
-                <a target="_blank" href="{% buildIpfsUrl vod.data.video240Hash %}">
+                <a target="_blank" href="{{ vod.data.video240Hash | buildIpfsUrl}}">
                     <span>
                       <i class="fas fa-video"></i>
                     </span>
@@ -87,22 +49,10 @@
               {% endif %}
             </td>
 
-            {#<td>
-              {% if vod.data.audioSrcHash %}
-                <a target="_blank" href="{% buildIpfsUrl vod.data.audioSrcHash %}">
-                    <span>
-                      <i class="fas fa-file-audio"></i>
-                    </span>
-                    <span class="icon">
-                      <i class="fas fa-external-link-alt"></i>
-                    </span>
-                </a>
-              {% endif %}
-            </td>#}
 
             <td>
               {% if vod.data.thiccHash %}
-                <a target="_blank" href="{% buildIpfsUrl vod.data.thiccHash %}">
+                <a target="_blank" href="{{ vod.data.thiccHash | buildIpfsUrl }}">
                   <span class="icon">
                     <i class="fas fa-image"></i>
                   </span>

@@ -16,12 +16,13 @@ eleventyComputed:
 permalink: /tags/{{ tag }}/
 ---
 
+
 <div class="content box">
   <h1>Tagged “{{ tag }}”</h1>
 
-{% set vodslist = collections[ tag ] %}
-{% include "vodslist.njk" %}
+  {% set vodslist = collections[ tag ] %}
+  {% include "vodslist.njk" %}
 
-<p>See <a href="{{ '/tags/' | url }}">all tags</a>.</p>
+  <p>See <a href="{{ '/tags/' | url }}">all tags</a>.</p>
 
 </div>

@@ -5,18 +5,83 @@ const pluginRss = require("@11ty/eleventy-plugin-rss");
 const pluginNavigation = require("@11ty/eleventy-navigation");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
-const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
+const { EleventyRenderPlugin } = require("@11ty/eleventy");
+const slinkity = require('slinkity')
+const dbData = require('./website/_data/db.cjs')
+const { format, utcToZonedTime, } = require('date-fns-tz');
+const Image = require("@11ty/eleventy-img");
+
+
+// const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
+// const EleventyVitePlugin = require("@11ty/eleventy-plugin-vite");
+
+
+
 // const sharpPlugin = require('eleventy-plugin-sharp');
 
 const isDev = process.env.NODE_ENV === "development";
 
 
+async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
+  let options = {
+    outputDir: './_site/img',
+    widths: widths,
+    formats: ['jpeg', 'avif'],
+    concurrency: 1,
+    cacheOptions: { 
+      directory: '.cache',
+      duration: "*"
+    }
+  };
+  // let isCid = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/.test(src)
+  // let url = isCid ? buildIpfsUrl(src) : src
+  let imageAttributes = {
+    class: cls,
+    alt,
+    sizes,
+    loading: "lazy",
+    decoding: "async",
+    onerror: "this.style.display='none'" // avoid ugly border
+  };
+  try {
+    console.log(`  [*] Downloading ${src}`)
+    let metadata = await Image(src, options);
+    return Image.generateHTML(metadata, imageAttributes)
+  } catch (e) {
+    console.error('We got an Image fetch error. Defaulting to Melface')
+    console.error(e);
+    let metadata = await Image('./website/favicon/favicon.png', options);
+    return Image.generateHTML(metadata, imageAttributes)
+  }
+}
+
+async function figureHtml(src, alt) {
+  let stats = await Image(src, {
+    widths: [64, 128, 512],
+    formats: ["avif", "png"],
+    urlPath: "/img/gen/",
+    outputDir: "./website/img/gen/",
+    cacheOptions: {
+      duration: '*'
+    }
+  });
+
+  return Image.generateHTML(stats, {
+    class: 'image',
+    alt: alt,
+    sizes: ["(max-width: 768px)", "(max-width: 769px)", "(max-width: 1024px)"],
+    decoding: "async",
+    loading: "lazy",
+  });
+}
+
+
 // const Image = require("@11ty/eleventy-img");
 // Image.concurrency = 1;
 
-const manifest = JSON.parse(
-  fs.readFileSync(manifestPath, { encoding: "utf8" })
-);
+// const manifest = JSON.parse(
+//   fs.readFileSync(manifestPath, { encoding: "utf8" })
+// );
 
 // https://stackoverflow.com/a/1527820/1004931
 function getRandomInt(min, max) {
@@ -28,7 +93,8 @@ function getRandomInt(min, max) {
 const filterIpfsCompleted = (vods) => {
   let golo = [];
   for (const vod of vods) {
-    if (vod.data.videoSrcHash !== null) golo.push(vod.data.videoSrcHash)
+    console.log(vod)
+    if (vod.videoSrcHash !== null) golo.push(vod.videoSrcHash)
   }
   return golo.length;
 }
@@ -42,9 +108,6 @@ const filterB2Completed = (vods) => {
 }
 
 
-function buildIpfsUrl(urlFragment) {
-  return `https://ipfs.io/ipfs/${urlFragment}`;
-}
 
 
 // function imageShortcode(
@@ -124,9 +187,24 @@ function buildIpfsUrl(urlFragment) {
 
 module.exports = function(eleventyConfig) {
 
+  // eleventyConfig.addCollection('vods', function (collection) {
+  //   // get unsorted items
+  //   return collection
+  //     .getFilteredByTag("vod")
+  //     .sort((a, b) => {
+  //       console.log(`>>>subtracting ${a.date} minus ${b.date}`)
+  //       return a.date - b.date
+  //     })
+  // })
 
   eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
   eleventyConfig.addPassthroughCopy({ "website/assets/img": "/img" });
+  // eleventyConfig.addPassthroughCopy({
+  //     "website/assts/img/gen/*.avif": "/img/gen"
+  // });
+  // eleventyConfig.addPassthroughCopy({
+  //     "website/assts/img/gen/*.png": "/img/gen"
+  // });
 
   // eleventyConfig.addPlugin(imageDownloader);
   // eleventyConfig.addPlugin(sharpPlugin({
@@ -142,7 +220,7 @@ module.exports = function(eleventyConfig) {
   // eleventyConfig.addLayoutAlias("base", "_includes/layouts/base.njk");
 
 
-  eleventyConfig.addShortcode("buildIpfsUrl", buildIpfsUrl);
+  
 
   eleventyConfig.addShortcode("randomIpfsPeername", function () {
     return `futureporn-peer-${getRandomInt(699,6969)}`
@@ -169,22 +247,33 @@ module.exports = function(eleventyConfig) {
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
 
-  // Adds a universal shortcode to return the URL to a webpack asset. In Nunjack templates:
-  // {% webpackAsset 'main.js' %} or {% webpackAsset 'main.css' %}
-  eleventyConfig.addShortcode("webpackAsset", function(name) {
-    if (!manifest[name]) {
-      throw new Error(`The asset ${name} does not exist in ${manifestPath}`);
-    }
-    return manifest[name];
-  });
+  // // Adds a universal shortcode to return the URL to a webpack asset. In Nunjack templates:
+  // // {% webpackAsset 'main.js' %} or {% webpackAsset 'main.css' %}
+  // eleventyConfig.addShortcode("webpackAsset", function(name) {
+  //   if (!manifest[name]) {
+  //     throw new Error(`The asset ${name} does not exist in ${manifestPath}`);
+  //   }
+  //   return manifest[name];
+  // });
 
+  eleventyConfig.addFilter('safeDate', (text) => {
+    const date = utcToZonedTime(text, 'UTC');
+    const formattedDate = format(date, "yyyyMMdd'T'HHmmss'Z'", { timezone: 'UTC' });
+    return formattedDate;
+  })
+
+  eleventyConfig.addFilter("buildIpfsUrl", urlFragment => {
+    return `https://ipfs.io/ipfs/${urlFragment}`
+  });
 
   eleventyConfig.addFilter("stripQueryString", text => {
     return text.split(/[?#]/)[0];
   });
   eleventyConfig.addAsyncFilter("urlDecode", async (text) => {
-    const duc = await import('decode-uri-component');
-    return duc.default(text);
+    console.warn(`Eyy bro, something is calling urlDecode and that's not cool anymore`)
+    return text
+    // const duc = await import('decode-uri-component');
+    // return duc.default(text);
   });
   eleventyConfig.addFilter("readableDate", dateObj => {
     return DateTime.fromJSDate(dateObj, {zone: 'utc'}).toFormat("dd LLL yyyy");
@@ -212,6 +301,15 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter("min", (...numbers) => {
     return Math.min.apply(null, numbers);
+  });
+
+  eleventyConfig.addNunjucksAsyncShortcode("getFigureHtml", figureHtml);
+  eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
+  eleventyConfig.addPassthroughCopy({
+      "./website/img/gen/*.avif": "/img/gen"
+  });
+  eleventyConfig.addPassthroughCopy({
+      "./website/img/gen/*.png": "/img/gen"
   });
 
   eleventyConfig.addCollection("tagList", function(collection) {
@@ -273,15 +371,22 @@ module.exports = function(eleventyConfig) {
     ghostMode: false
   });
 
-  
+  eleventyConfig.addPlugin(EleventyRenderPlugin);
+
+  // eleventyConfig.addPlugin(EleventyVitePlugin);
+  eleventyConfig.addPlugin(
+    slinkity.plugin, 
+    slinkity.defineConfig({
+      // renderers: [vue()], // too many errors! Maybe revisit when slinkity is more mature
+    })
+  )
 
 
   return {
     templateFormats: [
       "md",
       "njk",
-      "html",
-      "liquid"
+      "html"
     ],
 
     // If your site lives in a different subdirectory, change this.

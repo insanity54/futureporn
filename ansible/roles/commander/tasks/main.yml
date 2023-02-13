@@ -1,6 +1,8 @@
 ---
 
 
+- include_tasks: ./ufw.yml
 - include_tasks: ./user.yml
 - include_tasks: ./db.yml
+- include_tasks: ./caddy.yml
 - include_tasks: ./commander.yml

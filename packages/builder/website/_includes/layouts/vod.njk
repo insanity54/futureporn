@@ -2,36 +2,36 @@
 
 {% block head %}
   {{ super() }}
-  <link rel="stylesheet" href="{% webpackAsset 'player.css' %}">
+  <link rel="stylesheet" href="/@includes/styles/player.scss">
 {% endblock %}
 
 
 {% block content %}
 <div class="container">
-
+ 
   <div class="block">
-    <video id="player" style="--plyr-color-main:#353fff;" controls data-poster="{% buildIpfsUrl thiccHash if thiccHash else '' %}">
+    <video id="player" style="--plyr-color-main:#353fff;" controls data-poster="{{ vod.thiccHash | buildIpfsUrl }}">
       {# we originally called it videoHash, but then we switched to videoSrcHash #}
-      {%- if videoSrcHash %}
-        <source src="{% buildIpfsUrl videoSrcHash %}" size="1080" type="video/mp4">
+      {%- if vod.videoSrcHash %}
+        <source src="{{ vod.videoSrcHash | buildIpfsUrl }}" size="1080" type="video/mp4">
       {% else %}
-        <source src="{% buildIpfsUrl videoHash %}" size="1080" type="video/mp4">
+        <source src="{{ vod.videoHash | buildIpfsUrl }}" size="1080" type="video/mp4">
       {% endif %}
 
-      {%- if video720Hash %}
-        <source src="{% buildIpfsUrl video720Hash %}" size="720" type="video/mp4">
+      {%- if vod.video720Hash %}
+        <source src="{{ vod.video720Hash | buildIpfsUrl }}" size="720" type="video/mp4">
       {% endif %}
 
-      {%- if video480Hash %}
-        <source src="{% buildIpfsUrl video480Hash %}" size="480" type="video/mp4">
+      {%- if vod.video480Hash %}
+        <source src="{{ vod.video480Hash | buildIpfsUrl }}" size="480" type="video/mp4">
       {% endif %}
 
-      {%- if video360Hash %}
-        <source src="{% buildIpfsUrl video360Hash %}" size="360" type="video/mp4">
+      {%- if vod.video360Hash %}
+        <source src="{{ vod.video360Hash | buildIpfsUrl }}" size="360" type="video/mp4">
       {% endif %}
 
-      {%- if video240Hash %}
-        <source src="{% buildIpfsUrl video240Hash %}" size="240" type="video/mp4">
+      {%- if vod.video240Hash %}
+        <source src="{{ vod.video240Hash | buildIpfsUrl }}" size="240" type="video/mp4">
       {% endif %}
     </video>
   </div>
@@ -43,35 +43,37 @@
     <div class="box">
 
       <h2 class="subtitle">
-        {%- if announceTitle %}
-        {{ announceTitle | urlDecode }}
-        {% elif title %}
-        {{ title | urlDecode }}
-        {% elif date %}
-        {{ date }}
+        {%- if vod.announceTitle %}
+        {{ vod.announceTitle }}
+        {% elif vod.title %}
+        {{ vod.title }}
+        {% endif %}
+        
+        {% if vod.date %}
+          <span>--- {{ vod.date | readableDate }}</span>
         {% endif %}
       </h2>
 
       <h2 class="heading">Download Links</h2>
 
       <ul class="mb-5">
-      {%- if videoSrcHash %}
-      <li><span>Source: <a href="{% buildIpfsUrl videoSrcHash %}">{% buildIpfsUrl videoSrcHash %}</a></span></li>
+      {%- if vod.videoSrcHash %}
+      <li><span>Source: <a href="{{ vod.videoSrcHash | buildIpfsUrl }}">{{ vod.videoSrcHash | buildIpfsUrl }}</a></span></li>
       {% else %}
-      <li><span>Source: <a href="{% buildIpfsUrl videoHash %}">{% buildIpfsUrl videoHash %}</a></span></li>
+      <li><span>Source: <a href="{{ vod.videoHash | buildIpfsUrl }}">{{ vod.videoHash | buildIpfsUrl }}</a></span></li>
       {% endif %}
 
-      {%- if video720Hash %}
-      <li><span>720p: <a href="{% buildIpfsUrl video720Hash %}">{% buildIpfsUrl video720Hash %}</a></span></li>
+      {%- if vod.video720Hash %}
+      <li><span>720p: <a href="{{ vod.video720Hash | buildIpfsUrl }}">{{ vod.video720Hash | buildIpfsUrl }}</a></span></li>
       {% endif %}
-      {%- if video480Hash %}
-      <li><span>480p: <a href="{% buildIpfsUrl video480Hash %}">{% buildIpfsUrl video480Hash %}</a></span></li>
+      {%- if vod.video480Hash %}
+      <li><span>480p: <a href="{{ vod.video480Hash | buildIpfsUrl }}">{{ vod.video480Hash | buildIpfsUrl }}</a></span></li>
       {% endif %}
-      {%- if video360Hash %}
-      <li><span>360p: <a href="{% buildIpfsUrl video360Hash %}">{% buildIpfsUrl video360Hash %}</a></span></li>
+      {%- if vod.video360Hash %}
+      <li><span>360p: <a href="{{ vod.video360Hash | buildIpfsUrl }}">{{ vod.video360Hash | buildIpfsUrl }}</a></span></li>
       {% endif %}
-      {%- if video240Hash %}
-      <li><span>240p: <a href="{% buildIpfsUrl video240Hash %}">{% buildIpfsUrl video240Hash %}</a></span></li>
+      {%- if vod.video240Hash %}
+      <li><span>240p: <a href="{{ vod.video240Hash | buildIpfsUrl }}">{{ vod.video240Hash | buildIpfsUrl }}</a></span></li>
       {% endif %}
       </ul>
 
@@ -79,30 +81,42 @@
       <h2 class="heading">IPFS Content IDs</h2>
 
       <ul class="mb-5">
-        {%- if videoSrcHash %}
-          <li><span>Source: <span class="tag">{{ videoSrcHash | stripQueryString }}</span></span></li>
+        {%- if vod.videoSrcHash %}
+          <li><span>Source: <span class="tag">{{ vod.videoSrcHash | stripQueryString }}</span></span></li>
         {% endif %}
-        {%- if video720Hash %}
-          <li><span>Source: <span class="tag">{{ video720Hash | stripQueryString }}</span></span></li>
+        {%- if vod.video720Hash %}
+          <li><span>Source: <span class="tag">{{ vod.video720Hash | stripQueryString }}</span></span></li>
         {% endif %}
-        {%- if video480Hash %}
-          <li><span>Source: <span class="tag">{{ video480Hash | stripQueryString }}</span></span></li>
+        {%- if vod.video480Hash %}
+          <li><span>Source: <span class="tag">{{ vod.video480Hash | stripQueryString }}</span></span></li>
         {% endif %}
-        {%- if video360Hash %}
-          <li><span>Source: <span class="tag">{{ video360Hash | stripQueryString }}</span></span></li>
+        {%- if vod.video360Hash %}
+          <li><span>Source: <span class="tag">{{ vod.video360Hash | stripQueryString }}</span></span></li>
         {% endif %}
-        {%- if video240Hash %}
-          <li><span>240p: <span class="tag">{{ video240Hash | stripQueryString }}</span></span></li>
+        {%- if vod.video240Hash %}
+          <li><span>240p: <span class="tag">{{ vod.video240Hash | stripQueryString }}</span></span></li>
         {% endif %}
       </ul>
 
 
-      {%- if announceUrl %}
+      {%- if vod.announceUrl %}
         <div class="mb-5">
           <h2 class="mt-3 heading">Stream Annoucement URL</h2>
-          <a href="{{ announceUrl }}">{{ announceUrl }}</a>
+          <a href="{{ vod.announceUrl }}">{{ vod.announceUrl }}</a>
         </div>
       {% endif %}
+
+      {# 
+        tags coming soon
+        {%- if vod.tags %}
+        <div class="mb-5">
+          <h2 class="mt-3 heading">Tags</h2>
+          {%- for tag in vod.tags %}
+            <a href="/tags/{{ tag }}">{{ tag }}</a>
+          {% endfor -%}
+        </div>
+      {% endif %} #}
+
 
       {%- if note %}
         <div class="mb-3">
@@ -113,32 +127,22 @@
 
       <hr>
         
-      <ul>
-        {%- set nextVod = collections.vods | getNextCollectionItem(page) %}
-        {%- if nextVod %}
-          <li>Next VOD: 
-            <a href="{{ nextVod.url | url }}">
-            {%- if nextVod.data.announceTitle %}
-              {{ nextVod.data.announceTitle | urlDecode }}
-            {%- elif nextVod.data.title %}
-              {{ nextVod.data.title | urlDecode }}
-            {%- endif %}
-            </a>
-          </li>
-        {%- endif %}
-        {%- set previousVod = collections.vods | getPreviousCollectionItem(page) %}
-        {%- if previousVod %}
-          <li>Previous VOD: 
-            <a href="{{ previousVod.url | url }}">
-              {%- if previousVod.data.announceTitle %}
-                {{ previousVod.data.announceTitle | urlDecode }}
-              {%- elif previousVod.data.title %}
-                {{ previousVod.data.title | urlDecode }}
-              {%- endif %}
-            </a>
-          </li>
-        {%- endif %}
-      </ul>
+      <div class="level">
+        {% if pagination.href.previous %}
+          <p>Prev Vod:
+          <a 
+          href="{{ pagination.href.previous }}">{{ pagination.page.previous.title or pagination.page.next.announceTitle }}</a>
+          </p>
+        {% endif %}
+        {% if pagination.href.next %}
+          <p>Next Vod:
+          <a 
+          href="{{ pagination.href.next }}">{{ pagination.page.next.title or pagination.page.next.announceTitle }}
+          </a>
+          </p>
+        {% endif %}
+
+      </div>
     </div>
   </div>
 </div>
@@ -150,7 +154,10 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="{% webpackAsset 'player.js' %}"></script>
+  <script src="/@root/node_modules/plyr/dist/plyr.min.js"></script>
+  <script>
+    new Plyr('#player');
+  </script>
 {% endblock %}
 
 

@@ -1,0 +1,13 @@
+---
+---
+
+<h1>Vods</h1>
+
+
+<p>db.vods:({{ db.vods.length }})</p>
+
+<ol>
+  {%- for vod in db.vods %}
+    <li><a href="/vods/{{ vod.date|safeDate }}">idk ({{vod.date}})</a></li>
+  {% endfor -%}
+</ol>
