@@ -3752,6 +3752,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["markdown-it-anchor", "virtual:e23e599982366cf9938fd39adbbcc214d6d75e139b06b285ba74cb608271b1859a61d55d5b151826b5ea178501fe8f8fbdbe3f7605adbccacd5b1c7e6246584c#npm:8.6.6"],\
             ["mini-css-extract-plugin", "virtual:e23e599982366cf9938fd39adbbcc214d6d75e139b06b285ba74cb608271b1859a61d55d5b151826b5ea178501fe8f8fbdbe3f7605adbccacd5b1c7e6246584c#npm:2.7.2"],\
             ["nodemon", "npm:2.0.20"],\
+            ["please-upgrade-node", "npm:3.2.0"],\
             ["plyr", "npm:3.7.3"],\
             ["postgres", "npm:3.3.3"],\
             ["purgecss-webpack-plugin", "virtual:e23e599982366cf9938fd39adbbcc214d6d75e139b06b285ba74cb608271b1859a61d55d5b151826b5ea178501fe8f8fbdbe3f7605adbccacd5b1c7e6246584c#npm:5.0.0"],\
