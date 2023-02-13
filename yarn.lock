@@ -3180,6 +3180,7 @@ __metadata:
     markdown-it-anchor: ^8.6.6
     mini-css-extract-plugin: ^2.7.2
     nodemon: ^2.0.20
+    please-upgrade-node: ^3.2.0
     plyr: ^3.7.3
     postgres: ^3.3.3
     purgecss-webpack-plugin: ^5.0.0
