@@ -1,0 +1,2 @@
+(()=>{"use strict";document.addEventListener("DOMContentLoaded",(function(){Array.prototype.slice.call(document.querySelectorAll(".navbar-burger"),0).forEach((function(t){t.addEventListener("click",(function(){var e=t.dataset.target,c=document.getElementById(e);t.classList.toggle("is-active"),c.classList.toggle("is-active")}))}))}))})();
+//# sourceMappingURL=base.js.map
