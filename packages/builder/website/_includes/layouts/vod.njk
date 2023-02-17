@@ -42,17 +42,17 @@
 
     <div class="box">
 
-      <h2 class="subtitle">
+      <h2 class="subtitle mb-0">
         {%- if vod.announceTitle %}
         {{ vod.announceTitle }}
         {% elif vod.title %}
         {{ vod.title }}
         {% endif %}
         
-        {% if vod.date %}
-          <span>--- {{ vod.date | readableDate }}</span>
-        {% endif %}
       </h2>
+        {% if vod.date %}
+          <p class="mt-0 mb-5">{{ vod.date | readableDate }}</p>
+        {% endif %}
 
       <h2 class="heading">Download Links</h2>
 
@@ -131,7 +131,7 @@
         {% if pagination.href.previous %}
           <p>Prev Vod:
           <a 
-          href="{{ pagination.href.previous }}">{{ pagination.page.previous.title or pagination.page.next.announceTitle }}</a>
+          href="{{ pagination.href.previous }}">{{ pagination.page.previous.title or pagination.page.previous.announceTitle }}</a>
           </p>
         {% endif %}
         {% if pagination.href.next %}
