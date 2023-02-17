@@ -1,90 +1,86 @@
 
+<table class="table">
+  <thead>
+      <tr>
+        <th>Date</th>
+        <th>Source VOD</th>
+        {#<th>Video (720p)</th>#}
+        {#<th>Video (480p)</th>#}
+        {#<th>Video (360p)</th>#}
+        <th>240p VOD</th>
+        {#<th>Audio Only</th>#}
+        <th>Thumbnail</th>
+        <th>Title</th>
+        <th>Annouce URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vod in vodslist %}
+      <tr>
+        <td><a href="{{ vod.url | url }}">{{ vod.data.date | htmlDateString }}</a></td>
+        <td>
+          {% if vod.data.videoSrcHash %}
+            <a target="_blank" href="{{ vod.data.videoSrcHash | buildIpfsUrl}}">
+                <span>
+                  <i class="fas fa-video"></i>
+                </span>
+                <span class="icon">
+                  <i class="fas fa-external-link-alt"></i>
+                </span>
+            </a>
+          {% endif %}
+        </td>
 
 
+        <td>
+          {% if vod.data.video240Hash %}
+            <a target="_blank" href="{{ vod.data.video240Hash | buildIpfsUrl}}">
+                <span>
+                  <i class="fas fa-video"></i>
+                </span>
+                <span class="icon">
+                  <i class="fas fa-external-link-alt"></i>
+                </span>
+            </a>
+          {% endif %}
+        </td>
 
 
-    <table class="table">
-      <thead>
-          <tr>
-            <th>Date</th>
-            <th>Source VOD</th>
-            {#<th>Video (720p)</th>#}
-            {#<th>Video (480p)</th>#}
-            {#<th>Video (360p)</th>#}
-            <th>240p VOD</th>
-            {#<th>Audio Only</th>#}
-            <th>Thumbnail</th>
-            <th>Title</th>
-            <th>Annouce URL</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for vod in vodslist %}
-          <tr>
-            <td><a href="{{ vod.url | url }}">{{ vod.data.date | htmlDateString }}</a></td>
-            <td>
-              {% if vod.data.videoSrcHash %}
-                <a target="_blank" href="{{ vod.data.videoSrcHash | buildIpfsUrl}}">
-                    <span>
-                      <i class="fas fa-video"></i>
-                    </span>
-                    <span class="icon">
-                      <i class="fas fa-external-link-alt"></i>
-                    </span>
-                </a>
-              {% endif %}
-            </td>
+        <td>
+          {% if vod.data.thiccHash %}
+            <a target="_blank" href="{{ vod.data.thiccHash | buildIpfsUrl }}">
+              <span class="icon">
+                <i class="fas fa-image"></i>
+              </span>
+              <span class="icon">
+                <i class="fas fa-external-link-alt"></i>
+              </span>
+            </a>
+          {% endif %}
+        </td>
 
+        <td>
+          {% if vod.data.announceTitle %}
+            {{ vod.data.announceTitle | urlDecode }}
+          {% elseif vod.data.title %}
+            {{ vod.data.title | urlDecode }}
+          {% endif %}
+        </td>
 
-            <td>
-              {% if vod.data.video240Hash %}
-                <a target="_blank" href="{{ vod.data.video240Hash | buildIpfsUrl}}">
-                    <span>
-                      <i class="fas fa-video"></i>
-                    </span>
-                    <span class="icon">
-                      <i class="fas fa-external-link-alt"></i>
-                    </span>
-                </a>
-              {% endif %}
-            </td>
+        <td>
+          {% if vod.data.announceUrl %}
+            <a target="_blank" href="{{ vod.data.announceUrl }}">
+              <span class="icon">
+                <i class="fab fa-twitter"></i>
+              </span>
+              <span class="icon">
+                <i class="fas fa-external-link-alt"></i>
+              </span>
+            </a>
+          {% endif %}
+        </td>
 
-
-            <td>
-              {% if vod.data.thiccHash %}
-                <a target="_blank" href="{{ vod.data.thiccHash | buildIpfsUrl }}">
-                  <span class="icon">
-                    <i class="fas fa-image"></i>
-                  </span>
-                  <span class="icon">
-                    <i class="fas fa-external-link-alt"></i>
-                  </span>
-                </a>
-              {% endif %}
-            </td>
-
-            <td>
-              {% if vod.data.announceTitle %}
-                {{ vod.data.announceTitle | urlDecode }}
-              {% elseif vod.data.title %}
-                {{ vod.data.title | urlDecode }}
-              {% endif %}
-            </td>
-
-            <td>
-              {% if vod.data.announceUrl %}
-                <a target="_blank" href="{{ vod.data.announceUrl }}">
-                  <span class="icon">
-                    <i class="fab fa-twitter"></i>
-                  </span>
-                  <span class="icon">
-                    <i class="fas fa-external-link-alt"></i>
-                  </span>
-                </a>
-              {% endif %}
-            </td>
-
-          </tr>
-          {% endfor %}
-        </tbody>
-    </table>
+      </tr>
+      {% endfor %}
+    </tbody>
+</table>

@@ -42,17 +42,17 @@
 
     <div class="box">
 
-      <h2 class="subtitle">
+      <h2 class="subtitle mb-0">
         {%- if vod.announceTitle %}
         {{ vod.announceTitle }}
         {% elif vod.title %}
         {{ vod.title }}
         {% endif %}
         
-        {% if vod.date %}
-          <span>--- {{ vod.date | readableDate }}</span>
-        {% endif %}
       </h2>
+        {% if vod.date %}
+          <p class="mt-0 mb-5">{{ vod.date | readableDate }}</p>
+        {% endif %}
 
       <h2 class="heading">Download Links</h2>
 
@@ -118,10 +118,10 @@
       {% endif %} #}
 
 
-      {%- if note %}
+      {%- if vod.note %}
         <div class="mb-3">
           <h2 class="heading">Note</h2>
-          <p>{{ note }}</p>
+          <p>{{ vod.note }}</p>
         </div>
       {% endif %}
 
@@ -131,7 +131,7 @@
         {% if pagination.href.previous %}
           <p>Prev Vod:
           <a 
-          href="{{ pagination.href.previous }}">{{ pagination.page.previous.title or pagination.page.next.announceTitle }}</a>
+          href="{{ pagination.href.previous }}">{{ pagination.page.previous.title or pagination.page.previous.announceTitle }}</a>
           </p>
         {% endif %}
         {% if pagination.href.next %}
@@ -154,10 +154,8 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="/@root/node_modules/plyr/dist/plyr.min.js"></script>
-  <script>
-    new Plyr('#player');
-  </script>
+  {# <script type="module" src="/@root/node_modules/plyr/dist/plyr.min.js"></script> #}
+  <script type="module" src="/@includes/js/player.js"></script>
 {% endblock %}
 
 
