@@ -1,15 +1,16 @@
 ---
 
+- name: create futureporn group
+  ansible.builtin.group:
+    name: futureporn
+
 - name: create futureporn user
   ansible.builtin.user:
     name: futureporn
     groups: futureporn
+    group: futureporn
     create_home: true
     home: /home/futureporn
-
-- name: create futureporn group
-  ansible.builtin.group:
-    name: futureporn
 
 - name: upload/install ssh deploy key
   copy:
@@ -25,8 +26,6 @@
     name: yarn
     global: yes
     state: present
-  become: yes
-  become_user: futureporn
 
 - name: Download futureporn
   git:
@@ -42,12 +41,17 @@
   
 - name: Install futureporn
   community.general.yarn:
-    path: /home/futureporn/futureporn/builder
+    path: /home/futureporn/futureporn/packages/builder
   notify:
     - restart builder
   become: yes
   become_user: futureporn
-  
+
+- name: Transfer dev cache to build server
+  copy:
+    remote_src: false
+    src: /home/chris/Documents/futureporn/packages/builder/.cache
+    dest: /home/futureporn/futureporn/packages/builder
 
 - name: Install builder system service
   ansible.builtin.template:
