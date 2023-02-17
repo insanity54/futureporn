@@ -118,10 +118,10 @@
       {% endif %} #}
 
 
-      {%- if note %}
+      {%- if vod.note %}
         <div class="mb-3">
           <h2 class="heading">Note</h2>
-          <p>{{ note }}</p>
+          <p>{{ vod.note }}</p>
         </div>
       {% endif %}
 
@@ -154,10 +154,8 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="/@root/node_modules/plyr/dist/plyr.min.js"></script>
-  <script>
-    new Plyr('#player');
-  </script>
+  {# <script type="module" src="/@root/node_modules/plyr/dist/plyr.min.js"></script> #}
+  <script type="module" src="/@includes/js/player.js"></script>
 {% endblock %}
 
 
