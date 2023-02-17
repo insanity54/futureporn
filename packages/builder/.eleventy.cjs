@@ -10,7 +10,7 @@ const slinkity = require('slinkity')
 const dbData = require('./website/_data/db.cjs')
 const { format, utcToZonedTime, } = require('date-fns-tz');
 const Image = require("@11ty/eleventy-img");
-
+// const AbortController = require('abort-controller')
 
 // const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
 // const EleventyVitePlugin = require("@11ty/eleventy-plugin-vite");
@@ -167,6 +167,17 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
 
   try {
+    if (process.env.FAST) {
+      // Abort any slow loading downloads
+      let abortController = new AbortController()
+      opts.cacheOptions.fetchOptions = {
+        signal: abortController.signal,
+        taco: true
+      }
+      const timeout = setTimeout(() => {
+        abortController.abort();
+      }, 500);
+    }
     metadata = await Image(src, opts);
   } catch (e) {
     console.warn(`catching error during image fetch ${e}`)
