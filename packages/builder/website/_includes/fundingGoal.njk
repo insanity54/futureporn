@@ -19,9 +19,9 @@
         {% set fundedGoal = patreon.goals.complete[patreon.goals.complete.length-1] %}
         <p class="subtitle">${{ (fundedGoal.amount_cents*(fundedGoal.completed_percentage*0.01)/100) | round }} of ${{ fundedGoal.amount_cents / 100 }} ({{ fundedGoal.completed_percentage}}%)</p>
 
-        <div class="notification is-success">FUNDED</div>
+        <div class="mb-5 tag is-success is-rounded" style="width:100%">FUNDED</div>
 
-        <p>{{ fundedGoal.description }}</p>
+        <p>{{ fundedGoal.description | stripHtml }}</p>
       </div>
 
 
@@ -33,7 +33,7 @@
 
         <progress class="progress is-info is-large" value="{{ unfundedGoal.completed_percentage }}" max="100">{{ unfundedGoal.completed_percentage }}%</progress>
 
-        <p>{{ unfundedGoal.description }}</p>
+        <p>{{ unfundedGoal.description | stripHtml }}</p>
       </div>
     </div>
 
