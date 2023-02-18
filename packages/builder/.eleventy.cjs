@@ -71,10 +71,16 @@ const filterIpfsCompleted = (vods) => {
 const filterB2Completed = (vods) => {
   let golo = [];
   for (const vod of vods) {
-    if (vod.data.videoSrc !== null) golo.push(vod.data.videoSrc)
+    if (vod.videoSrc !== null) golo.push(vod.data.videoSrc)
   }
   return golo.length;
 }
+
+const filter240pTranscodeCompleted = (vods) => {
+  let completed = vods.filter((v) => v.video240Hash !== null)
+  return completed.length
+}
+
 
 // async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
 //   let options = {
@@ -269,6 +275,12 @@ module.exports = function(eleventyConfig) {
     return `${filterIpfsCompleted(vods)}`;
   });
 
+  eleventyConfig.addShortcode("transcode240pProgressPercentage", function(vods) {
+    const totalVods = vods.length
+    const completedVods = filter240pTranscodeCompleted(vods)
+    return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
+  })
+
   eleventyConfig.addShortcode("ipfsProgressTotal", function(vods) {
     return `${vods.length}`;
   });
@@ -294,6 +306,11 @@ module.exports = function(eleventyConfig) {
   //   }
   //   return manifest[name];
   // });
+
+  eleventyConfig.addFilter('stripHtml', (text) => {
+    // greets ChatGPT
+    return text.replace(/<[^>]+>/g, '');
+  })
 
   eleventyConfig.addFilter('safeDate', (text) => {
     const date = utcToZonedTime(text, 'UTC');

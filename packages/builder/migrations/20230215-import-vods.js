@@ -85,6 +85,7 @@ async function main () {
         "video720Hash", 
         "video480Hash", 
         "video360Hash", 
+        "video360Hash", 
         "videoSrc", 
         "thinHash", 
         "thiccHash", 
