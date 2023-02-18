@@ -210,9 +210,13 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addPlugin(EleventyVitePlugin, {
     viteOptions: {
+      appType: "custom",
       server: {
         mode: 'development',
         middlewareMode: true
+      },
+      build: {
+        mode: "production",
       },
       resolve: {
         alias: {
