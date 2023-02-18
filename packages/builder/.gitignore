@@ -1,3 +1,5 @@
+# it's important that .cache stay .gitignore, as 
+# eleventy-fetch is used to cache patreon API requests
 .cache/
 
 .editorconfig
