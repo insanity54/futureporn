@@ -2,8 +2,6 @@
 layout: false
 permalink: '/api/v1.json'
 ---
-{ "taco": "yes, please" }
-{# 
 {
   "vods": [
     {% for vod in db.vods %}
@@ -13,4 +11,4 @@ permalink: '/api/v1.json'
       }{% if not loop.last %},{% endif %}
     {% endfor %}
   ]
-} #}
+}
