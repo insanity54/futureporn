@@ -208,7 +208,20 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
 module.exports = function(eleventyConfig) {
 
-  eleventyConfig.addPlugin(EleventyVitePlugin);
+  eleventyConfig.addPlugin(EleventyVitePlugin, {
+    viteOptions: {
+      server: {
+        mode: 'development',
+        middlewareMode: true
+      },
+      resolve: {
+        alias: {
+          '/@root/node_modules': path.resolve('.', 'node_modules'),
+          '/@includes': path.resolve('.', 'website/_includes')
+        }
+      }
+    }
+  });
   // eleventyConfig.addCollection('vods', function (collection) {
   //   // get unsorted items
   //   return collection
