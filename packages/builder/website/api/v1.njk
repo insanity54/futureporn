@@ -7,7 +7,18 @@ permalink: '/api/v1.json'
     {% for vod in db.vods %}
       {
         "title": "{{ vod.title | urlencode }}",
+        "videoSrcHash": "{{ vod.videoSrcHash }}",
+        "video720Hash": "{{ vod.video720Hash }}",
+        "video480Hash": "{{ vod.video480Hash }}",
+        "video360Hash": "{{ vod.video360Hash }}",
+        "video240Hash": "{{ vod.video240Hash }}",
+        "thinHash": "{{ vod.thinHash }}",
+        "thiccHash": "{{ vod.thiccHash }}",
+        "announceTitle": "{{ vod.announceTitle | urlencode }}",
+        "announceUrl": "{{ vod.announceUrl }}",
         "date": "{{ vod.date }}",
+        "note": "{{ vod.note }}",
+        "url": "{{ vod.url }}"
       }{% if not loop.last %},{% endif %}
     {% endfor %}
   ]
