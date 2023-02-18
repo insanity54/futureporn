@@ -1,25 +1,16 @@
 ---
+layout: false
 permalink: '/api/v1.json'
 ---
-
+{ "taco": "yes, please" }
+{# 
 {
   "vods": [
-    {% for vod in collections.vods %}
+    {% for vod in db.vods %}
       {
-        "title": "{{ vod.data.title }}",
-        "videoSrcHash": "{{ vod.data.videoSrcHash }}",
-        "video720Hash": "{{ vod.data.video720Hash }}",
-        "video480Hash": "{{ vod.data.video480Hash }}",
-        "video360Hash": "{{ vod.data.video360Hash }}",
-        "video240Hash": "{{ vod.data.video240Hash }}",
-        "thinHash": "{{ vod.data.thinHash }}",
-        "thiccHash": "{{ vod.data.thiccHash }}",
-      	"announceTitle": "{{ vod.data.announceTitle }}",
-      	"announceUrl": "{{ vod.data.announceUrl }}",
-        "date": "{{ vod.data.date }}",
-        "note": "{{ vod.data.note }}",
-        "url": "{{ vod.url }}"
+        "title": "{{ vod.title | urlencode }}",
+        "date": "{{ vod.date }}",
       }{% if not loop.last %},{% endif %}
     {% endfor %}
   ]
-}
+} #}

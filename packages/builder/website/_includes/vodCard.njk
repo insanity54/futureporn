@@ -20,7 +20,7 @@
               {% set imageTitle = vod.title %}
             {% endif %}
 
-            {% image imageUrl, imageTitle %}
+            {% image imageUrl, undefined, "" %}
           </figure>
       </div>
       <div class="card-content">
@@ -28,9 +28,9 @@
         <h4 class="heading">{{ vod.date | htmlDateString }}</h3>
         <p class="description is-size-7">
           {% if vod.data.announceTitle %}
-            {{ vod.data.announceTitle | urlDecode }}
+            {{ vod.data.announceTitle }}
           {% elseif vod.data.title %}
-            {{ vod.data.title | urlDecode }}
+            {{ vod.data.title }}
           {% endif %}
         </p>
       </div>

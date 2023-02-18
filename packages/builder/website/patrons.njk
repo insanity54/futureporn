@@ -9,13 +9,10 @@ eleventyNavigation:
 <div class="content">
   <div class="block">
     <div class="box">
-      <div class="columns">
-
-          
-        <div class="column is-6">
 
           <p class="title">Patron List</p>
           <p class="subtitle">Futureporn.net continues to improve thanks to these generous supporters.</p>
+          {# <a class="button mb-5 is-primary is-rounded" href="https://patreon.com/CJ_Clippy" target="_blank">Patreon</a> #}
 
           {% if metadata.patrons.length < 1 %}
           <article class="mt-5 message is-warning">
@@ -25,18 +22,33 @@ eleventyNavigation:
           </article>
           {% else %}
 
-          <ul class="patron-list">
-          {%- for patron in metadata.activePatronNames %}
-            <li>{{ patron }}</li>
+          <div class="patron-list columns is-mobile is-multiline">
+          {%- for patron in patreon.patrons.active %}
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+              <div class="box">
+                <article class="media">
+                  <div class="media-left">
+                    {% image patron.attributes.image_url, "image is-32x32", patron.attributes.full_name, undefined, [32] %}
+                  </div>
+                  <div class="media-content">
+                    <div class="content">
+                      <p>
+                        <strong>{{ patron.attributes.full_name }}</strong>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
           {% endfor %}
-          </ul>
+          </div>
 
           <p>Want to get your name on this list? <a href="https://patreon.com/CJ_Clippy" target="_blank">Become a patron today!<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
 
           {% endif %}
 
         </div>
-      </div>
-    </div>
+
   </div>
 </div>

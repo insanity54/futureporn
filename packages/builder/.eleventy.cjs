@@ -5,11 +5,13 @@ const pluginRss = require("@11ty/eleventy-plugin-rss");
 const pluginNavigation = require("@11ty/eleventy-navigation");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
-const { EleventyRenderPlugin } = require("@11ty/eleventy");
-const slinkity = require('slinkity')
-const dbData = require('./website/_data/db.cjs')
+// const { EleventyRenderPlugin } = require("@11ty/eleventy");
+// const slinkity = require('slinkity')
 const { format, utcToZonedTime, } = require('date-fns-tz');
 const Image = require("@11ty/eleventy-img");
+const EleventyVitePlugin = require("@11ty/eleventy-plugin-vite");
+
+
 // const AbortController = require('abort-controller')
 
 // const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
@@ -24,24 +26,24 @@ const isDev = process.env.NODE_ENV === "development";
 
 
 
-async function figureHtml(src, alt) {
-  let stats = await Image(src, {
-    widths: [64, 128, 512],
-    formats: ["avif", "png"],
-    urlPath: "/img/gen/",
-    outputDir: "./website/img/gen/",
-    cacheOptions: {
-      duration: '*'
-    }
-  });
-  return Image.generateHTML(stats, {
-    class: 'image',
-    alt: alt,
-    sizes: ["(max-width: 768px)", "(max-width: 769px)", "(max-width: 1024px)"],
-    decoding: "async",
-    loading: "lazy",
-  });
-}
+// async function figureHtml(src, alt) {
+//   let stats = await Image(src, {
+//     widths: [64, 128, 512],
+//     formats: ["avif", "png"],
+//     urlPath: "/img/gen/",
+//     outputDir: "./website/img/gen/",
+//     cacheOptions: {
+//       duration: '*'
+//     }
+//   });
+//   return Image.generateHTML(stats, {
+//     class: 'image',
+//     alt: alt,
+//     sizes: ["(max-width: 768px)", "(max-width: 769px)", "(max-width: 1024px)"],
+//     decoding: "async",
+//     loading: "lazy",
+//   });
+// }
 
 
 // const Image = require("@11ty/eleventy-img");
@@ -192,6 +194,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
       return `  <source type="${imageFormat[0].sourceType}" srcset="${imageFormat.map(entry => entry.srcset).join(", ")}" sizes="${sizes}">`;
     }).join("\n")}
       <img
+        class="${imageAttributes.class}"
         src="${lowsrc.url}"
         width="${highsrc.width}"
         height="${highsrc.height}"
@@ -205,6 +208,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
 module.exports = function(eleventyConfig) {
 
+  eleventyConfig.addPlugin(EleventyVitePlugin);
   // eleventyConfig.addCollection('vods', function (collection) {
   //   // get unsorted items
   //   return collection
@@ -321,7 +325,6 @@ module.exports = function(eleventyConfig) {
     return Math.min.apply(null, numbers);
   });
 
-  // eleventyConfig.addNunjucksAsyncShortcode("getFigureHtml", figureHtml);
   eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
   eleventyConfig.addPassthroughCopy({
       "./website/img/gen/*.avif": "/img/gen"
@@ -389,15 +392,15 @@ module.exports = function(eleventyConfig) {
     ghostMode: false
   });
 
-  eleventyConfig.addPlugin(EleventyRenderPlugin);
+  // eleventyConfig.addPlugin(EleventyRenderPlugin);
 
   // eleventyConfig.addPlugin(EleventyVitePlugin);
-  eleventyConfig.addPlugin(
-    slinkity.plugin, 
-    slinkity.defineConfig({
-      // renderers: [vue()], // too many errors! Maybe revisit when slinkity is more mature
-    })
-  )
+  // eleventyConfig.addPlugin(
+  //   slinkity.plugin, 
+  //   slinkity.defineConfig({
+  //     // renderers: [vue()], // too many errors! Maybe revisit when slinkity is more mature
+  //   })
+  // )
 
 
   return {

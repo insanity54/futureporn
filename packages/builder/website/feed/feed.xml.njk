@@ -9,7 +9,7 @@ eleventyExcludeFromCollections: true
   <link href="{{ metadata.feedUrl }}" rel="self"/>
   <link href="{{ metadata.url }}"/>
   <updated>{{ collections.vods | getNewestCollectionItemDate | dateToRfc3339 }}</updated>
-  <id>{{ metadata.url | urlDecode}}</id>
+  <id>{{ metadata.url }}</id>
   <author>
     <name>{{ metadata.author.name }}</name>
     <email>{{ metadata.author.email }}</email>
@@ -17,7 +17,7 @@ eleventyExcludeFromCollections: true
   {%- for vod in collections.vods %}
   {% set absolutePostUrl %}{{ vod.url | url | absoluteUrl(metadata.url) }}{% endset %}
   <entry>
-    <title>{{ vod.data.title | urlDecode }}</title>
+    <title>{{ vod.data.title }}</title>
     <link href="{{ absolutePostUrl }}"/>
     <updated>{{ vod.date | dateToRfc3339 }}</updated>
     <id>{{ absolutePostUrl }}</id>

@@ -82,19 +82,22 @@
                 </p>
                 <p>
                   Made possible by generous donations from
-                  {%- for patron in metadata.allPatronNames %}
-                    <span>{{ patron }}</span>{% if loop.index === metadata.allPatronNames.length %} {% else %}, {% endif %}
+
+                  {% set donors = patreon.patrons.all.concat(donors.list) %}
+
+                  {%- for donor in donors %}
+                    <span>{{ donor.attributes.full_name or donor.name }}</span>{% if loop.index === donors.length %} {% else %}, {% endif %}
                   {% endfor %}
                 </p>
                 <p>
                   VOD contributions by 
-                    {%- for c in metadata.contributors %}
+                    {%- for c in contributors.list %}
                       {% if (c.link) %}
                         <a target="_blank" href="{{ c.link }}">{{ c.name }} <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
                       {% else %}
                         <span>{{ c.name }}</span>
                       {% endif %}
-                      </span>{% if loop.index === metadata.contributors.length %} {% else %}, {% endif %}
+                      </span>{% if loop.index === contributors.list.length %} {% else %}, {% endif %}
                     {% endfor %}
                 </p>
                 <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
