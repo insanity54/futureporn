@@ -5,53 +5,15 @@ const pluginRss = require("@11ty/eleventy-plugin-rss");
 const pluginNavigation = require("@11ty/eleventy-navigation");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
-// const { EleventyRenderPlugin } = require("@11ty/eleventy");
-// const slinkity = require('slinkity')
+
 const { format, utcToZonedTime, } = require('date-fns-tz');
 const Image = require("@11ty/eleventy-img");
 const EleventyVitePlugin = require("@11ty/eleventy-plugin-vite");
-
-
-// const AbortController = require('abort-controller')
-
-// const manifestPath = path.resolve(__dirname, "_site", "assets", "manifest.json");
-// const EleventyVitePlugin = require("@11ty/eleventy-plugin-vite");
-
-
-
-// const sharpPlugin = require('eleventy-plugin-sharp');
+const copy = require('rollup-plugin-copy')
 
 const isDev = process.env.NODE_ENV === "development";
 
 
-
-
-// async function figureHtml(src, alt) {
-//   let stats = await Image(src, {
-//     widths: [64, 128, 512],
-//     formats: ["avif", "png"],
-//     urlPath: "/img/gen/",
-//     outputDir: "./website/img/gen/",
-//     cacheOptions: {
-//       duration: '*'
-//     }
-//   });
-//   return Image.generateHTML(stats, {
-//     class: 'image',
-//     alt: alt,
-//     sizes: ["(max-width: 768px)", "(max-width: 769px)", "(max-width: 1024px)"],
-//     decoding: "async",
-//     loading: "lazy",
-//   });
-// }
-
-
-// const Image = require("@11ty/eleventy-img");
-// Image.concurrency = 1;
-
-// const manifest = JSON.parse(
-//   fs.readFileSync(manifestPath, { encoding: "utf8" })
-// );
 
 // https://stackoverflow.com/a/1527820/1004931
 function getRandomInt(min, max) {
@@ -80,70 +42,6 @@ const filter240pTranscodeCompleted = (vods) => {
   let completed = vods.filter((v) => v.video240Hash !== null)
   return completed.length
 }
-
-
-// async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
-//   let options = {
-//     outputDir: './_site/img',
-//     widths: widths,
-//     formats: ['jpeg', 'avif'],
-//     concurrency: 1,
-//     cacheOptions: { 
-//       directory: '.cache',
-//       duration: "*"
-//     }
-//   };
-//   // let isCid = /Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,}/.test(src)
-//   // let url = isCid ? buildIpfsUrl(src) : src
-//   let imageAttributes = {
-//     class: cls,
-//     alt,
-//     sizes,
-//     loading: "lazy",
-//     decoding: "async",
-//     onerror: "this.style.display='none'" // avoid ugly border
-//   };
-//   try {
-//     console.log(`  [*] Downloading ${src}`)
-//     let metadata = await Image(src, options);
-//     return Image.generateHTML(metadata, imageAttributes)
-//   } catch (e) {
-//     console.error('We got an Image fetch error. Defaulting to Melface')
-//     console.error(e);
-//     let metadata = await Image('./website/favicon/favicon.png', options);
-//     return Image.generateHTML(metadata, imageAttributes)
-//   }
-// }
-
-
-// function imageShortcode(
-//   src, 
-//   cls = "image", 
-//   alt = "", 
-//   sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", 
-//   widths = [90, 180, 360]
-// ) {
-//   console.log(`  [*] getting ${src}`)
-//   let img = sharpPlugin.getUrl(src)
-//   return `
-//     <picture>
-//       <source 
-//         type="image/avif" 
-//         srcset="/img/vlhQdaV-L1-64.avif 64w" 
-//         sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px"
-//       >
-//       <img 
-//         class="image" 
-//         alt="" 
-//         loading="lazy" 
-//         decoding="async" 
-//         onerror="this.style.display='none'" 
-//         src="/img/vlhQdaV-L1-64.jpeg" 
-//         width="64" 
-//         height="65"
-//       >
-//     </picture>`
-// }
 
 
 async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
@@ -214,14 +112,29 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
 module.exports = function(eleventyConfig) {
 
+  eleventyConfig.on('eleventy.after', async ({ dir, runMode, outputMode, results }) => {
+    // Run me after the build ends
+    console.log(results.map((r) => r.outputPath).filter((r) => r.includes('.json')))
+  });
+
   eleventyConfig.addPlugin(EleventyVitePlugin, {
     viteOptions: {
-      appType: "custom",
+      appType: "mpa",
       server: {
         mode: 'development',
         middlewareMode: true
       },
       build: {
+        rollupOptions: {
+          plugins: [
+            copy({
+              targets: [
+                { src: '.11ty-vite/api/*.json', dest: '_site/api' }
+              ]
+            })
+          ]
+        },
+        assetsInclude: ['api/*.json'],
         mode: "production",
       },
       resolve: {
@@ -232,38 +145,15 @@ module.exports = function(eleventyConfig) {
       }
     }
   });
-  // eleventyConfig.addCollection('vods', function (collection) {
-  //   // get unsorted items
-  //   return collection
-  //     .getFilteredByTag("vod")
-  //     .sort((a, b) => {
-  //       console.log(`>>>subtracting ${a.date} minus ${b.date}`)
-  //       return a.date - b.date
-  //     })
-  // })
 
   eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
   eleventyConfig.addPassthroughCopy({ "website/assets/img": "/img" });
-  // eleventyConfig.addPassthroughCopy({
-  //     "website/assts/img/gen/*.avif": "/img/gen"
-  // });
-  // eleventyConfig.addPassthroughCopy({
-  //     "website/assts/img/gen/*.png": "/img/gen"
-  // });
 
-  // eleventyConfig.addPlugin(imageDownloader);
-  // eleventyConfig.addPlugin(sharpPlugin({
-  //   urlPath: '/img',
-  //   outputDir: '_site/img'
-  // }));
+
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginNavigation);
 
   eleventyConfig.setDataDeepMerge(true);
-
-  // eleventyConfig.addLayoutAlias("vod", "_includes/layouts/vod.njk");
-  // eleventyConfig.addLayoutAlias("base", "_includes/layouts/base.njk");
-
 
   
 
@@ -297,15 +187,6 @@ module.exports = function(eleventyConfig) {
     const completedVods = filterIpfsCompleted(vods)
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
-
-  // // Adds a universal shortcode to return the URL to a webpack asset. In Nunjack templates:
-  // // {% webpackAsset 'main.js' %} or {% webpackAsset 'main.css' %}
-  // eleventyConfig.addShortcode("webpackAsset", function(name) {
-  //   if (!manifest[name]) {
-  //     throw new Error(`The asset ${name} does not exist in ${manifestPath}`);
-  //   }
-  //   return manifest[name];
-  // });
 
   eleventyConfig.addFilter('stripHtml', (text) => {
     // greets ChatGPT
@@ -426,16 +307,6 @@ module.exports = function(eleventyConfig) {
     ghostMode: false
   });
 
-  // eleventyConfig.addPlugin(EleventyRenderPlugin);
-
-  // eleventyConfig.addPlugin(EleventyVitePlugin);
-  // eleventyConfig.addPlugin(
-  //   slinkity.plugin, 
-  //   slinkity.defineConfig({
-  //     // renderers: [vue()], // too many errors! Maybe revisit when slinkity is more mature
-  //   })
-  // )
-
 
   return {
     templateFormats: [
@@ -443,16 +314,6 @@ module.exports = function(eleventyConfig) {
       "njk",
       "html"
     ],
-
-    // If your site lives in a different subdirectory, change this.
-    // Leading or trailing slashes are all normalized away, so don’t worry about those.
-
-    // If you don’t have a subdirectory, use "" or "/" (they do the same thing)
-    // This is only used for link URLs (it does not affect your file structure)
-    // Best paired with the `url` filter: https://www.11ty.dev/docs/filters/url/
-
-    // You can also pass this in on the command line using `--pathprefix`
-    // pathPrefix: "/",
 
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
