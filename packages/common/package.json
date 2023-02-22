@@ -4,7 +4,10 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
+    "cuid": "^2.1.8",
+    "dotenv": "^16.0.3",
     "form-data-encoder": "^2.1.4",
+    "formdata-node": "^5.0.0",
     "got": "^12.5.3",
     "query-string": "^8.1.0",
     "winston": "^3.8.2"

@@ -15,6 +15,7 @@
     "common": "workspace:^0.0.1",
     "cuid": "^2.1.8",
     "dotenv": "^16.0.3",
+    "execa": "^6.1.0",
     "fastq": "^1.15.0",
     "postgres": "^3.3.3"
   }
