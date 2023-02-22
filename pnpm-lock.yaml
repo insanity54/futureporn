@@ -187,13 +187,19 @@ importers:
   packages/common:
     specifiers:
       chai: ^4.3.7
+      cuid: ^2.1.8
+      dotenv: ^16.0.3
       form-data-encoder: ^2.1.4
+      formdata-node: ^5.0.0
       got: ^12.5.3
       mocha: ^10.2.0
       query-string: ^8.1.0
       winston: ^3.8.2
     dependencies:
+      cuid: 2.1.8
+      dotenv: 16.0.3
       form-data-encoder: 2.1.4
+      formdata-node: 5.0.0
       got: 12.5.3
       query-string: 8.1.0
       winston: 3.8.2
@@ -227,12 +233,14 @@ importers:
       common: workspace:^0.0.1
       cuid: ^2.1.8
       dotenv: ^16.0.3
+      execa: ^6.1.0
       fastq: ^1.15.0
       postgres: ^3.3.3
     dependencies:
       common: link:../common
       cuid: 2.1.8
       dotenv: 16.0.3
+      execa: 6.1.0
       fastq: 1.15.0
       postgres: 3.3.3
 
