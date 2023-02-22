@@ -6,6 +6,7 @@ import { ipfsHashRegex } from 'common/constants'
 import Cluster from 'common/Cluster'
 import path from 'node:path'
 import {execa} from 'execa'
+import {got} from 'got'
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
 if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
@@ -50,15 +51,36 @@ async function download (cid) {
   cid = ipfsHashRegex.exec(cid)[0]
   const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
   logger.log({ level: 'debug', message: `  [*] downloading ${cid} from IPFS to ${localFilePath}` })
-  const proc = execa('ipfs', ['-c', '/home/ipfs/.ipfs/config', 'get', '-o', localFilePath, cid], {
-    env: {
-      'IPFS_PATH': '/home/ipfs/.ipfs'
+
+
+  try {
+    console.log('dl\'ing!')
+    const res = got.post(`http://127.0.0.1:5001/api/v0/get?arg=${cid}&output=${localFilePath}`, {
+      isStream: true
+    })
+    // const res = await got.post(
+    //   `${this.uri}/add?cid-version=1&progress=1`,
+    //   opts
+    // )
+
+    for await (const chunk of res) {
+      const data = JSON.parse(chunk.toString())
+      console.log(data)
     }
-  });
-  const { stdout, stderr } = await proc;
-  logger.log({ level: 'debug', message: `  [*] download to ${localFilePath} is done` });
-  logger.log({ level: 'debug', message: stdout })
-  logger.log({ level: 'debug', message: stderr })
+  } catch (e) {
+    console.error('rejecting! ', e)
+  }
+
+
+  // const proc = execa('ipfs', ['-c', '/home/ipfs/.ipfs/config', 'get', '-o', localFilePath, cid], {
+  //   env: {
+  //     'IPFS_PATH': '/home/ipfs/.ipfs'
+  //   }
+  // });
+  // const { stdout, stderr } = await proc;
+  // logger.log({ level: 'debug', message: `  [*] download to ${localFilePath} is done` });
+  // logger.log({ level: 'debug', message: stdout })
+  // logger.log({ level: 'debug', message: stderr })
   return localFilePath;
 }
 
@@ -68,7 +90,7 @@ async function download (cid) {
  * @resolves {string} output
  */
 async function transcode (filename) {
-  const outputFilePath = path.join(FUTUREPORN_WORKDIR, path.basename(filename, '.mp4')+'_240p.mp4')
+  const outputFilePath = path.join(process.env.FUTUREPORN_WORKDIR, path.basename(filename, '.mp4')+'_240p.mp4')
   const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', filename, '-vf', 'scale=w=-2:h=240', '-b:v', '386k', '-b:a', '45k', outputFilePath]);
   if (exitCode !== 0 || killed !== false) {
     throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
@@ -137,8 +159,8 @@ async function main () {
     const filenameSrc = await download(vod.videoSrcHash)
 
     // transcode
-    logger.log({ level: 'debug', message: `transcoding ${filename}`})
-    const filename240 = await transcode(filename)
+    logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})
+    const filename240 = await transcode(filenameSrc)
 
     // upload
     logger.log({ level: 'debug', message: `uploading ${filename240}`})
