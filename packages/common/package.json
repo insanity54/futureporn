@@ -4,10 +4,23 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
+    "form-data-encoder": "^2.1.4",
+    "got": "^12.5.3",
+    "query-string": "^8.1.0",
     "winston": "^3.8.2"
   },
   "type": "module",
   "exports": {
-    "./logger": "./src/logger.js"
+    "./logger": "./src/logger.js",
+    "./id": "./src/id.js",
+    "./constants": "./src/constants.js",
+    "./Cluster": "./src/Cluster.js"
+  },
+  "scripts": {
+    "test:integration": "mocha ./test/integration"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
   }
 }
