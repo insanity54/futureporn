@@ -50,8 +50,12 @@ async function download (cid) {
   cid = ipfsHashRegex.exec(cid)[0]
   const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
   logger.log({ level: 'debug', message: `  [*] downloading ${cid} from IPFS to ${localFilePath}` })
-  const proc = execa('ipfs', ['-c', '/home/ipfs/.ipfs/config', 'get', '-o', localFilePath, cid]);
-  const {stdout, stderr} = await proc;
+  const proc = execa('ipfs', ['-c', '/home/ipfs/.ipfs/config', 'get', '-o', localFilePath, cid], {
+    env: {
+      'IPFS_PATH': '/home/ipfs/.ipfs'
+    }
+  });
+  const { stdout, stderr } = await proc;
   logger.log({ level: 'debug', message: `  [*] download to ${localFilePath} is done` });
   logger.log({ level: 'debug', message: stdout })
   logger.log({ level: 'debug', message: stderr })
