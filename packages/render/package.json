@@ -1,0 +1,21 @@
+{
+  "name": "coder",
+  "version": "0.0.1",
+  "description": "Futureporn component which transcodes video different formats and generates thumbnails",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index"
+  },
+  "keywords": [],
+  "author": "CJ_Clippy <cj@futureporn.net>",
+  "license": "Unlicense",
+  "type": "module",
+  "dependencies": {
+    "common": "workspace:^0.0.1",
+    "cuid": "^2.1.8",
+    "dotenv": "^16.0.3",
+    "fastq": "^1.15.0",
+    "postgres": "^3.3.3"
+  }
+}
