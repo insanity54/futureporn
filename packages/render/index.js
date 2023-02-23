@@ -57,12 +57,12 @@ async function download (cid) {
   logger.log({ level: 'debug', message: `downloading ${cid} from IPFS to ${localFilePath}` })
 
 
-  const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
+  // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
   const res = got.post(
     'http://127.0.0.1:5001/api/v0/get',
     {
       searchParams: {
-        arg: ssCid
+        arg: cid
       },
       timeout: {
         request: 1000*60*60*3
