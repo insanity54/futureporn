@@ -7,7 +7,7 @@ import Cluster from 'common/Cluster'
 import path from 'node:path'
 import {execa} from 'execa'
 import {got} from 'got'
-import fs from 'node:fs'
+import {writeFile} from 'node:fs/promises'
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
 if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
@@ -57,12 +57,12 @@ async function download (cid) {
   logger.log({ level: 'debug', message: `  [*] downloading ${cid} from IPFS to ${localFilePath}` })
 
 
-  // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
+  const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
   const res = got.post(
     'http://127.0.0.1:5001/api/v0/get',
     {
       searchParams: {
-        arg: cid
+        arg: ssCid
       },
       timeout: {
         request: 1000*60*60*3
@@ -77,20 +77,16 @@ async function download (cid) {
   })
 
   res.on('downloadProgress', (progress) => {
-    if (progress.transferred % (10 * 1024 * 1024) === 0) {
+    if (progress.transferred % (100 * 1024 * 1024) === 0) {
       logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
     }
   })
 
 
-  const downloadBuffer = res.buffer()
-  fs.writeFile(localFilePath, downloadBuffer, (err) => {
-    if (err) {
-      console.error(err)
-    } else {
-      console.log(`Downloaded ${cid} to ${localFilePath}`)
-    }
-  })
+  await writeFile(localFilePath, await res.buffer())
+  console.log(`Downloaded ${cid} to ${localFilePath}`)
+  
+
 
 
   return localFilePath;
