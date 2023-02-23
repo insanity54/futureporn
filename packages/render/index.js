@@ -78,7 +78,7 @@ async function download (cid) {
 
   res.on('downloadProgress', (progress) => {
     if (progress.percent % 5 === 0) { // log every 5%
-      logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}%` })
+      logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
     }
   })
 
