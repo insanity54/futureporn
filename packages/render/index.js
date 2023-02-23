@@ -54,7 +54,7 @@ function _getIpfsHash (input) {
 async function download (cid) {
   cid = ipfsHashRegex.exec(cid)[0]
   const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
-  logger.log({ level: 'debug', message: `  [*] downloading ${cid} from IPFS to ${localFilePath}` })
+  logger.log({ level: 'debug', message: `downloading ${cid} from IPFS to ${localFilePath}` })
 
 
   const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
@@ -71,9 +71,9 @@ async function download (cid) {
   )
 
   res.on('response', (res) => {
-    console.log('got response')
-    console.log(res.headers)
-    console.log(response.trailers)
+    logger.log({ level: 'debug', message: 'got response' })
+    logger.log({ level: 'debug', message: res.headers })
+    logger.log({ level: 'debug', message: response.trailers })
   })
 
   res.on('downloadProgress', (progress) => {
@@ -84,7 +84,7 @@ async function download (cid) {
 
 
   await writeFile(localFilePath, await res.buffer())
-  console.log(`Downloaded ${cid} to ${localFilePath}`)
+  logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
   
 
 
@@ -123,22 +123,21 @@ async function notify () {
 
 
 
-async function transcode240pVideo () {
-  if (this.video240Hash !== '') return;
-  await this.ensureTmpFilePath();
-  const videoBasename = this._getVideoBasename('240p');
-  const target = VOD._getTmpDownloadPath(videoBasename);
-  console.log(`transcoding ${this.tmpFilePath} to ${target}`);
-  const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-vf', 'scale=w=-2:h=240', '-b:v', '386k', '-b:a', '45k', target]);
-  if (exitCode !== 0 || killed !== false) {
-    throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
-  } else {
-    this.video240HashTmp = target;
-  }
-  const hash = await this._ipfsUpload(this.video240HashTmp);
-  if (typeof hash === 'undefined') throw new UploadFailedError()
-  this.video240Hash = `${hash}?filename=${videoBasename}`
-}
+// async function transcode240pVideo () {
+//   if (this.video240Hash !== '') return;
+//   await this.ensureTmpFilePath();
+//   const videoBasename = this._getVideoBasename('240p');
+//   const target = VOD._getTmpDownloadPath(videoBasename);
+//   const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', this.tmpFilePath, '-vf', 'scale=w=-2:h=240', '-b:v', '386k', '-b:a', '45k', target]);
+//   if (exitCode !== 0 || killed !== false) {
+//     throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+//   } else {
+//     this.video240HashTmp = target;
+//   }
+//   const hash = await this._ipfsUpload(this.video240HashTmp);
+//   if (typeof hash === 'undefined') throw new UploadFailedError()
+//   this.video240Hash = `${hash}?filename=${videoBasename}`
+// }
 
 async function sleep (ms) {
   return new Promise((resolve) => {
@@ -161,7 +160,7 @@ async function main () {
     if (vod === null) {
       logger.log({ level: 'info', message: 'there are no unprocessed videos. idling.' })
     } else {
-      logger.log({ level: 'debug', message: vod })
+      logger.log({ level: 'debug', message: vod.id })
 
       // download
       logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
