@@ -7,6 +7,7 @@ import Cluster from 'common/Cluster'
 import path from 'node:path'
 import {execa} from 'execa'
 import {got} from 'got'
+import fs from 'node:fs'
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
 if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
@@ -47,40 +48,50 @@ function _getIpfsHash (input) {
   return result[0]
 }
 
+// ubuuntu iso QmPK1s3pNYLi9ERiq3BDxKa4XosgWwFRQUydHUtz4YgpqB
+// getting started txt /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme
+
 async function download (cid) {
   cid = ipfsHashRegex.exec(cid)[0]
   const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
   logger.log({ level: 'debug', message: `  [*] downloading ${cid} from IPFS to ${localFilePath}` })
 
 
-  try {
-    console.log('dl\'ing!')
-    const res = got.post(`http://127.0.0.1:5001/api/v0/get?arg=${cid}&output=${localFilePath}`, {
-      isStream: true
-    })
-    // const res = await got.post(
-    //   `${this.uri}/add?cid-version=1&progress=1`,
-    //   opts
-    // )
-
-    for await (const chunk of res) {
-      const data = JSON.parse(chunk.toString())
-      console.log(data)
+  console.log('dl\'ing!')
+  // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
+  const res = got.post(
+    'http://127.0.0.1:5001/api/v0/get',
+    {
+      searchParams: {
+        arg: cid
+      },
+      timeout: {
+        request: 30000
+      }
     }
-  } catch (e) {
-    console.error('rejecting! ', e)
-  }
+  )
+
+  res.on('response', (res) => {
+    console.log('got response')
+    console.log(res.headers)
+    console.log(response.trailers)
+  })
+
+  res.on('downloadProgress', (progress) => {
+    logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent*100}%` })
+  })
 
 
-  // const proc = execa('ipfs', ['-c', '/home/ipfs/.ipfs/config', 'get', '-o', localFilePath, cid], {
-  //   env: {
-  //     'IPFS_PATH': '/home/ipfs/.ipfs'
-  //   }
-  // });
-  // const { stdout, stderr } = await proc;
-  // logger.log({ level: 'debug', message: `  [*] download to ${localFilePath} is done` });
-  // logger.log({ level: 'debug', message: stdout })
-  // logger.log({ level: 'debug', message: stderr })
+  const downloadBuffer = res.buffer()
+  fs.writeFile(localFilePath, downloadBuffer, (err) => {
+    if (err) {
+      console.error(err)
+    } else {
+      console.log(`Downloaded ${cid} to ${localFilePath}`)
+    }
+  })
+
+
   return localFilePath;
 }
 
@@ -147,35 +158,37 @@ async function main () {
 
   const delayTime = 1000*60
   // while (true) {
-  logger.log({ level: 'debug', message: 'looking for an unprocessed VOD.' })
-  const vod = await find()
-  if (vod === null) {
-    logger.log({ level: 'info', message: 'there are no unprocessed videos. idling.' })
-  } else {
-    logger.log({ level: 'debug', message: vod })
+  try {
+    logger.log({ level: 'debug', message: 'looking for an unprocessed VOD.' })
+    const vod = await find()
+    if (vod === null) {
+      logger.log({ level: 'info', message: 'there are no unprocessed videos. idling.' })
+    } else {
+      logger.log({ level: 'debug', message: vod })
 
-    // download
-    logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
-    const filenameSrc = await download(vod.videoSrcHash)
+      // download
+      logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
+      const filenameSrc = await download(vod.videoSrcHash)
 
-    // transcode
-    logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})
-    const filename240 = await transcode(filenameSrc)
+      // transcode
+      logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})
+      const filename240 = await transcode(filenameSrc)
 
-    // upload
-    logger.log({ level: 'debug', message: `uploading ${filename240}`})
-    const data = await cluster.add(filename240)
+      // upload
+      logger.log({ level: 'debug', message: `uploading ${filename240}`})
+      const data = await cluster.add(filename240)
 
-    // save
-    logger.log({ level: 'debug', message: `saving ${data.cid}`})
-    await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
+      // save
+      logger.log({ level: 'debug', message: `saving ${data.cid}`})
+      await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
+    }
+
+    logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
+  } catch (e) {
+    logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
   }
-
-
-
-  logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
-  // await sleep(delayTime)
-  // }
+    // await sleep(delayTime)
+    // }
 }
 
 
