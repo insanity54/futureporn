@@ -8,6 +8,9 @@ import path from 'node:path'
 import {execa} from 'execa'
 import {got} from 'got'
 import {writeFile} from 'node:fs/promises'
+import {createWriteStream} from 'node:fs'
+import {promisify} from 'node:util';
+import stream from 'node:stream';
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
 if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
@@ -52,6 +55,19 @@ function _getIpfsHash (input) {
 // getting started txt /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme
 
 async function download (cid) {
+  const responseStream = got.stream(
+    'http://127.0.0.1:5001/api/v0/get',
+    {
+      method: 'POST',
+      searchParams: {
+        arg: cid
+      },
+      timeout: {
+        request: 1000*60*60*3
+      }
+    }
+  )
+
   try {
     cid = ipfsHashRegex.exec(cid)[0]
     const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
@@ -59,32 +75,45 @@ async function download (cid) {
 
 
     // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
-    const res = await got.post(
-      'http://127.0.0.1:5001/api/v0/get',
-      {
-        searchParams: {
-          arg: cid
-        },
-        timeout: {
-          request: 1000*60*60*3
-        }
-      }
-    )
 
-    res.on('response', (res) => {
-      logger.log({ level: 'debug', message: 'got response' })
-      logger.log({ level: 'debug', message: res.headers })
-      logger.log({ level: 'debug', message: response.trailers })
-    })
 
-    res.on('downloadProgress', (progress) => {
-      if (progress.transferred % (100 * 1024 * 1024) === 0) {
+    // stream.response.on('response', (res) => {
+    //   logger.log({ level: 'debug', message: 'got response' })
+    //   logger.log({ level: 'debug', message: res.headers })
+    //   logger.log({ level: 'debug', message: response.trailers })
+    // })
+
+    // stream.response.on('close', (c) => {
+    //   logger.log({ level: 'debug', message: 'IncomingMessage clos3ed.'})
+    // })
+
+    // stream.on('response', (res) => {
+    //   logger.log({ level: 'debug', message: 'got response' })
+    //   logger.log({ level: 'debug', message: res.headers })
+    //   logger.log({ level: 'debug', message: response.trailers })
+    // })
+
+    setInterval(() => {
+      console.log(responseStream.downloadProgress)
+    }, 2000)
+
+    responseStream.on('downloadProgress', (progress) => {
+    //   if (progress.transferred % (100 * 1024 * 1024) === 0) {
         logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
-      }
+    //   }
     })
 
+    // console.log(pipeline)
 
-    await writeFile(localFilePath, await res.buffer())
+    const pipeline = promisify(stream.pipeline);
+
+    await pipeline(
+      responseStream,
+      createWriteStream(localFilePath),
+      new stream.PassThrough()
+    );
+
+    // await writeFile(localFilePath, await res.buffer())
     logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
     
 
@@ -94,6 +123,9 @@ async function download (cid) {
   } catch (e) {
     logger.log({ level: 'error', message: 'error while downloading' })
     logger.log({ level: 'error', message: e })
+    console.trace()
+  } finally {
+    responseStream.end()
   }
 }
 
@@ -190,8 +222,8 @@ async function main () {
 
     logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
   }
-    // await sleep(delayTime)
-    // }
+  // await sleep(delayTime)
+  // }
 
 
 }
