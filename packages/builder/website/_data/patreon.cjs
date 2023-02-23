@@ -234,7 +234,8 @@ function parsePatronData (data) {
 }
 
 function parseGoalsData (data) {
-  const allGoals = data.included.map((goal) => goal.attributes)
+  const allGoals = data.included.map((goal) => goal.attributes).sort((a, b) => b.completed_percentage - a.completed_percentage)
+  console.log(allGoals)
   const incompleteGoals = allGoals.filter((goal) => goal.completed_percentage < 100)
   const completeGoals = allGoals.filter((goal) => goal.completed_percentage === 100)
   return {
