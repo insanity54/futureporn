@@ -52,44 +52,49 @@ function _getIpfsHash (input) {
 // getting started txt /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme
 
 async function download (cid) {
-  cid = ipfsHashRegex.exec(cid)[0]
-  const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
-  logger.log({ level: 'debug', message: `downloading ${cid} from IPFS to ${localFilePath}` })
+  try {
+    cid = ipfsHashRegex.exec(cid)[0]
+    const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
+    logger.log({ level: 'debug', message: `downloading ${cid} from IPFS to ${localFilePath}` })
 
 
-  // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
-  const res = got.post(
-    'http://127.0.0.1:5001/api/v0/get',
-    {
-      searchParams: {
-        arg: cid
-      },
-      timeout: {
-        request: 1000*60*60*3
+    // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
+    const res = await got.post(
+      'http://127.0.0.1:5001/api/v0/get',
+      {
+        searchParams: {
+          arg: cid
+        },
+        timeout: {
+          request: 1000*60*60*3
+        }
       }
-    }
-  )
+    )
 
-  res.on('response', (res) => {
-    logger.log({ level: 'debug', message: 'got response' })
-    logger.log({ level: 'debug', message: res.headers })
-    logger.log({ level: 'debug', message: response.trailers })
-  })
+    res.on('response', (res) => {
+      logger.log({ level: 'debug', message: 'got response' })
+      logger.log({ level: 'debug', message: res.headers })
+      logger.log({ level: 'debug', message: response.trailers })
+    })
 
-  res.on('downloadProgress', (progress) => {
-    if (progress.transferred % (100 * 1024 * 1024) === 0) {
-      logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
-    }
-  })
-
-
-  await writeFile(localFilePath, await res.buffer())
-  logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
-  
+    res.on('downloadProgress', (progress) => {
+      if (progress.transferred % (100 * 1024 * 1024) === 0) {
+        logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
+      }
+    })
 
 
+    await writeFile(localFilePath, await res.buffer())
+    logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
+    
 
-  return localFilePath;
+
+
+    return localFilePath;
+  } catch (e) {
+    logger.log({ level: 'error', message: 'error while downloading' })
+    logger.log({ level: 'error', message: e })
+  }
 }
 
 
@@ -160,11 +165,12 @@ async function main () {
     if (vod === null) {
       logger.log({ level: 'info', message: 'there are no unprocessed videos. idling.' })
     } else {
-      logger.log({ level: 'debug', message: vod.id })
+      // logger.log({ level: 'debug', message: vod.id })
 
       // download
       logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
       const filenameSrc = await download(vod.videoSrcHash)
+      logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
 
       // transcode
       logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})
@@ -181,10 +187,13 @@ async function main () {
 
     logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
   } catch (e) {
+
     logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
   }
     // await sleep(delayTime)
     // }
+
+
 }
 
 
