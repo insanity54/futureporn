@@ -45,7 +45,8 @@ const path = require('node:path')
 const EleventyFetch = require('@11ty/eleventy-fetch')
 
 
-
+const benefitId = 9380665 // Username displayed on Futureporn.net benefit
+const campaignId = 8012692 // CJ_Clippy campaign
 const dataDir = path.join(os.homedir(), '.local/share/futureporn/builder')
 const tokenFile = path.join(dataDir, 'patreonTokens.json')
 
@@ -77,17 +78,42 @@ async function saveOauthTokenToDisk (token) {
 
 async function getPatronData (access_token) {
   try {
-    let data = await EleventyFetch(encodeURI('https://www.patreon.com/api/oauth2/v2/campaigns/8012692/members?include=user,currently_entitled_tiers&fields[user]=image_url,full_name&fields[member]=full_name,lifetime_support_cents,currently_entitled_amount_cents,patron_status'), {
-      duration: '1d',
-      type: 'json',
-      fetchOptions: {
-        headers: {
-          Authorization: `Bearer ${access_token}`
+
+    // // const url = `https://www.patreon.com/api/oauth2/v2/campaigns/${campaignID}/members?include=benefits&fields[member]=full_name,patron_status&fields[tier]=title,benefits&fields[benefit]=title&fields[reward]=title,amount_cents`;
+    // // find the list of tiers
+    // let tierData = EleventyFetch(
+    //   encodeURI(`https://www.patreon.com/api/oauth2/v2/campaigns/${campaignId}/tier`),
+    //   {
+    //     duration: '1d',
+    //     type: 'json',
+    //     fetchOptions: {
+    //       headers: {
+    //         Authorization: `Bearer ${access_token}`
+    //       }
+    //     }
+    //   }
+    // )
+
+    // // filter the list of tiers, showing only tiers with the "Your username displayed on Futureporn.net" benefit
+    // let applicableTiers = tierData.filter((td) => td.some(td.relationships))
+
+
+    let data = await EleventyFetch(
+      encodeURI(`https://www.patreon.com/api/oauth2/v2/campaigns/${campaignId}/members?include=user,currently_entitled_tiers,currently_entitled_tiers.benefits&fields[tier]=title&fields[benefit]=title&fields[user]=image_url,full_name&fields[member]=full_name,lifetime_support_cents,currently_entitled_amount_cents,patron_status`), 
+      {
+        duration: '1d',
+        type: 'json',
+        fetchOptions: {
+          headers: {
+            Authorization: `Bearer ${access_token}`
+          }
         }
       }
-    });
+    );
 
-    // console.log(JSON.stringify(data, 0, 2))
+    console.log(JSON.stringify(data, 0, 2))
+    console.log('---')
+    // process.exit()
     return data
 
   } catch (e) {
@@ -154,6 +180,8 @@ async function init () {
 
 function parsePatronData (data) {
 
+
+
   // patreon api is kind of funky because 
   // the member is separate from the user
   // there is data I need in both the member and user objects.
@@ -177,13 +205,25 @@ function parsePatronData (data) {
     };
   });
 
-  // Log the merged data
-  // console.log(mergedData);
+  console.log(JSON.stringify(data, 0, 2));
+
+  // we need to map benefits to tiers because users/members only have a tiers relationship (no benefits relationship)
+  // so we need to know the tiers that contain the "Your username displayed on Futureporn.net" benefit
+  // and include only the patrons who belong to said tiers
+  const tiers = data.included.filter((d) => d.type === 'tier')
+  const appropriateTiers = tiers.filter((t) => t.relationships.benefits.data.some((b) => b.id == benefitId))
+  const appropriateTierIds = appropriateTiers.map((t) => t.id)
 
 
+  // Greets ChatGPT
+  function isPatronEntitledToAnyTier(patron) {
+    const entitledTierIds = patron.relationships.currently_entitled_tiers.data.map(tier => tier.id);
+    return entitledTierIds.some(tierId => appropriateTierIds.includes(tierId))
+  }
 
+  const eligiblePatrons = mergedData.filter(isPatronEntitledToAnyTier);
 
-  const sortedPatrons = mergedData.filter(patron => patron.attributes.lifetime_support_cents > 0).sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
+  const sortedPatrons = eligiblePatrons.filter(patron => patron.attributes.lifetime_support_cents > 0).sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
   
   const activePatrons = sortedPatrons.filter(patron => patron.attributes.patron_status === 'active_patron')
 
