@@ -57,7 +57,6 @@ async function download (cid) {
   logger.log({ level: 'debug', message: `  [*] downloading ${cid} from IPFS to ${localFilePath}` })
 
 
-  console.log('dl\'ing!')
   // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
   const res = got.post(
     'http://127.0.0.1:5001/api/v0/get',
@@ -66,7 +65,7 @@ async function download (cid) {
         arg: cid
       },
       timeout: {
-        request: 30000
+        request: 1000*60*60*3
       }
     }
   )
@@ -78,7 +77,9 @@ async function download (cid) {
   })
 
   res.on('downloadProgress', (progress) => {
-    logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent*100}%` })
+    if (progress.percent % 5 === 0) { // log every 5%
+      logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}%` })
+    }
   })
 
 
