@@ -8,8 +8,8 @@ import path from 'node:path'
 import {execa} from 'execa'
 import {got} from 'got'
 import {writeFile} from 'node:fs/promises'
-import {createWriteStream} from 'node:fs'
-import {promisify} from 'node:util';
+import fs from 'node:fs'
+import { pipeline } from 'node:stream/promises';
 import stream from 'node:stream';
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
@@ -59,6 +59,7 @@ async function download (cid) {
     'http://127.0.0.1:5001/api/v0/get',
     {
       method: 'POST',
+      body: '',
       searchParams: {
         arg: cid
       },
@@ -93,23 +94,27 @@ async function download (cid) {
     //   logger.log({ level: 'debug', message: response.trailers })
     // })
 
+    responseStream.on('downloadProgress', (progress) => {
+      if (progress.transferred % (1000 * 1024 * 1024) === 0) {
+        logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
+      }
+    })
+
+
     setInterval(() => {
       console.log(responseStream.downloadProgress)
     }, 2000)
 
-    responseStream.on('downloadProgress', (progress) => {
-    //   if (progress.transferred % (100 * 1024 * 1024) === 0) {
-        logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
-    //   }
-    })
+    // console.log('>>>>>>>>>>>>>here we go')
+    // console.log(responseStream)                      // request
+    // console.log(fs.createWriteStream(localFilePath)) // writethru
+    // console.log(new stream.PassThrough())            // passthru
 
-    // console.log(pipeline)
-
-    const pipeline = promisify(stream.pipeline);
+    const writeStream = fs.createWriteStream(localFilePath)
 
     await pipeline(
       responseStream,
-      createWriteStream(localFilePath),
+      writeStream,
       new stream.PassThrough()
     );
 
@@ -125,6 +130,7 @@ async function download (cid) {
     logger.log({ level: 'error', message: e })
     console.trace()
   } finally {
+    console.log('do i need to end the stream here???/')
     responseStream.end()
   }
 }
@@ -203,6 +209,8 @@ async function main () {
       logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
       const filenameSrc = await download(vod.videoSrcHash)
       logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
+
+      if (typeof filenameSrc === 'undefined') throw new Error('download did not return a localFilePath')
 
       // transcode
       logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})

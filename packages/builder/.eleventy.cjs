@@ -112,10 +112,10 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
 module.exports = function(eleventyConfig) {
 
-  eleventyConfig.on('eleventy.after', async ({ dir, runMode, outputMode, results }) => {
-    // Run me after the build ends
-    console.log(results.map((r) => r.outputPath).filter((r) => r.includes('.json')))
-  });
+  // eleventyConfig.on('eleventy.after', async ({ dir, runMode, outputMode, results }) => {
+  //   // Run me after the build ends
+  //   console.log(results.map((r) => r.outputPath).filter((r) => r.includes('.json')))
+  // });
 
   eleventyConfig.addPlugin(EleventyVitePlugin, {
     viteOptions: {
@@ -129,7 +129,8 @@ module.exports = function(eleventyConfig) {
           plugins: [
             copy({
               targets: [
-                { src: '.11ty-vite/api/*.json', dest: '_site/api' }
+                { src: '.11ty-vite/api/*.json', dest: '_site/api' },
+                { src: '.11ty-vite/feed/*.xml', dest: '_site/feed' },
               ]
             })
           ]
