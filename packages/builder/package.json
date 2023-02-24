@@ -59,6 +59,7 @@
     "webpack-manifest-plugin": "^5.0.0"
   },
   "scripts": {
+    "serve": "npx http-server ./_site",
     "start": "node index.js",
     "dev": "echo \"please use dev:index or dev:11ty",
     "build": "echo \"please use build:fast or build:slow\"",
