@@ -15,7 +15,7 @@ eleventyExcludeFromCollections: true
     <email>{{ metadata.author.email }}</email>
   </author>
   {%- for vod in db.vods %}
-  {% set absolutePostUrl %}{{ vod.url | url | absoluteUrl(metadata.url) }}{% endset %}
+  {% set absolutePostUrl %}{{ vod.date | safeDate | vodUrl | absoluteUrl(metadata.url) }}{% endset %}
   <entry>
     <title>{{ vod.title }}</title>
     <link href="{{ absolutePostUrl }}"/>

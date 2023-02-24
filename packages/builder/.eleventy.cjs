@@ -131,6 +131,7 @@ module.exports = function(eleventyConfig) {
               targets: [
                 { src: '.11ty-vite/api/*.json', dest: '_site/api' },
                 { src: '.11ty-vite/feed/*.xml', dest: '_site/feed' },
+                { src: '.11ty-vite/sitemap.xml', dest: '_site' }
               ]
             })
           ]
@@ -162,6 +163,8 @@ module.exports = function(eleventyConfig) {
     return `futureporn-peer-${getRandomInt(699,6969)}`
   })
 
+
+
   eleventyConfig.addShortcode("ipfsProgressComplete", function(vods) {
     return `${filterIpfsCompleted(vods)}`;
   });
@@ -188,6 +191,10 @@ module.exports = function(eleventyConfig) {
     const completedVods = filterIpfsCompleted(vods)
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
+
+  eleventyConfig.addFilter('vodUrl', (text) => {
+    return `/vods/${text}/`
+  })
 
   eleventyConfig.addFilter('stripHtml', (text) => {
     // greets ChatGPT
