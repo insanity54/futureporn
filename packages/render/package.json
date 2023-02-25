@@ -1,5 +1,5 @@
 {
-  "name": "coder",
+  "name": "render",
   "version": "0.0.1",
   "description": "Futureporn component which transcodes video different formats and generates thumbnails",
   "main": "index.js",
@@ -12,12 +12,17 @@
   "license": "Unlicense",
   "type": "module",
   "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.0",
     "common": "workspace:^0.0.1",
-    "cuid": "^2.1.8",
     "dotenv": "^16.0.3",
     "execa": "^6.1.0",
     "fastq": "^1.15.0",
     "got": "^12.5.3",
-    "postgres": "^3.3.3"
+    "magic-bytes.js": "^1.0.14",
+    "node-tar": "^1.0.0",
+    "postgres": "^3.3.3",
+    "tar": "^6.1.13",
+    "tar-fs": "^2.1.1",
+    "tar-stream": "^3.0.0"
   }
 }

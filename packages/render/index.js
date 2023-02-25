@@ -7,10 +7,13 @@ import Cluster from 'common/Cluster'
 import path from 'node:path'
 import {execa} from 'execa'
 import {got} from 'got'
-import {writeFile} from 'node:fs/promises'
+import {rename, writeFile} from 'node:fs/promises'
 import fs from 'node:fs'
-import { pipeline } from 'node:stream/promises';
-import stream from 'node:stream';
+import { pipeline } from 'node:stream/promises'
+import stream from 'node:stream'
+import tar from 'tar'
+
+
 
 if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_HOST undef');
 if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
@@ -38,7 +41,7 @@ async function find () {
     SELECT "videoSrcHash", "video240Hash", "thiccHash"
     FROM vod
     WHERE "video240Hash" IS NULL
-    ORDER BY date DESC
+    ORDER BY RANDOM()
     LIMIT 1;
   `
   return (!!results[0]) ? results[0] : null
@@ -55,19 +58,31 @@ function _getIpfsHash (input) {
 // getting started txt /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme
 
 async function download (cid) {
-  const responseStream = got.stream(
+  cid = 'bafybeihd4slqjqmtcwvcccdco32ko6nrvn2pqkmgnrnxddeze2tlpiaqo4'
+  const gotStream = got.stream(
     'http://127.0.0.1:5001/api/v0/get',
     {
       method: 'POST',
       body: '',
       searchParams: {
-        arg: cid
+        arg: cid,
+        // Even if I switch archive to false, we get the same tar response.
+        // apparently there is no way via the API to get anything other than a tar stream
+        // see: https://discuss.ipfs.tech/t/download-more-bytes-when-using-curl-command/562
+        // see: https://github.com/ipfs/kubo/issues/6477
+        // 
+        // so we are just putting archive: true, compress: false to future-proof.
+        // in case a default is ever set, we will be on the setting that we are coded to handle
+        archive: true, 
+        compress: false
       },
       timeout: {
-        request: 1000*60*60*3
+        request: 1000*60*60*3 // 3 hour timeout
       }
     }
   )
+
+  let progressReportTimer 
 
   try {
     cid = ipfsHashRegex.exec(cid)[0]
@@ -75,48 +90,44 @@ async function download (cid) {
     logger.log({ level: 'debug', message: `downloading ${cid} from IPFS to ${localFilePath}` })
 
 
-    // const ssCid = '/ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme'
+
+    progressReportTimer = setInterval(() => {
+      console.log(gotStream.downloadProgress)
+    }, 30000)
 
 
-    // stream.response.on('response', (res) => {
-    //   logger.log({ level: 'debug', message: 'got response' })
-    //   logger.log({ level: 'debug', message: res.headers })
-    //   logger.log({ level: 'debug', message: response.trailers })
-    // })
 
-    // stream.response.on('close', (c) => {
-    //   logger.log({ level: 'debug', message: 'IncomingMessage clos3ed.'})
-    // })
+    // const writeStream = fs.createWriteStream(localFilePath)
 
-    // stream.on('response', (res) => {
-    //   logger.log({ level: 'debug', message: 'got response' })
-    //   logger.log({ level: 'debug', message: res.headers })
-    //   logger.log({ level: 'debug', message: response.trailers })
-    // })
+    // await pipeline(
+    //   gotStream,
+    //   // tar.extract(),
+    //   writeStream
+    // );
 
-    responseStream.on('downloadProgress', (progress) => {
-      if (progress.transferred % (1000 * 1024 * 1024) === 0) {
-        logger.log({ level: 'info', message: `progress bytes:${progress.transferred}, percentage:${progress.percent}` })
-      }
+    // pipe the file to tar.extract which will
+    // create an unextracted file with the filename being an extensionless CID
+
+    const extractStream = tar.extract({
+      C: process.env.FUTUREPORN_WORKDIR,
+    })
+
+    gotStream.pipe(extractStream)
+
+
+    logger.log({ level: 'info', message: 'piping download to tar'})
+    await new Promise((resolve, reject) => {
+      extractStream.once('error', reject);
+      extractStream.once('finish', resolve);
     })
 
 
-    setInterval(() => {
-      console.log(responseStream.downloadProgress)
-    }, 2000)
 
-    // console.log('>>>>>>>>>>>>>here we go')
-    // console.log(responseStream)                      // request
-    // console.log(fs.createWriteStream(localFilePath)) // writethru
-    // console.log(new stream.PassThrough())            // passthru
-
-    const writeStream = fs.createWriteStream(localFilePath)
-
-    await pipeline(
-      responseStream,
-      writeStream,
-      new stream.PassThrough()
-    );
+    logger.log({ level: 'info', message: 'renaming the CID file to CID.mp4'})
+    await rename(
+      path.join(process.env.FUTUREPORN_WORKDIR, cid),
+      localFilePath
+    )
 
     // await writeFile(localFilePath, await res.buffer())
     logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
@@ -130,8 +141,9 @@ async function download (cid) {
     logger.log({ level: 'error', message: e })
     console.trace()
   } finally {
-    console.log('do i need to end the stream here???/')
-    responseStream.end()
+    logger.log({ level: 'debug', message: 'Finally! (do I need to end the stream here???/)' })
+    // responseStream.end()
+    clearInterval(progressReportTimer)
   }
 }
 
@@ -195,7 +207,7 @@ async function main () {
     password: process.env.IPFS_CLUSTER_HTTP_API_PASSWORD
   })
 
-  const delayTime = 1000*60
+  const delayTime = 1000*30
   // while (true) {
   try {
     logger.log({ level: 'debug', message: 'looking for an unprocessed VOD.' })
@@ -221,8 +233,8 @@ async function main () {
       const data = await cluster.add(filename240)
 
       // save
-      logger.log({ level: 'debug', message: `saving ${data.cid}`})
-      await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
+      logger.log({ level: 'debug', message: `@TODO @TODO @TODO saving ${data.cid}`})
+      // await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
     }
 
     logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
