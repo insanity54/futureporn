@@ -7,7 +7,7 @@ import Cluster from 'common/Cluster'
 import path from 'node:path'
 import {execa} from 'execa'
 import {got} from 'got'
-import {rename, writeFile} from 'node:fs/promises'
+import {rename, writeFile, readFile} from 'node:fs/promises'
 import fs from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 import stream from 'node:stream'
@@ -19,6 +19,10 @@ if (typeof process.env.POSTGRES_HOST === 'undefined') throw new Error('POSTGRES_
 if (typeof process.env.POSTGRES_USERNAME === 'undefined') throw new Error('POSTGRES_USERNAME undef');
 if (typeof process.env.POSTGRES_PASSWORD === 'undefined') throw new Error('POSTGRES_PASSWORD undef');
 if (typeof process.env.FUTUREPORN_WORKDIR === 'undefined') throw new Error('FUTUREPORN_WORKDIR is undefined in env');
+
+const reportInterval = 60000
+const delayBetweenAttempts = 30000
+
 
 const logger = loggerFactory({
   defaultMeta: {
@@ -57,8 +61,26 @@ function _getIpfsHash (input) {
 // ubuuntu iso QmPK1s3pNYLi9ERiq3BDxKa4XosgWwFRQUydHUtz4YgpqB
 // getting started txt /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme
 
-async function download (cid) {
-  // cid = 'bafybeihd4slqjqmtcwvcccdco32ko6nrvn2pqkmgnrnxddeze2tlpiaqo4'
+async function stat (cid) {
+  return got(
+    'http://127.0.0.1:5001/api/v0/block/stat',
+    {
+      method: 'POST',
+      body: '',
+      responseType: 'json',
+      searchParams: {
+        arg: cid
+      },
+      timeout: {
+        request: 1000*60
+      }
+    }
+  ).json()
+}
+
+
+async function download (cid, size) {
+  if (typeof cid === 'undefined') throw new Error('cid is undefined');
   const gotStream = got.stream(
     'http://127.0.0.1:5001/api/v0/get',
     {
@@ -91,8 +113,15 @@ async function download (cid) {
 
 
     progressReportTimer = setInterval(() => {
-      console.log(gotStream.downloadProgress)
-    }, 30000)
+      if (typeof size !== 'undefined') {
+        // accurate percentage if we know the filesize
+        const progressPercentage = ((gotStream.downloadProgress.transferred / size) * 100).toFixed(2)
+        logger.log({ level: 'info', message: `${progressPercentage}% transferred.` })
+      } else {
+        // generic progress
+        logger.log({ level: 'info', message: JSON.stringify(gotStream.downloadProgress) })
+      }
+    }, reportInterval)
 
 
     const extractStream = tar.extract({
@@ -128,23 +157,71 @@ async function download (cid) {
     logger.log({ level: 'error', message: e })
     console.trace()
   } finally {
-    logger.log({ level: 'debug', message: 'Finally! (do I need to end the stream here???/)' })
-    // responseStream.end()
     clearInterval(progressReportTimer)
   }
 }
 
+// greets ChatGPT
+async function getLastFrameNumber(filePath) {
+  const fileContent = await readFile(filePath, 'utf-8');
+  const matches = fileContent.match(/frame=(\d+)/g);
+  if (matches && matches.length > 0) {
+    const lastMatch = matches[matches.length - 1];
+    const numberMatch = lastMatch.match(/\d+/g);
+    if (numberMatch && numberMatch.length > 0) {
+      return parseInt(numberMatch[numberMatch.length - 1]);
+    }
+  }
+  return null;
+}
+
+async function getTotalFrameCount (filename) {
+  const { exitCode, killed, stdout, stderr } = await execa('ffprobe', [
+    '-v', 'error',
+    '-select_streams', 'v:0',
+    '-show_entries', 'stream=nb_frames',
+    '-of', 'default=nokey=1:noprint_wrappers=1',
+    filename
+  ])
+  if (exitCode !== 0 || killed !== false) {
+    throw new Error(`problem while getting frame count. exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
+  }
+  return parseInt(stdout)
+}
 
 /**
  * @param {string} input
  * @resolves {string} output
  */
 async function transcode (filename) {
+  if (typeof filename === 'undefined') throw new Error('filename is undefined');
+  const progressFilePath = path.join(process.env.FUTUREPORN_WORKDIR, 'ffmpeg-progress.log')
   const outputFilePath = path.join(process.env.FUTUREPORN_WORKDIR, path.basename(filename, '.mp4')+'_240p.mp4')
-  const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', ['-y', '-i', filename, '-vf', 'scale=w=-2:h=240', '-b:v', '386k', '-b:a', '45k', outputFilePath]);
+  const totalFrames = await getTotalFrameCount(filename)
+
+  logger.log({ level: 'debug', message: `transcoding ${filename} to ${outputFilePath} and saving progress log to ${progressFilePath}` })
+  let progressReportTimer = setInterval(async () => {
+    try {
+      const frame = await getLastFrameNumber(progressFilePath)
+      logger.log({ level: 'info', message: `transcoder progress-- ${(frame/totalFrames*100).toFixed(2)}%` })
+    } catch (e) {
+      logger.log({ level: 'info', message: 'we got an error thingy while reading the ffmpeg-progress log but its ok we can just ignore and try again later.' })
+    }
+  }, reportInterval)
+  const { exitCode, killed, stdout, stderr } = await execa('ffmpeg', [
+    '-y',
+    '-i', filename,
+    '-vf', 'scale=w=-2:h=240',
+    '-b:v', '386k',
+    '-b:a', '45k',
+    '-progress', progressFilePath,
+    outputFilePath
+  ]);
   if (exitCode !== 0 || killed !== false) {
     throw new RemuxError(`exitCode:${exitCode}, killed:${killed}, stdout:${stdout}, stderr:${stderr}`);
   }
+  logger.log({ level: 'info', message: 'transcode COMPLETE!' })
+  clearInterval(progressReportTimer)
   return outputFilePath
 }
 
@@ -195,7 +272,13 @@ async function main () {
     password: process.env.IPFS_CLUSTER_HTTP_API_PASSWORD
   })
 
-  const delayTime = 1000*30
+  // const devCid = 'bafybeihd4slqjqmtcwvcccdco32ko6nrvn2pqkmgnrnxddeze2tlpiaqo4'
+  // const size = await stat(devCid)
+  // console.log(size)
+  // const data = await cluster.add('/home/chris/Documents/projektmelody/Projekt Melody _ VSHOJO - A.I.s save so much money on closet space-1596526711801319427.mp4')
+  // console.log(data)
+  // process.exit()
+
   while (true) {
     try {
       logger.log({ level: 'debug', message: 'looking for an unprocessed VOD.' })
@@ -205,9 +288,15 @@ async function main () {
       } else {
         logger.log({ level: 'debug', message: `the VOD id we are working with is ${vod.id}` })
 
+        // stat
+        logger.log({ level: 'debug', message: `getting stats of ${vod.videoSrcHash}`})
+        const stat = await stat(vod.videoSrcHash)
+        const size = stat.Size
+        logger.log({ level: 'debug', message: `size is ${size}`})
+
         // download
         logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
-        const filenameSrc = await download(vod.videoSrcHash)
+        const filenameSrc = await download(vod.videoSrcHash, size)
         logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
 
         if (typeof filenameSrc === 'undefined') throw new Error('download did not return a localFilePath')
@@ -221,7 +310,7 @@ async function main () {
         const data = await cluster.add(filename240)
 
         // save
-        logger.log({ level: 'debug', message: `@TODO @TODO @TODO saving ${data.cid}`})
+        logger.log({ level: 'debug', message: `saving ${data.cid} to the db`})
         await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
       }
 
@@ -230,7 +319,7 @@ async function main () {
 
       logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
     }
-    await sleep(delayTime)
+    await sleep(delayBetweenAttempts)
   }
 
 

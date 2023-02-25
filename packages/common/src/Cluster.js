@@ -119,7 +119,7 @@ export default class Cluster {
     if (typeof this.password === 'undefined') throw new Error('password not defined');
   }
   async add (filename) {
-    logger.log({ level: 'info', message: `username:${this.username}, password:${this.password}, uri:${this.uri}` })
+    logger.log({ level: 'debug', message: `username:${this.username}, password:${this.password}, uri:${this.uri}` })
     const streamPipeline = promisify(pipeline);
 
     const agent = new https.Agent({
@@ -147,6 +147,9 @@ export default class Cluster {
         opts
       )
 
+      // progress updates are streamed from the cluster
+      // for each update, just display it
+      // when a cid exists in the output, it's done.
       for await (const chunk of res) {
         const data = JSON.parse(chunk.toString())
         logger.log({ level: 'debug', message: JSON.stringify(data) })
@@ -155,7 +158,7 @@ export default class Cluster {
         }
       }
     } catch (e) {
-      logger.log({ level: 'error', message: `rejecting! ${error}` })
+      logger.log({ level: 'error', message: `error while uploading! ${e}` })
     }
 
   }
