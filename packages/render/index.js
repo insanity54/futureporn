@@ -38,7 +38,7 @@ const sql = postgres({
 
 async function find () {
   const results = await sql`
-    SELECT "videoSrcHash", "video240Hash", "thiccHash"
+    SELECT "videoSrcHash", "video240Hash", "thiccHash", "id"
     FROM vod
     WHERE "video240Hash" IS NULL
     ORDER BY RANDOM()
@@ -182,6 +182,7 @@ async function notify () {
 // }
 
 async function sleep (ms) {
+  logger.log({ level: 'debug', message: `sleeping for ${ms}ms` })
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
@@ -195,42 +196,42 @@ async function main () {
   })
 
   const delayTime = 1000*30
-  // while (true) {
-  try {
-    logger.log({ level: 'debug', message: 'looking for an unprocessed VOD.' })
-    const vod = await find()
-    if (vod === null) {
-      logger.log({ level: 'info', message: 'there are no unprocessed videos. idling.' })
-    } else {
-      // logger.log({ level: 'debug', message: vod.id })
+  while (true) {
+    try {
+      logger.log({ level: 'debug', message: 'looking for an unprocessed VOD.' })
+      const vod = await find()
+      if (vod === null) {
+        logger.log({ level: 'info', message: 'there are no unprocessed videos. idling.' })
+      } else {
+        logger.log({ level: 'debug', message: `the VOD id we are working with is ${vod.id}` })
 
-      // download
-      logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
-      const filenameSrc = await download(vod.videoSrcHash)
-      logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
+        // download
+        logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
+        const filenameSrc = await download(vod.videoSrcHash)
+        logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
 
-      if (typeof filenameSrc === 'undefined') throw new Error('download did not return a localFilePath')
+        if (typeof filenameSrc === 'undefined') throw new Error('download did not return a localFilePath')
 
-      // transcode
-      logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})
-      const filename240 = await transcode(filenameSrc)
+        // transcode
+        logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})
+        const filename240 = await transcode(filenameSrc)
 
-      // upload
-      logger.log({ level: 'debug', message: `uploading ${filename240}`})
-      const data = await cluster.add(filename240)
+        // upload
+        logger.log({ level: 'debug', message: `uploading ${filename240}`})
+        const data = await cluster.add(filename240)
 
-      // save
-      logger.log({ level: 'debug', message: `@TODO @TODO @TODO saving ${data.cid}`})
-      // await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
+        // save
+        logger.log({ level: 'debug', message: `@TODO @TODO @TODO saving ${data.cid}`})
+        await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
+      }
+
+      logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
+    } catch (e) {
+
+      logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
     }
-
-    logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
-  } catch (e) {
-
-    logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
+    await sleep(delayTime)
   }
-  // await sleep(delayTime)
-  // }
 
 
 }
