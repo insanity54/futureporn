@@ -131,7 +131,6 @@ async function download (cid, size) {
     gotStream.pipe(extractStream)
 
 
-    logger.log({ level: 'info', message: 'piping download to tar'})
     await new Promise((resolve, reject) => {
       extractStream.once('error', reject);
       extractStream.once('finish', resolve);
