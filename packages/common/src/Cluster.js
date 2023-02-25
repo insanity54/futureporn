@@ -9,6 +9,8 @@ import fs, { createWriteStream } from 'node:fs'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
 import { fileFromPath } from "formdata-node/file-from-path"
+import { loggerFactory } from 'common/logger'
+
 dotenv.config()
 
 // const ipfsClusterExecutable = '/usr/local/bin/ipfs-cluster-ctl'
@@ -23,6 +25,12 @@ dotenv.config()
 // if (typeof IPFS_CLUSTER_HTTP_API_PASSWORD === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_PASSWORD in env is undefined');
 // if (typeof IPFS_CLUSTER_HTTP_API_MULTIADDR === 'undefined') throw new Error('IPFS_CLUSTER_HTTP_API_MULTIADDR in env is undefined');
 
+
+const logger = loggerFactory({
+  defaultMeta: {
+    service: 'futureporn/common'
+  }
+})
 
 
 
@@ -111,7 +119,7 @@ export default class Cluster {
     if (typeof this.password === 'undefined') throw new Error('password not defined');
   }
   async add (filename) {
-    console.log(`username:${this.username}, password:${this.password}, uri:${this.uri}`)
+    logger.log({ level: 'info', message: `username:${this.username}, password:${this.password}, uri:${this.uri}` })
     const streamPipeline = promisify(pipeline);
 
     const agent = new https.Agent({
@@ -133,7 +141,7 @@ export default class Cluster {
 
 
     try {
-      console.log('posting!')
+      logger.log({ level: 'info', message: `Adding ${filename} to IPFS cluster` })
       const res = await got.post(
         `${this.uri}/add?cid-version=1&progress=1`,
         opts
@@ -141,13 +149,13 @@ export default class Cluster {
 
       for await (const chunk of res) {
         const data = JSON.parse(chunk.toString())
-        console.log(data)
+        logger.log({ level: 'debug', message: JSON.stringify(data) })
         if (data?.cid) {
           return data
         }
       }
     } catch (e) {
-      console.error('rejecting! ', error)
+      logger.log({ level: 'error', message: `rejecting! ${error}` })
     }
 
   }
