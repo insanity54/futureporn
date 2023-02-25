@@ -140,25 +140,27 @@ export default class Cluster {
     }
 
 
-    try {
-      logger.log({ level: 'info', message: `Adding ${filename} to IPFS cluster` })
-      const res = await got.post(
-        `${this.uri}/add?cid-version=1&progress=1`,
-        opts
-      )
+    for (let i = 0; i < 5; i++) {
+      try {
+        logger.log({ level: 'info', message: `Adding ${filename} to IPFS cluster` });
+        const res = await got.post(`${this.uri}/add?cid-version=1&progress=1`, opts);
 
-      // progress updates are streamed from the cluster
-      // for each update, just display it
-      // when a cid exists in the output, it's done.
-      for await (const chunk of res) {
-        const data = JSON.parse(chunk.toString())
-        logger.log({ level: 'debug', message: JSON.stringify(data) })
-        if (data?.cid) {
-          return data
+        // progress updates are streamed from the cluster
+        // for each update, just display it
+        // when a cid exists in the output, it's done.
+        for await (const chunk of res) {
+          const data = JSON.parse(chunk.toString());
+          logger.log({ level: 'debug', message: JSON.stringify(data) });
+          if (data?.cid) {
+            return data;
+          }
+        }
+      } catch (e) {
+        logger.log({ level: 'error', message: `error while uploading! ${e}` });
+        if (i < 4) {
+          logger.log({ level: 'info', message: `Retrying the upload...` });
         }
       }
-    } catch (e) {
-      logger.log({ level: 'error', message: `error while uploading! ${e}` })
     }
 
   }
