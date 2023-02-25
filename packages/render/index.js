@@ -291,7 +291,7 @@ async function main () {
         logger.log({ level: 'debug', message: `getting stats of ${vod.videoSrcHash}`})
         const statRes = await stat(vod.videoSrcHash)
         const size = statRes.Size
-        logger.log({ level: 'debug', message: `size is ${size}`})
+        logger.log({ level: 'debug', message: `size is ${size} (${JSON.stringify(statsRes)})` })
 
         // download
         logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
