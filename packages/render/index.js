@@ -264,6 +264,19 @@ async function sleep (ms) {
   })
 }
 
+async function save (id, video240Hash, thiccHash) {
+  for (let i = 0; i < 5; i++) {
+    logger.log({ level: 'info', message: `Saving id:${id}, video240Hash:${video240Hash}, thiccHash:${thiccHash} to db. Attempt ${i+1}` });
+    try {
+      await sql`UPDATE vod SET "video240Hash" = ${video240Hash} WHERE vod.id = ${id};`
+    } catch (e) {
+      logger.log({ level: 'error', message: `error while saving! ${e}` });
+      if (i < 4) {
+        logger.log({ level: 'info', message: `Retrying the save...` });
+      }
+    }
+  }
+}
 
 async function main () {
   const cluster = new Cluster({
@@ -310,7 +323,7 @@ async function main () {
 
         // save
         logger.log({ level: 'debug', message: `saving ${data.cid} to the db`})
-        await sql`UPDATE vod SET "video240Hash" = ${data.cid} WHERE vod.id = ${vod.id};`
+        await save(vod.id, data.cid)
       }
 
       logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
