@@ -116,7 +116,7 @@ async function download (cid, size) {
       if (typeof size !== 'undefined') {
         // accurate percentage if we know the filesize
         const progressPercentage = ((gotStream.downloadProgress.transferred / size) * 100).toFixed(2)
-        logger.log({ level: 'info', message: `${progressPercentage}% transferred.` })
+        logger.log({ level: 'info', message: `transferred:${gotStream.downloadProgress.transferred}, size:${size}, ${progressPercentage}% transferred.` })
       } else {
         // generic progress
         logger.log({ level: 'info', message: JSON.stringify(gotStream.downloadProgress) })
