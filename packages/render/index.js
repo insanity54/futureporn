@@ -268,7 +268,8 @@ async function save (id, video240Hash, thiccHash) {
   for (let i = 0; i < 5; i++) {
     logger.log({ level: 'info', message: `Saving id:${id}, video240Hash:${video240Hash}, thiccHash:${thiccHash} to db. Attempt ${i+1}` });
     try {
-      await sql`UPDATE vod SET "video240Hash" = ${video240Hash} WHERE vod.id = ${id};`
+      const res = await sql`UPDATE vod SET "video240Hash" = ${video240Hash} WHERE vod.id = ${id};`
+      return res
     } catch (e) {
       logger.log({ level: 'error', message: `error while saving! ${e}` });
       if (i < 4) {
