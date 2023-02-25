@@ -142,7 +142,7 @@ export default class Cluster {
 
     for (let i = 0; i < 5; i++) {
       try {
-        logger.log({ level: 'info', message: `Adding ${filename} to IPFS cluster` });
+        logger.log({ level: 'info', message: `Adding ${filename} to IPFS cluster. Attempt ${i+1}` });
         const res = await got.post(`${this.uri}/add?cid-version=1&progress=1`, opts);
 
         // progress updates are streamed from the cluster
