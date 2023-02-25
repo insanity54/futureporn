@@ -58,7 +58,7 @@ function _getIpfsHash (input) {
 // getting started txt /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/readme
 
 async function download (cid) {
-  cid = 'bafybeihd4slqjqmtcwvcccdco32ko6nrvn2pqkmgnrnxddeze2tlpiaqo4'
+  // cid = 'bafybeihd4slqjqmtcwvcccdco32ko6nrvn2pqkmgnrnxddeze2tlpiaqo4'
   const gotStream = got.stream(
     'http://127.0.0.1:5001/api/v0/get',
     {
@@ -90,23 +90,10 @@ async function download (cid) {
     logger.log({ level: 'debug', message: `downloading ${cid} from IPFS to ${localFilePath}` })
 
 
-
     progressReportTimer = setInterval(() => {
       console.log(gotStream.downloadProgress)
     }, 30000)
 
-
-
-    // const writeStream = fs.createWriteStream(localFilePath)
-
-    // await pipeline(
-    //   gotStream,
-    //   // tar.extract(),
-    //   writeStream
-    // );
-
-    // pipe the file to tar.extract which will
-    // create an unextracted file with the filename being an extensionless CID
 
     const extractStream = tar.extract({
       C: process.env.FUTUREPORN_WORKDIR,
