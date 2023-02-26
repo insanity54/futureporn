@@ -9,9 +9,11 @@ import {execa} from 'execa'
 import {got} from 'got'
 import {rename, writeFile, readFile} from 'node:fs/promises'
 import fs from 'node:fs'
-import { pipeline } from 'node:stream/promises'
+import os from 'node:os'
 import stream from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 import tar from 'tar'
+import Prevvy from 'prevvy'
 
 
 
@@ -231,13 +233,24 @@ async function transcode (filename) {
  * @resolves {string} output
  */
 async function thumbnail (filename) {
-
+  if (typeof filename === 'undefined') throw new Error('thumbnail is undefined')
+  logger.log({ level: 'debug', message: 'Generating thiccHash Thumbnail...' });
+  const tmpDateStamp = new Date().valueOf()
+  const thiccThumbnailPath = path.join(os.tmpdir(), `${tmpDateStamp}_thicc.jpg`);
+  let thiccOpts = {
+    input: filename,
+    output: thiccThumbnailPath,
+    throttleTimeout: 10000,
+    width: 128,
+    cols: 5,
+    rows: 5,
+  };
+  let pThicc = new Prevvy(thiccOpts);
+  await pThicc.generate();
+  const thiccFilePath = pThicc.output;
+  return thiccFilePath
 }
 
-
-async function notify () {
-
-}
 
 
 
@@ -285,12 +298,6 @@ async function main () {
     password: process.env.IPFS_CLUSTER_HTTP_API_PASSWORD
   })
 
-  // const devCid = 'bafybeihd4slqjqmtcwvcccdco32ko6nrvn2pqkmgnrnxddeze2tlpiaqo4'
-  // const size = await stat(devCid)
-  // console.log(size)
-  // const data = await cluster.add('/home/chris/Documents/projektmelody/Projekt Melody _ VSHOJO - A.I.s save so much money on closet space-1596526711801319427.mp4')
-  // console.log(data)
-  // process.exit()
 
   while (true) {
     try {
@@ -311,20 +318,25 @@ async function main () {
         logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
         const filenameSrc = await download(vod.videoSrcHash, size)
         logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
-
         if (typeof filenameSrc === 'undefined') throw new Error('download did not return a localFilePath')
+
+        // thumbnail
+        logger.log({ level: 'debug', message: `creating thumbnail` })
+        const thumbnailFilePath = await thumbnail(filenameSrc)
+        logger.log({ level: 'debug', message: `thumbnail created at ${thumbnailFilePath}`})
 
         // transcode
         logger.log({ level: 'debug', message: `transcoding ${filenameSrc}`})
         const filename240 = await transcode(filenameSrc)
 
         // upload
-        logger.log({ level: 'debug', message: `uploading ${filename240}`})
-        const data = await cluster.add(filename240)
+        logger.log({ level: 'debug', message: `uploading ${filename240} and ${thumbnailFilePath}`})
+        const up240 = await cluster.add(filename240)
+        const upThumb = await cluster.add(up240)
 
         // save
         logger.log({ level: 'debug', message: `saving ${data.cid} to the db`})
-        await save(vod.id, data.cid)
+        await save(vod.id, up240.cid, upThumb.cid)
       }
 
       logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })

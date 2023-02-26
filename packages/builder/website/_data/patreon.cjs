@@ -43,6 +43,7 @@ const os = require('node:os')
 const path = require('node:path')
 // const fetch = require('node-fetch')
 const EleventyFetch = require('@11ty/eleventy-fetch')
+const redacted = require('./redacted.json')
 
 
 const benefitId = 9380665 // Username displayed on Futureporn.net benefit
@@ -223,7 +224,10 @@ function parsePatronData (data) {
 
   const eligiblePatrons = mergedData.filter(isPatronEntitledToAnyTier);
 
-  const sortedPatrons = eligiblePatrons.filter(patron => patron.attributes.lifetime_support_cents > 0).sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
+  // @todo remove this redaction code once it's more established that there is a privacy-focused tier
+  const redactedPatrons = eligiblePatrons.filter((patron) => !redacted.includes(patron.attributes.full_name))
+
+  const sortedPatrons = redactedPatrons.filter(patron => patron.attributes.lifetime_support_cents > 0).sort((patronA, patronB) => patronA.lifetime_support_cents - patronB.lifetime_support_cents)
   
   const activePatrons = sortedPatrons.filter(patron => patron.attributes.patron_status === 'active_patron')
 
