@@ -118,7 +118,8 @@ export default class Cluster {
     if (typeof this.username === 'undefined') throw new Error('username not defined');
     if (typeof this.password === 'undefined') throw new Error('password not defined');
   }
-  async add (filename) {
+  async add (filename, fileSize) {
+    if (typeof fileSize !== 'number') throw new Error(`fileSize must be a number but it was ${typeof fileSize}`)
     logger.log({ level: 'debug', message: `username:${this.username}, password:${this.password}, uri:${this.uri}` })
     const streamPipeline = promisify(pipeline);
 
@@ -140,8 +141,21 @@ export default class Cluster {
     }
 
 
+
     for (let i = 0; i < 5; i++) {
+      let bytesReport = 0
+      let timer
+      let output
       try {
+
+        timer = setInterval(() => {
+          if (typeof fileSize !== 'undefined') {
+            logger.log({ level: 'info', message: `adding to IPFS. Progress: ${(bytesReport/fileSize*100).toFixed(2)}%`})
+          } else {
+            logger.log({ level: 'info', message: `adding to IPFS. Bytes transferred: ${bytesReport}` })
+          }
+        }, 60000)
+
         logger.log({ level: 'info', message: `Adding ${filename} to IPFS cluster. Attempt ${i+1}` });
         const res = await got.post(`${this.uri}/add?cid-version=1&progress=1`, opts);
 
@@ -150,8 +164,10 @@ export default class Cluster {
         // when a cid exists in the output, it's done.
         for await (const chunk of res) {
           const data = JSON.parse(chunk.toString());
+
           logger.log({ level: 'debug', message: JSON.stringify(data) });
           if (data?.cid) {
+            clearInterval(timer)
             return data;
           }
         }
@@ -160,6 +176,7 @@ export default class Cluster {
         if (i < 4) {
           logger.log({ level: 'info', message: `Retrying the upload...` });
         }
+        clearInterval(timer)
       }
     }
 
