@@ -21,6 +21,7 @@
     "magic-bytes.js": "^1.0.14",
     "node-tar": "^1.0.0",
     "postgres": "^3.3.3",
+    "prevvy": "^5.0.1",
     "tar": "^6.1.13",
     "tar-fs": "^2.1.1",
     "tar-stream": "^3.0.0"
