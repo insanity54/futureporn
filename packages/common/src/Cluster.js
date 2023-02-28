@@ -163,8 +163,9 @@ export default class Cluster {
         // when a cid exists in the output, it's done.
         for await (const chunk of res) {
           const data = JSON.parse(chunk.toString());
+          bytesReport = data?.bytes
 
-          logger.log({ level: 'debug', message: JSON.stringify(data) });
+          logger.log({ level: 'trace', message: JSON.stringify(data) });
           if (data?.cid) {
             clearInterval(timer)
             return data;
