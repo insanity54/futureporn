@@ -119,7 +119,6 @@ export default class Cluster {
     if (typeof this.password === 'undefined') throw new Error('password not defined');
   }
   async add (filename, fileSize) {
-    if (typeof fileSize !== 'number') throw new Error(`fileSize must be a number but it was ${typeof fileSize}`)
     logger.log({ level: 'debug', message: `username:${this.username}, password:${this.password}, uri:${this.uri}` })
     const streamPipeline = promisify(pipeline);
 
