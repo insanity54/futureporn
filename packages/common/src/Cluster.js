@@ -119,7 +119,6 @@ export default class Cluster {
     if (typeof this.password === 'undefined') throw new Error('password not defined');
   }
   async add (filename, fileSize) {
-    logger.log({ level: 'debug', message: `username:${this.username}, password:${this.password}, uri:${this.uri}` })
     const streamPipeline = promisify(pipeline);
 
     const agent = new https.Agent({
@@ -168,7 +167,7 @@ export default class Cluster {
           logger.log({ level: 'trace', message: JSON.stringify(data) });
           if (data?.cid) {
             clearInterval(timer)
-            return data;
+            return data.cid;
           }
         }
       } catch (e) {

@@ -337,6 +337,7 @@ async function main () {
         // upload
         logger.log({ level: 'debug', message: `uploading ${filename240} and ${thumbnailFilePath}`})
         const up240 = await cluster.add(filename240)
+        logger.log({ level: 'debug', message: `uploading ${filename240} complete. CID:${up240}.`})
         const upThumb = await cluster.add(up240)
 
         // save
