@@ -278,6 +278,9 @@ async function sleep (ms) {
 }
 
 async function save (id, video240Hash, thiccHash) {
+  if (typeof id === 'undefined') throw new Error('id passed to save() is undef');
+  if (typeof video240Hash === 'undefined') throw new Error('video240Hash passed to save() is undef');
+  if (typeof thiccHash === 'undefined') throw new Error('thiccHash passed to save() is undef');
   for (let i = 0; i < 5; i++) {
     logger.log({ level: 'info', message: `Saving id:${id}, video240Hash:${video240Hash}, thiccHash:${thiccHash} to db. Attempt ${i+1}` });
     try {
@@ -337,8 +340,9 @@ async function main () {
         // upload
         logger.log({ level: 'debug', message: `uploading ${filename240} and ${thumbnailFilePath}`})
         const up240 = await cluster.add(filename240)
-        logger.log({ level: 'debug', message: `uploading ${filename240} complete. CID:${up240}.`})
+        logger.log({ level: 'debug', message: `DONE uploading ${filename240}. CID:${up240}.`})
         const upThumb = await cluster.add(up240)
+        logger.log({ level: 'debug', message: `DONE uploading ${up240}. CID:${upThumb}.`})
 
         // save
         logger.log({ level: 'debug', message: `saving ${data.cid} to the db`})

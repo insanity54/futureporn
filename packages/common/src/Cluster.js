@@ -164,7 +164,6 @@ export default class Cluster {
           const data = JSON.parse(chunk.toString());
           bytesReport = data?.bytes
 
-          logger.log({ level: 'trace', message: JSON.stringify(data) });
           if (data?.cid) {
             clearInterval(timer)
             return data.cid;
