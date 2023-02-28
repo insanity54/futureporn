@@ -8,7 +8,6 @@ const markdownItAnchor = require("markdown-it-anchor");
 const { format, utcToZonedTime, } = require('date-fns-tz');
 const Image = require("@11ty/eleventy-img");
 const EleventyVitePlugin = require("@11ty/eleventy-plugin-vite");
-const copy = require('rollup-plugin-copy')
 const slinkity = require('slinkity')
 const svelte = require('@slinkity/svelte')
 
