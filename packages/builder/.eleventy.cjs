@@ -5,14 +5,15 @@ const pluginRss = require("@11ty/eleventy-plugin-rss");
 const pluginNavigation = require("@11ty/eleventy-navigation");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
-
 const { format, utcToZonedTime, } = require('date-fns-tz');
 const Image = require("@11ty/eleventy-img");
 const EleventyVitePlugin = require("@11ty/eleventy-plugin-vite");
 const copy = require('rollup-plugin-copy')
+const slinkity = require('slinkity')
+const svelte = require('@slinkity/svelte')
+
 
 const isDev = process.env.NODE_ENV === "development";
-
 
 
 // https://stackoverflow.com/a/1527820/1004931
@@ -29,6 +30,10 @@ const filterIpfsCompleted = (vods) => {
   }
   return golo.length;
 }
+
+const filterThumbnailCompleted = (vods) => 
+  vods.filter((v) => v.thiccHash !== null).length;
+
 
 const filterB2Completed = (vods) => {
   let golo = [];
@@ -117,36 +122,43 @@ module.exports = function(eleventyConfig) {
   //   console.log(results.map((r) => r.outputPath).filter((r) => r.includes('.json')))
   // });
 
-  eleventyConfig.addPlugin(EleventyVitePlugin, {
-    viteOptions: {
-      appType: "mpa",
-      server: {
-        mode: 'development',
-        middlewareMode: true
-      },
-      build: {
-        rollupOptions: {
-          plugins: [
-            copy({
-              targets: [
-                { src: '.11ty-vite/api/*.json', dest: '_site/api' },
-                { src: '.11ty-vite/feed/*.xml', dest: '_site/feed' },
-                { src: '.11ty-vite/sitemap.xml', dest: '_site' }
-              ]
-            })
-          ]
-        },
-        assetsInclude: ['api/*.json'],
-        mode: "production",
-      },
-      resolve: {
-        alias: {
-          '/@root/node_modules': path.resolve('.', 'node_modules'),
-          '/@includes': path.resolve('.', 'website/_includes')
-        }
-      }
-    }
-  });
+  // eleventyConfig.addPlugin(EleventyVitePlugin, {
+  //   viteOptions: {
+  //     appType: "mpa",
+  //     server: {
+  //       mode: 'development',
+  //       middlewareMode: true
+  //     },
+  //     build: {
+  //       rollupOptions: {
+  //         plugins: [
+  //           copy({
+  //             targets: [
+  //               { src: '.11ty-vite/api/*.json', dest: '_site/api' },
+  //               { src: '.11ty-vite/feed/*.xml', dest: '_site/feed' },
+  //               { src: '.11ty-vite/sitemap.xml', dest: '_site' }
+  //             ]
+  //           })
+  //         ]
+  //       },
+  //       assetsInclude: ['api/*.json'],
+  //       mode: "production",
+  //     },
+  //     resolve: {
+  //       alias: {
+  //         '/@root/node_modules': path.resolve('.', 'node_modules'),
+  //         '/@includes': path.resolve('.', 'website/_includes')
+  //       }
+  //     }
+  //   }
+  // });
+
+  eleventyConfig.addPlugin(
+    slinkity.plugin,
+    slinkity.defineConfig({
+      renderers: [svelte()]
+    })
+  )
 
   eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
   eleventyConfig.addPassthroughCopy({ "website/assets/img": "/img" });
@@ -168,6 +180,13 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode("ipfsProgressComplete", function(vods) {
     return `${filterIpfsCompleted(vods)}`;
   });
+
+
+  eleventyConfig.addShortcode("thumbnailProgressPercentage", function(vods) {
+    const totalVods = vods.length
+    const completedVods = filterThumbnailCompleted(vods)
+    return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
+  })
 
   eleventyConfig.addShortcode("transcode240pProgressPercentage", function(vods) {
     const totalVods = vods.length

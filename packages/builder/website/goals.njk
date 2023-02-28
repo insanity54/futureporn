@@ -33,7 +33,14 @@ eleventyNavigation:
       {% if transcode240pProgressPercentage !== 100 %}
       <li><p>☐ Transcode a 240p version of each stream. {% transcode240pProgressPercentage db.vods %}</p></li>
       {% endif %}
+
+      {# thumbnail progress #}
+      {% if thumbnailProgressPercentage !== 100 %}
+      <li><p>☐ Generate thumbnail for each stream. {% thumbnailProgressPercentage db.vods %}</p></li>
+      {% endif %}
+
     </ul>
+
 
 
 
@@ -57,6 +64,12 @@ eleventyNavigation:
       {% if transcode240pProgressPercentage === 100 %}
       <li><p>✅ Transcode a 240p version of each stream.</p></li>
       {% endif %}
+
+      {# thumbnail progress #}
+      {% if thumbnailProgressPercentage === 100 %}
+      <li><p>✅ Generate thumbnail for each stream.</p></li>
+      {% endif %}
+
     </ul>
   </div>
     
