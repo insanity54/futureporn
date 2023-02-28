@@ -292,6 +292,11 @@ async function save (id, video240Hash, thiccHash) {
   }
 }
 
+
+async function notify () {
+  await sql.notify('render/upload', "{}")
+}
+
 async function main () {
   const cluster = new Cluster({
     username: process.env.IPFS_CLUSTER_HTTP_API_USERNAME,
@@ -337,12 +342,16 @@ async function main () {
         // save
         logger.log({ level: 'debug', message: `saving ${data.cid} to the db`})
         await save(vod.id, up240.cid, upThumb.cid)
+
+        // notify
+        await notify()
       }
 
       logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
     } catch (e) {
 
       logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
+      console.trace()
     }
     await sleep(delayBetweenAttempts)
   }

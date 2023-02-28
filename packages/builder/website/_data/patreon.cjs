@@ -112,8 +112,8 @@ async function getPatronData (access_token) {
       }
     );
 
-    console.log(JSON.stringify(data, 0, 2))
-    console.log('---')
+    // console.log(JSON.stringify(data, 0, 2))
+    // console.log('---')
     // process.exit()
     return data
 
@@ -206,7 +206,7 @@ function parsePatronData (data) {
     };
   });
 
-  console.log(JSON.stringify(data, 0, 2));
+  // console.log(JSON.stringify(data, 0, 2));
 
   // we need to map benefits to tiers because users/members only have a tiers relationship (no benefits relationship)
   // so we need to know the tiers that contain the "Your username displayed on Futureporn.net" benefit
@@ -239,7 +239,7 @@ function parsePatronData (data) {
 
 function parseGoalsData (data) {
   const allGoals = data.included.map((goal) => goal.attributes).sort((a, b) => b.completed_percentage - a.completed_percentage)
-  console.log(allGoals)
+  // console.log(allGoals)
   const incompleteGoals = allGoals.filter((goal) => goal.completed_percentage < 100)
   const completeGoals = allGoals.filter((goal) => goal.completed_percentage === 100)
   return {

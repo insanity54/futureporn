@@ -54,7 +54,20 @@
           <p class="mt-0 mb-5">{{ vod.date | readableDate }}</p>
         {% endif %}
 
-      <h2 class="heading">Download Links</h2>
+      <h2 class="heading">
+        Download Links
+        {% island 'IpfsGatewaySwitcher.svelte', 'client:load' %}
+        {% endisland %}
+      </h2>
+
+      {% island 'IpfsLink.svelte', 'client:load' %}
+      {% prop 'cid', vod.videoSrcHash %}
+      {% endisland %}
+
+
+      {% island 'IpfsLink.svelte', 'client:load' %}
+      {% prop 'cid', vod.video240Hash %}
+      {% endisland %}
 
       <ul class="mb-5">
       {%- if vod.videoSrcHash %}

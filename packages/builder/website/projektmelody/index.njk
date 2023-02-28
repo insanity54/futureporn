@@ -4,11 +4,11 @@ eleventyNavigation:
   key: Home
   order: 1
 pagination:
-  data: collections.vods
+  data: db.vods
   size: 50
 ---
 
 
-{% set vodslist = collections.vods %}
-{% set vodslistCounter = collections.vods | length %}
+{% set vodslist = db.vods %}
+{% set vodslistCounter = db.vods | length %}
 {% include "vodslist.njk" %}
