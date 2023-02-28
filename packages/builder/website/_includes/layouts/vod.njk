@@ -56,18 +56,18 @@
 
       <h2 class="heading">
         Download Links
-        {% island 'IpfsGatewaySwitcher.svelte', 'client:load' %}
-        {% endisland %}
+        {# {% island 'IpfsGatewaySwitcher.svelte', 'client:load' %}
+        {% endisland %} #}
       </h2>
 
-      {% island 'IpfsLink.svelte', 'client:load' %}
+      {# {% island 'IpfsLink.svelte', 'client:load' %}
       {% prop 'cid', vod.videoSrcHash %}
       {% endisland %}
 
 
       {% island 'IpfsLink.svelte', 'client:load' %}
       {% prop 'cid', vod.video240Hash %}
-      {% endisland %}
+      {% endisland %} #}
 
       <ul class="mb-5">
       {%- if vod.videoSrcHash %}
