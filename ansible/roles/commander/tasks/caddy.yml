@@ -1,0 +1,22 @@
+--- 
+
+
+- name: install certutil
+  apt:
+    package: libnss3-tools
+    state: present
+
+- name: install caddy
+  include_role: 
+    name: nvjacobo.caddy
+
+
+- name: Install Caddyfile
+  ansible.builtin.template:
+    src: templates/Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - restart caddy
