@@ -51,5 +51,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
             
-    - run: yarn install
-    - run: yarn run test
+      - run: yarn install
+      - run: yarn run test
