@@ -1,0 +1,13 @@
+
+
+commander.sbtp.xyz {
+
+        tls chris@grimtech.net
+
+        basicauth / {
+                {{ lookup('env', 'COMMANDER_USERNAME' ) }} {{ lookup('env', 'COMMANDER_PASSWORD') | password_hash('bcrypt') }}
+        }
+
+        reverse_proxy 127.0.0.1:8080
+
+}

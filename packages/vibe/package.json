@@ -1,0 +1,25 @@
+{
+  "name": "vibe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Chris Grimmett <chris@grimtech.net>",
+  "license": "Unlicense",
+  "private": true,
+  "devDependencies": {
+    "mocha": "^10.2.0"
+  },
+  "dependencies": {
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.3",
+    "execa": "^6.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "formdata-node": "^5.0.0",
+    "node-fetch": "^3.3.0",
+    "postgres": "^3.3.3",
+    "video-length": "^2.0.6"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "mocha"
+  }
+}
