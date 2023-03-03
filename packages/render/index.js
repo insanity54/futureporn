@@ -316,15 +316,15 @@ async function main () {
       } else {
         logger.log({ level: 'debug', message: `the VOD id we are working with is ${vod.id}` })
 
-        // stat
-        logger.log({ level: 'debug', message: `getting stats of ${vod.videoSrcHash}`})
-        const statRes = await stat(vod.videoSrcHash)
-        const size = statRes.Size
-        logger.log({ level: 'debug', message: `size is ${size} (${JSON.stringify(statRes)})` })
+        // // stat
+        // logger.log({ level: 'debug', message: `getting stats of ${vod.videoSrcHash}`})
+        // const statRes = await stat(vod.videoSrcHash)
+        // const size = statRes.Size
+        // logger.log({ level: 'debug', message: `size is ${size} (${JSON.stringify(statRes)})` })
 
         // download
         logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
-        const filenameSrc = await download(vod.videoSrcHash, size)
+        const filenameSrc = await download(vod.videoSrcHash)
         logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
         if (typeof filenameSrc === 'undefined') throw new Error('download did not return a localFilePath')
 
