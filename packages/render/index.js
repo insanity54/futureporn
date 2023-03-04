@@ -83,6 +83,21 @@ async function stat (cid) {
 
 async function download (cid, size) {
   if (typeof cid === 'undefined') throw new Error('cid is undefined');
+
+
+  // for (let i = 0; i < 5; i++) {
+  //   logger.log({ level: 'info', message: `Saving id:${id}, video240Hash:${video240Hash}, thiccHash:${thiccHash} to db. Attempt ${i+1}` });
+  //   try {
+  //     const res = await sql`UPDATE vod SET "video240Hash" = ${video240Hash} WHERE vod.id = ${id};`
+  //     return res
+  //   } catch (e) {
+  //     logger.log({ level: 'error', message: `error while saving! ${e}` });
+  //     if (i < 4) {
+  //       logger.log({ level: 'info', message: `Retrying the save...` });
+  //     }
+  //   }
+  // }
+
   const gotStream = got.stream(
     'http://127.0.0.1:5001/api/v0/get',
     {
@@ -108,57 +123,58 @@ async function download (cid, size) {
 
   let progressReportTimer 
 
-  try {
-    cid = ipfsHashRegex.exec(cid)[0]
-    const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
-    logger.log({ level: 'debug', message: `downloading ${cid} from IPFS to ${localFilePath}` })
+
+  // retry up to 5 times
+  for (let i = 0; i < 5; i++) {
+    try {
+      cid = ipfsHashRegex.exec(cid)[0]
+      const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
+      logger.log({ level: 'info', message: `Download Attempt ${i+1}. DL ${cid} from IPFS to ${localFilePath}` })
 
 
-    progressReportTimer = setInterval(() => {
-      if (typeof size !== 'undefined') {
-        // accurate percentage if we know the filesize
-        const progressPercentage = ((gotStream.downloadProgress.transferred / size) * 100).toFixed(2)
-        logger.log({ level: 'info', message: `transferred:${gotStream.downloadProgress.transferred}, size:${size}, ${progressPercentage}% transferred.` })
-      } else {
-        // generic progress
-        logger.log({ level: 'info', message: JSON.stringify(gotStream.downloadProgress) })
-      }
-    }, reportInterval)
+      progressReportTimer = setInterval(() => {
+        if (typeof size !== 'undefined') {
+          // accurate percentage if we know the filesize
+          const progressPercentage = ((gotStream.downloadProgress.transferred / size) * 100).toFixed(2)
+          logger.log({ level: 'info', message: `transferred:${gotStream.downloadProgress.transferred}, size:${size}, ${progressPercentage}% transferred.` })
+        } else {
+          // generic progress
+          logger.log({ level: 'info', message: JSON.stringify(gotStream.downloadProgress) })
+        }
+      }, reportInterval)
 
 
-    const extractStream = tar.extract({
-      C: process.env.FUTUREPORN_WORKDIR,
-    })
+      const extractStream = tar.extract({
+        C: process.env.FUTUREPORN_WORKDIR,
+      })
 
-    gotStream.pipe(extractStream)
-
-
-    await new Promise((resolve, reject) => {
-      extractStream.once('error', reject);
-      extractStream.once('finish', resolve);
-    })
+      gotStream.pipe(extractStream)
 
 
-
-    logger.log({ level: 'info', message: 'renaming the CID file to CID.mp4'})
-    await rename(
-      path.join(process.env.FUTUREPORN_WORKDIR, cid),
-      localFilePath
-    )
-
-    // await writeFile(localFilePath, await res.buffer())
-    logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
-    
+      await new Promise((resolve, reject) => {
+        extractStream.once('error', reject);
+        extractStream.once('finish', resolve);
+      })
 
 
 
-    return localFilePath;
-  } catch (e) {
-    logger.log({ level: 'error', message: 'error while downloading' })
-    logger.log({ level: 'error', message: e })
-    console.trace()
-  } finally {
-    clearInterval(progressReportTimer)
+      logger.log({ level: 'info', message: 'renaming the CID file to CID.mp4'})
+      await rename(
+        path.join(process.env.FUTUREPORN_WORKDIR, cid),
+        localFilePath
+      )
+
+      // await writeFile(localFilePath, await res.buffer())
+      logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
+      
+      return localFilePath;
+    } catch (e) {
+      logger.log({ level: 'error', message: 'Error while downloading!' })
+      logger.log({ level: 'error', message: e })
+
+    } finally {
+      clearInterval(progressReportTimer)
+    }
   }
 }
 
