@@ -84,49 +84,34 @@ async function stat (cid) {
 async function download (cid, size) {
   if (typeof cid === 'undefined') throw new Error('cid is undefined');
 
-
-  // for (let i = 0; i < 5; i++) {
-  //   logger.log({ level: 'info', message: `Saving id:${id}, video240Hash:${video240Hash}, thiccHash:${thiccHash} to db. Attempt ${i+1}` });
-  //   try {
-  //     const res = await sql`UPDATE vod SET "video240Hash" = ${video240Hash} WHERE vod.id = ${id};`
-  //     return res
-  //   } catch (e) {
-  //     logger.log({ level: 'error', message: `error while saving! ${e}` });
-  //     if (i < 4) {
-  //       logger.log({ level: 'info', message: `Retrying the save...` });
-  //     }
-  //   }
-  // }
-
-  const gotStream = got.stream(
-    'http://127.0.0.1:5001/api/v0/get',
-    {
-      method: 'POST',
-      body: '',
-      searchParams: {
-        arg: cid,
-        // Even if I switch archive to false, we get the same tar response.
-        // apparently there is no way via the API to get anything other than a tar stream
-        // see: https://discuss.ipfs.tech/t/download-more-bytes-when-using-curl-command/562
-        // see: https://github.com/ipfs/kubo/issues/6477
-        // 
-        // so we are just putting archive: true, compress: false to future-proof.
-        // in case a default is ever set, we will be on the setting that we are coded to handle
-        archive: true, 
-        compress: false
-      },
-      timeout: {
-        request: 1000*60*60*3 // 3 hour timeout
-      }
-    }
-  )
-
   let progressReportTimer 
-
 
   // retry up to 5 times
   for (let i = 0; i < 5; i++) {
     try {
+
+      const gotStream = got.stream(
+        'http://127.0.0.1:5001/api/v0/get',
+        {
+          method: 'POST',
+          body: '',
+          searchParams: {
+            arg: cid,
+            // Even if I switch archive to false, we get the same tar response.
+            // apparently there is no way via the API to get anything other than a tar stream
+            // see: https://discuss.ipfs.tech/t/download-more-bytes-when-using-curl-command/562
+            // see: https://github.com/ipfs/kubo/issues/6477
+            // 
+            // so we are just putting archive: true, compress: false to future-proof.
+            // in case a default is ever set, we will be on the setting that we are coded to handle
+            archive: true, 
+            compress: false
+          },
+          timeout: {
+            request: 1000*60*60*3 // 3 hour timeout
+          }
+        }
+      )
       cid = ipfsHashRegex.exec(cid)[0]
       const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
       logger.log({ level: 'info', message: `Download Attempt ${i+1}. DL ${cid} from IPFS to ${localFilePath}` })
@@ -356,13 +341,14 @@ async function main () {
         // upload
         logger.log({ level: 'debug', message: `uploading ${filename240} and ${thumbnailFilePath}`})
         const up240 = await cluster.add(filename240)
-        logger.log({ level: 'debug', message: `DONE uploading ${filename240}. CID:${up240}.`})
-        const upThumb = await cluster.add(up240)
-        logger.log({ level: 'debug', message: `DONE uploading ${up240}. CID:${upThumb}.`})
+        logger.log({ level: 'debug', message: `DONE uploading video240Hash ${filename240}. CID:${up240}.`})
+        const upThumb = await cluster.add(thumbnailFilePath)
+        logger.log({ level: 'debug', message: `DONE uploading thumbnail ${up240}. CID:${upThumb}.`})
 
         // save
         logger.log({ level: 'debug', message: `saving ${data.cid} to the db`})
         await save(vod.id, up240.cid, upThumb.cid)
+        logger.log({ level: 'info', message: `SAVED. ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅`})
 
         // notify
         await notify()
