@@ -89,7 +89,7 @@ async function download (cid, size) {
   // retry up to 5 times
   for (let i = 0; i < 5; i++) {
     try {
-
+      logger.log({level: 'debug', message: 'tryharding to download!'})
       const gotStream = got.stream(
         'http://127.0.0.1:5001/api/v0/get',
         {
@@ -113,7 +113,7 @@ async function download (cid, size) {
         }
       )
       cid = ipfsHashRegex.exec(cid)[0]
-      const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4`)
+      const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4.tar`)
       logger.log({ level: 'info', message: `Download Attempt ${i+1}. DL ${cid} from IPFS to ${localFilePath}` })
 
 
@@ -129,38 +129,60 @@ async function download (cid, size) {
       }, reportInterval)
 
 
-      const extractStream = tar.extract({
-        C: process.env.FUTUREPORN_WORKDIR,
-      })
-
-      gotStream.pipe(extractStream)
-
-
-      await new Promise((resolve, reject) => {
-        extractStream.once('error', reject);
-        extractStream.once('finish', resolve);
-      })
 
 
 
-      logger.log({ level: 'info', message: 'renaming the CID file to CID.mp4'})
-      await rename(
-        path.join(process.env.FUTUREPORN_WORKDIR, cid),
-        localFilePath
+      await pipeline(
+        gotStream,
+        fs.createWriteStream(localFilePath)
       )
 
-      // await writeFile(localFilePath, await res.buffer())
+
       logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
       
       return localFilePath;
     } catch (e) {
       logger.log({ level: 'error', message: 'Error while downloading!' })
-      logger.log({ level: 'error', message: e })
+      // logger.log({ level: 'error', message: e })
 
     } finally {
       clearInterval(progressReportTimer)
     }
   }
+}
+
+async function extract (filename) {
+
+  // The only file in the tar is going to be the video.
+  // It is named simply <CID> with no file extensions.
+  // After extracting, we give it a .mp4 file extension.
+  const { name, dir } = path.parse(filename)
+
+  const targetFilename = path.join(process.env.FUTUREPORN_WORKDIR, name)
+
+  const readStream = fs.createReadStream(filename)
+
+  const extractStream = tar.extract({
+    C: process.env.FUTUREPORN_WORKDIR,
+  })
+
+  readStream.pipe(extractStream)
+
+  await new Promise((resolve, reject) => {
+    extractStream.once('error', reject);
+    extractStream.once('finish', resolve);
+  })
+
+
+  logger.log({ level: 'info', message: 'renaming the CID.mp4.tar file to CID.mp4'})
+  logger.log({ level: 'debug', message: `renaming ${targetFilename}`})
+
+  await rename(
+    path.join(process.env.FUTUREPORN_WORKDIR, cid),
+    localFilePath
+  )
+
+  return targetFilename
 }
 
 // greets ChatGPT
@@ -325,9 +347,13 @@ async function main () {
 
         // download
         logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
-        const filenameSrc = await download(vod.videoSrcHash)
-        logger.log({ level: 'debug', message: `downloaded:${filenameSrc}`})
-        if (typeof filenameSrc === 'undefined') throw new Error('download did not return a localFilePath')
+        const tarFile = await download(vod.videoSrcHash)
+        logger.log({ level: 'debug', message: `downloaded:${tarFile}`})
+        if (typeof tarFile === 'undefined') throw new Error('download did not return a localFilePath')
+
+        // extract
+        logger.log({ leve: 'debug', message: `extracting`})
+        const filenameSrc = await extract(tarFile)
 
         // thumbnail
         logger.log({ level: 'debug', message: `creating thumbnail` })
@@ -358,7 +384,6 @@ async function main () {
     } catch (e) {
 
       logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
-      console.trace()
     }
     await sleep(delayBetweenAttempts)
   }
