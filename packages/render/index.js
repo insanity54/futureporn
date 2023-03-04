@@ -143,7 +143,7 @@ async function download (cid, size) {
       return localFilePath;
     } catch (e) {
       logger.log({ level: 'error', message: 'Error while downloading!' })
-      // logger.log({ level: 'error', message: e })
+      logger.log({ level: 'error', message: e })
 
     } finally {
       clearInterval(progressReportTimer)
@@ -151,16 +151,16 @@ async function download (cid, size) {
   }
 }
 
-async function extract (filename) {
+async function extract (tarFile, cid) {
 
   // The only file in the tar is going to be the video.
   // It is named simply <CID> with no file extensions.
   // After extracting, we give it a .mp4 file extension.
-  const { name, dir } = path.parse(filename)
+  const { name, dir } = path.parse(tarFile)
+  const mp4File = path.join(process.env.FUTUREPORN_WORKDIR, name)
+  const cidFile = path.join(dir, cid)
 
-  const targetFilename = path.join(process.env.FUTUREPORN_WORKDIR, name)
-
-  const readStream = fs.createReadStream(filename)
+  const readStream = fs.createReadStream(tarFile)
 
   const extractStream = tar.extract({
     C: process.env.FUTUREPORN_WORKDIR,
@@ -174,15 +174,15 @@ async function extract (filename) {
   })
 
 
-  logger.log({ level: 'info', message: 'renaming the CID.mp4.tar file to CID.mp4'})
-  logger.log({ level: 'debug', message: `renaming ${targetFilename}`})
+  logger.log({ level: 'debug', message: 'renaming the CID file to CID.mp4'})
+  logger.log({ level: 'debug', message: `renaming ${cidFile} to ${mp4File}`})
 
   await rename(
-    path.join(process.env.FUTUREPORN_WORKDIR, cid),
-    localFilePath
+    cidFile,
+    mp4File
   )
 
-  return targetFilename
+  return mp4File
 }
 
 // greets ChatGPT
@@ -307,8 +307,9 @@ async function save (id, video240Hash, thiccHash) {
   for (let i = 0; i < 5; i++) {
     logger.log({ level: 'info', message: `Saving id:${id}, video240Hash:${video240Hash}, thiccHash:${thiccHash} to db. Attempt ${i+1}` });
     try {
-      const res = await sql`UPDATE vod SET "video240Hash" = ${video240Hash} WHERE vod.id = ${id};`
-      return res
+      await sql`UPDATE vod SET "video240Hash" = ${video240Hash} WHERE vod.id = ${id};`
+      await sql`UPDATE vod SET "thiccHash" = ${thiccHash} WHERE vod.id = ${id};`
+      return 
     } catch (e) {
       logger.log({ level: 'error', message: `error while saving! ${e}` });
       if (i < 4) {
@@ -346,14 +347,14 @@ async function main () {
         // logger.log({ level: 'debug', message: `size is ${size} (${JSON.stringify(statRes)})` })
 
         // download
-        logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}`})
+        logger.log({ level: 'debug', message: `downloading ${vod.videoSrcHash}` })
         const tarFile = await download(vod.videoSrcHash)
-        logger.log({ level: 'debug', message: `downloaded:${tarFile}`})
+        logger.log({ level: 'debug', message: `downloaded:${tarFile}` })
         if (typeof tarFile === 'undefined') throw new Error('download did not return a localFilePath')
 
         // extract
-        logger.log({ leve: 'debug', message: `extracting`})
-        const filenameSrc = await extract(tarFile)
+        logger.log({ level: 'debug', message: `extracting`})
+        const filenameSrc = await extract(tarFile, vod.videoSrcHash)
 
         // thumbnail
         logger.log({ level: 'debug', message: `creating thumbnail` })
@@ -366,21 +367,24 @@ async function main () {
 
         // upload
         logger.log({ level: 'debug', message: `uploading ${filename240} and ${thumbnailFilePath}`})
-        const up240 = await cluster.add(filename240)
-        logger.log({ level: 'debug', message: `DONE uploading video240Hash ${filename240}. CID:${up240}.`})
-        const upThumb = await cluster.add(thumbnailFilePath)
-        logger.log({ level: 'debug', message: `DONE uploading thumbnail ${up240}. CID:${upThumb}.`})
+        const up240CID = await cluster.add(filename240)
+        logger.log({ level: 'debug', message: `DONE uploading video240Hash ${filename240}. CID:${up240CID}.`})
+        const upThumbCID = await cluster.add(thumbnailFilePath)
+        logger.log({ level: 'debug', message: `DONE uploading thumbnail ${up240CID}. CID:${upThumbCID}.`})
+
+        logger.log({ level: 'debug', message: JSON.stringify(up240CID) })
+        logger.log({ level: 'debug', message: JSON.stringify(upThumbCID) })
 
         // save
-        logger.log({ level: 'debug', message: `saving ${data.cid} to the db`})
-        await save(vod.id, up240.cid, upThumb.cid)
-        logger.log({ level: 'info', message: `SAVED. ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅`})
+        logger.log({ level: 'debug', message: `saving video240Hash and thumbnail to the db`})
+        await save(vod.id, up240CID, upThumbCID)
+        logger.log({ level: 'info', message: `SAVED. ✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅✅` })
 
         // notify
         await notify()
       }
 
-      logger.log({ level: 'debug', message: `waiting ${delayTime}ms until next run.` })
+      logger.log({ level: 'debug', message: `waiting ${delayBetweenAttempts}ms until next run.` })
     } catch (e) {
 
       logger.log({ level: 'error', message: `problem while running main process-- ${e}` })
