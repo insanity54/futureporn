@@ -197,7 +197,6 @@ module.exports = function(eleventyConfig) {
     return `${vods.length}`;
   });
 
-
   eleventyConfig.addShortcode("b2ProgressPercentage", function(vods) {
     const totalVods = vods.length;
     const completedVods = filterB2Completed(vods)
@@ -209,6 +208,20 @@ module.exports = function(eleventyConfig) {
     const completedVods = filterIpfsCompleted(vods)
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
+
+  eleventyConfig.addFilter("isArchiveComplete", function (vods) {
+    const totalVodCount = vods.length
+    const completedVodCount = filterIpfsCompleted(vods)
+    return totalVodCount === completedVodCount
+  })
+
+  eleventyConfig.addFilter("isThumbnailsComplete", function (vods) {
+    return (vods.length === filterThumbnailCompleted(vods).length)
+  })
+
+  eleventyConfig.addFilter("is240pComplete", function (vods) {
+    return (vods.length === filter240pTranscodeCompleted(vods).length)
+  })
 
   eleventyConfig.addFilter('vodUrl', (text) => {
     return `/vods/${text}/`
