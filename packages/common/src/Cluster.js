@@ -152,7 +152,7 @@ export default class Cluster {
           } else {
             logger.log({ level: 'info', message: `adding to IPFS. Bytes transferred: ${bytesReport}` })
           }
-        }, 60000)
+        }, 60000*5)
 
         logger.log({ level: 'info', message: `Adding ${filename} to IPFS cluster. Attempt ${i+1}` });
         const res = await got.post(`${this.uri}/add?cid-version=1&progress=1`, opts);
