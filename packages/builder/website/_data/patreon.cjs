@@ -130,7 +130,7 @@ async function getGoalData (access_token) {
       type: 'json',
       fetchOptions: {
         headers: {
-            Authorization: `Bearer ${access_token}`
+          Authorization: `Bearer ${access_token}`
         }
       }
     })

@@ -25,17 +25,17 @@ eleventyNavigation:
       {% endif %}
 
       {# all vods archived progress #}
-      {% if ipfsProgressPercentage !== 100 %}
+      {% if not db.vods | isArchiveComplete %}
       <li><p>☐ Archive every ProjektMelody Chaturbate stream. {% ipfsProgressPercentage db.vods %}</p></li>
       {% endif %}
 
       {# 240p encode progress #}
-      {% if transcode240pProgressPercentage !== 100 %}
+      {% if not db.vods | is240pComplete %}
       <li><p>☐ Transcode a 240p version of each stream. {% transcode240pProgressPercentage db.vods %}</p></li>
       {% endif %}
 
       {# thumbnail progress #}
-      {% if thumbnailProgressPercentage !== 100 %}
+      {% if not db.vods | isThumbnailsComplete %}
       <li><p>☐ Generate thumbnail for each stream. {% thumbnailProgressPercentage db.vods %}</p></li>
       {% endif %}
 
@@ -56,17 +56,17 @@ eleventyNavigation:
       <li><p>✅ Secure website funding</p></li>
       {% endif %}
 
-      {% if ipfsProgressPercentage === 100 %}
+      {% if db.vods | isArchiveComplete %}
       <li><p>✅ Archive every ProjektMelody Chaturbate stream.</p></li>
       {% endif %}
 
       {# 240p encode progress #}
-      {% if transcode240pProgressPercentage === 100 %}
+      {% if db.vods | is240pComplete %}
       <li><p>✅ Transcode a 240p version of each stream.</p></li>
       {% endif %}
 
       {# thumbnail progress #}
-      {% if thumbnailProgressPercentage === 100 %}
+      {% if db.vods | isThumbnailsComplete %}
       <li><p>✅ Generate thumbnail for each stream.</p></li>
       {% endif %}
 
