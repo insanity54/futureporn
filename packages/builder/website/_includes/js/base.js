@@ -1,7 +1,4 @@
 
-
-
-
 // handler for the burger menu
 document.addEventListener('DOMContentLoaded', () => {
 

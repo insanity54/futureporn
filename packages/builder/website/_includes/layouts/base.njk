@@ -29,6 +29,7 @@
   </head>
   <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
+
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <h1 class="title">{{ metadata.title }}</h1>
@@ -54,8 +55,25 @@
         <a class="navbar-item is-expanded" href="/feed">RSS</a>
         <a class="navbar-item is-expanded" href="/api">API</a>
         <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status</a>
-        {# <a class="navbar-item is-expanded" target="_blank" href="">Log In With Patreon</a> #}
+
+        {% set redirectUrl %}{{ page.url | absoluteUrl(metadata.url) | urlencode }}{% endset %}
+
+        <div class="navbar-item">
+          <a href="https://gw.futureporn.net/auth/oauth2/patreon?redirect_url={{ redirectUrl }}" class="button is-warning is-outlined">
+            <span class="icon">
+              <i class="fab fa-patreon"></i>
+            </span>
+            <span>Log in</span>
+          </a>
+        </div>
+
       </div>
+
+
+
+
+    </div>
+
     </nav>
     <div class="container">
 
@@ -128,12 +146,10 @@
   </div>
   {% endblock %}
 
-    {# {% clientOnlyIsland 'Base.vue' %}{% endclientOnlyIsland %} #}
 
     {% block scripts %}
 
     <script type="module" src="/@includes/js/base.js"></script>
-    <script type="module" src="/@root/node_modules/@fortawesome/fontawesome-free/js/all.js"></script>
     <script data-goatcounter="https://futureporn.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
     {% endblock %}

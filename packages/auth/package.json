@@ -5,14 +5,22 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index"
+    "dev": "run-p dev:index dev:tunnel",
+    "dev:index": "PORT=8030 nodemon index",
+    "start": "node index",
+    "dev:tunnel": "run-s dev:tunnel:up dev:tunnel:reminder || run-s dev:tunnel:down",
+    "dev:tunnel:create": "curl https://tunnel.pyjam.as/8030 > tunnel.conf",
+    "dev:tunnel:reminder": "echo \"remember to run 'dev:tunnel:down' when you're done with development.\"",
+    "dev:tunnel:up": "wg-quick up ./tunnel.conf",
+    "dev:tunnel:down": "wg-quick down ./tunnel.conf"
   },
   "private": true,
   "license": "Unlicense",
   "type": "module",
   "dependencies": {
     "@fastify/oauth2": "^7.0.0",
-    "fastify": "^4.13.0"
+    "fastify": "^4.13.0",
+    "npm-run-all": "^4.1.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
