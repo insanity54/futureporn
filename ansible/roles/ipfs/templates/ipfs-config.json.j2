@@ -60,7 +60,7 @@
     }
   },
   "Routing": {
-    "Type": "dhtclient",
+    "Type": "dhtserver",
     "Routers": null,
     "Methods": null
   },
@@ -97,7 +97,12 @@
     "APICommands": [],
     "NoFetch": true,
     "NoDNSLink": true,
-    "PublicGateways": null
+    "PublicGateways": {
+      "gw.futureporn.net": {
+        "UseSubdomains": false,
+        "Paths": ["/ipfs", "/ipns"]
+      }
+    }
   },
   "API": {
     "HTTPHeaders": {}

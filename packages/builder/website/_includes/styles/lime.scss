@@ -1,0 +1,110 @@
+
+/** 
+    greets Lime Skin https://codesandbox.io/s/pztxb?file=/skin.scss:0-2570 
+**/
+
+$color-primary: #95c01f !default;
+$color-secondary: #2315FF !default;
+$border-radius: .5em !default;
+
+@keyframes rotate{
+  to{ transform: rotate(360deg); }
+}
+
+.video-js.vjs-lime {
+    border-radius: $border-radius;
+    .vjs-big-play-button {
+        width: 2em;
+        height: 2em;
+        line-height: 1.9em;
+        border-radius: 1em;
+        left: calc(50% - 1em);
+        top: calc(50% - 1em);
+        backdrop-filter: blur(4px);
+        background-color: rgba(0,0,0,.6);
+        border: 2px solid $color-primary;
+        color: $color-primary;
+    }
+
+    &:hover,
+    &:focus {
+        .vjs-big-play-button {
+            backdrop-filter: blur(4px);
+            background-color: rgba(40,40,40,.6);
+            border: 2px solid $color-primary;
+            color: $color-primary;
+        }
+    }
+
+    .vjs-loading-spinner {
+        border: 3px solid rgba(0,0,0, 0.6);
+        width: 45px;
+        height: 45px;
+        &:before,
+        &:after {
+            margin: -3px;
+            animation: rotate .8s linear infinite;
+            border-top-color: $color-primary;
+        }
+        &:after {
+            display: none;
+            border-top-color: $color-secondary;
+        }
+    }
+
+    button:focus,
+    .vjs-menu-item:focus {
+        outline: none;
+        color: $color-primary;
+    }
+
+    .vjs-control-bar {
+        height: 5em;
+        padding-top: 2em;
+        background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 35%, rgba(0,0,0,0) 100%);
+        border-bottom-left-radius: $border-radius;
+        border-bottom-right-radius: $border-radius;
+    }
+
+    button.vjs-icon-cog {
+        font-size: 1.3em;
+    }
+
+    .vjs-menu-button-popup .vjs-menu .vjs-menu-content {
+        background-color: rgba(0,0,0,.6);
+        border-radius: 0.5em;
+        backdrop-filter: blur(4px);
+    }
+
+    video {
+        border-radius: $border-radius;
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .vjs-slider {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    .vjs-progress-holder {
+        .vjs-load-progress {
+            background-color: $color-primary;
+            transition: width .15s linear;
+        }
+        .vjs-play-progress,
+        .vjs-load-progress,
+        .vjs-load-progress > div {
+            border-radius: 10px;
+        }
+    }
+
+    .vjs-menu li.vjs-menu-item:focus,
+    .vjs-menu li.vjs-menu-item:hover,
+    .js-focus-visible .vjs-menu li.vjs-menu-item:hover {
+        &:not(.vjs-selected) {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+    }
+}

@@ -1,3 +1,5 @@
+tunnel.conf
+
 .pnp.*
 .yarn/*
 !.yarn/patches

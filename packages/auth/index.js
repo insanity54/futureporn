@@ -24,7 +24,7 @@ fastify.register(oauthPlugin, {
   // register a fastify url to start the redirect flow
   startRedirectPath: '/login/patreon',
   // patreon redirect here after the user login
-  callbackUri: 'https://futureporn.ngrok.io/login/patreon/callback'
+  callbackUri: 'https://rmz78y.tunnel.pyjam.as/login/patreon/callback'
 })
 
 fastify.get('/login/patreon/callback', async function (request, reply) {
@@ -37,7 +37,7 @@ fastify.get('/login/patreon/callback', async function (request, reply) {
 
   reply.send({ access_token: token.access_token })
 
-  //
+  // 
 })
 
 fastify.get('/', (req, rep) => {
@@ -45,28 +45,8 @@ fastify.get('/', (req, rep) => {
   rep.send(`<p><a href="/login/patreon">Login with Patreon</a></p>`)
 })
 
-fastify.listen(process.env.PORT || 3000)
+fastify.listen({
+  port: process.env.PORT || 3000,
+  host: '0.0.0.0'
+})
 
-
-
-
-// fastify.register(oauthPlugin, {
-//   name: 'customOauth2',
-//   credentials: {
-//     client: {
-//       id: '<CLIENT_ID>',
-//       secret: '<CLIENT_SECRET>'
-//     },
-//     auth: {
-//       authorizeHost: 'https://my-site.com',
-//       authorizePath: '/authorize',
-//       tokenHost: 'https://token.my-site.com',
-//       tokenPath: '/api/token'
-//     }
-//   },
-//   startRedirectPath: '/login',
-//   callbackUri: 'http://localhost:3000/login/callback',
-//   callbackUriParams: {
-//     exampleParam: 'example param value'
-//   }
-// })

@@ -3,30 +3,58 @@
 
 # nvjacobo.caddy takes care of the following 3 tasks. make sure that runs first.
 
-# - name: Create the caddy group
-#   ansible.builtin.group:
-#     name: caddy
+- name: Create the caddy group
+  ansible.builtin.group:
+    name: caddy
 
-# - name: Create the caddy user
-#   ansible.builtin.user:
-#     name: caddy
-#     groups: caddy
-#     create_home: yes
-#     home: /home/caddy
 
-# - name: Create /var/www
-#   ansible.builtin.file:
-#     path: /var/www
-#     state: directory
-#     owner: caddy
-#     group: caddy
-#     mode: '0600'
-#   notify: reload caddy
+- name: Create the caddy user
+  ansible.builtin.user:
+    name: caddy
+    groups: caddy
+    create_home: yes
+    home: /home/caddy
+  ignore_errors: true
 
-# we are not running a public gateway so there is no reason to have caddy
 
-# - import_role: 
-#     name: nvjacobo.caddy
+- name: Install caddy system service
+  ansible.builtin.template:
+    src: templates/caddy.service.j2
+    dest: /etc/systemd/system/caddy.service
+    owner: root
+    group: root
+    mode: '0755'
+  notify: 
+    - reload caddy
+
+
+- name: Create /usr/local/bin/etc/caddy
+  ansible.builtin.file:
+    path: /usr/local/bin/etc/caddy
+    state: directory
+    owner: caddy
+    group: caddy
+    mode: '0600'
+  notify: reload caddy
+
+
+- name: copy custom-built caddy to server
+  ansible.builtin.copy:
+    remote_src: false
+    src: /home/chris/tmpdev/caddy-security/bin/authp
+    dest: /usr/local/bin/caddy
+    mode: '0755'
+
+
+- name: Configure Caddy
+  ansible.builtin.template:
+    src: templates/Caddyfile.j2
+    dest: /usr/local/etc/caddy/Caddyfile
+    owner: root
+    group: root
+    mode: '0755'
+  notify: reload caddy
+
 
 - name: stop nginx
   ansible.builtin.systemd:
@@ -37,11 +65,11 @@
   ignore_errors: true
 
 
-- name: stop & disable caddy
+- name: start & enable caddy
   ansible.builtin.systemd:
     name: caddy
-    state: stopped
-    enabled: false
+    state: started
+    enabled: true
     daemon_reload: true
   ignore_errors: true
 
@@ -70,15 +98,6 @@
 #     owner: caddy
 #     group: caddy
 #     mode: '0744'
-
-# - name: Configure Caddy
-#   ansible.builtin.template:
-#     src: templates/Caddyfile.j2
-#     dest: /usr/local/etc/caddy/Caddyfile
-#     owner: root
-#     group: root
-#     mode: '0755'
-#   notify: reload caddy
 
 
 

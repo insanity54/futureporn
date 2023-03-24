@@ -1,16 +1,83 @@
 {
-    email "cj@futureporn.net"
+  email "cj@futureporn.net"
+  debug
+  http_port 80
+  https_port 443
+
+  order authenticate before respond
+  order authorize before basicauth
+
+  security {
+    oauth identity provider patreon {
+      realm patreon
+      driver patreon
+      client_id {env.PATREON_CLIENT_ID}
+      client_secret {env.PATREON_CLIENT_SECRET}
+      scopes identity.memberships
+    }
+
+    authorization policy patrons_only_policy {
+      set auth url /auth/oauth2/patreon
+      crypto key verify {env.JWT_SHARED_KEY}
+      allow roles authp/admin authp/patron
+      validate bearer header
+      inject headers with claims
+    }
+
+    authentication portal auth_portal {
+      cookie domain futureporn.net
+      cookie lifetime 2629746 # 1 month
+      crypto key sign-verify {env.JWT_SHARED_KEY}
+
+      transform user {
+        match realm patreon
+        match role patreon.com/campaign/8012692
+        action add role authp/patron
+        ui link "Futureporn IPFS Gateway" /ipfs icon "las la-film"
+      }
+
+
+      transform user {
+        match realm patreon
+        match sub patreon.com/user/20828619
+        action add role authp/admin
+        ui link "IPFS Gateway (hi, admin!)" /ipfs icon "las la-film"
+      }
+    }
+  }
 }
-sbtp.xyz {
 
 
-    handle /qa* {
-        basicauth / {
-            {{ lookup('env', 'QA_USERNAME') }} {{ lookup('env', 'QA_PASSWORD') | password_hash('bcrypt') }}
-        }
-        reverse_proxy /qa* 127.0.0.1:5345
+
+
+gw.futureporn.net {
+  route /auth* {
+    authenticate with auth_portal
+  }
+
+  route /ipfs/* {
+    authorize with patrons_only_policy
+    reverse_proxy /ipfs/* {
+      header_up +X-Forwarded-Proto https
+      to http://127.0.0.1:8080
     }
-    handle {
-        reverse_proxy 127.0.0.1:8080
-    }
+  }
+  
+  route /taco {
+    authorize with patrons_only_policy
+    respond "Tacos are great!"
+  }
+
+  route / {
+    respond "home route! try /auth or /taco routes."
+  }
+
+  route {
+    authorize with patrons_only_policy
+    respond "app is running and you seem to be authorized!"
+  }
+
+  handle_errors {
+    respond "{err.status_code} {err.status_text}"
+  }
 }
