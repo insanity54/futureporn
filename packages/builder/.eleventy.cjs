@@ -115,41 +115,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
 module.exports = function(eleventyConfig) {
 
-  // eleventyConfig.on('eleventy.after', async ({ dir, runMode, outputMode, results }) => {
-  //   // Run me after the build ends
-  //   console.log(results.map((r) => r.outputPath).filter((r) => r.includes('.json')))
-  // });
 
-  // eleventyConfig.addPlugin(EleventyVitePlugin, {
-  //   viteOptions: {
-  //     appType: "mpa",
-  //     server: {
-  //       mode: 'development',
-  //       middlewareMode: true
-  //     },
-  //     build: {
-  //       rollupOptions: {
-  //         plugins: [
-  //           copy({
-  //             targets: [
-  //               { src: '.11ty-vite/api/*.json', dest: '_site/api' },
-  //               { src: '.11ty-vite/feed/*.xml', dest: '_site/feed' },
-  //               { src: '.11ty-vite/sitemap.xml', dest: '_site' }
-  //             ]
-  //           })
-  //         ]
-  //       },
-  //       assetsInclude: ['api/*.json'],
-  //       mode: "production",
-  //     },
-  //     resolve: {
-  //       alias: {
-  //         '/@root/node_modules': path.resolve('.', 'node_modules'),
-  //         '/@includes': path.resolve('.', 'website/_includes')
-  //       }
-  //     }
-  //   }
-  // });
 
   eleventyConfig.addPlugin(
     slinkity.plugin,
