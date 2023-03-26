@@ -19,6 +19,7 @@
   <select 
     class="gateway-selector"
     on:change={setGateway}
+    bind:value={$defaultGateway.hostname}
   >
   {#each gateways as gw}
     <option>{ gw.hostname }</option>

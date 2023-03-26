@@ -15,7 +15,7 @@ const futurepornExclusiveGateways = [
 
 const publicGatewayNames = [
   'https://ipfs.io/ipfs/:hash',
-  'https://dweb.link/ipfs/:hash',
+  'https://:hash.ipfs.dweb.link',
 ]
 
 
@@ -33,8 +33,7 @@ module.exports = async function() {
   const publicGateways = publicGatewayNames
     .map((gw) => ({ 
       pattern: gw, 
-      url: gw.replace(':hash', ''), 
-      hostname: new URL(gw).hostname 
+      hostname: new URL(gw.replace(':hash.', '')).hostname 
     }))
 
 

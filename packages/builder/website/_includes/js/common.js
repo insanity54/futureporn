@@ -1,5 +1,5 @@
 
-const defaultPattern = 'https://ipfs.io/ipfs/:hash'
+const defaultPattern = ''
 
 export function buildIpfsUrl (pattern, cid) {
   pattern = pattern || defaultPattern;
