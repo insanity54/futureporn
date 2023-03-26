@@ -1,15 +1,10 @@
 // store.js
 
 
-import { writable } from 'svelte/store'
+import { persisted } from 'svelte-local-storage-store'
+
 
 const isClient = (typeof process === 'undefined')
-const publicGateway = 'https://ipfs.io'
+const publicGateway = { hostname: 'ipfs.io', pattern: 'https://ipfs.io/ipfs/:hash' }
 const stored = (isClient) ? localStorage.defaultGateway : publicGateway
-export const defaultGateway = writable(stored || publicGateway)
-
-// Anytime the store changes, update the local storage value.
-if (isClient) {
-  defaultGateway.subscribe((value) => localStorage.defaultGateway = value)
-}
-
+export const defaultGateway = persisted('defaultGateway', publicGateway)

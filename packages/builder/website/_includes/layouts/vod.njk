@@ -11,15 +11,14 @@
 
 
   <div class="block">
-
     {% island 'VideoPlayer.svelte', 'client:load' %}
     {% prop 'videoSrcHash', vod.videoSrcHash %}
-    {% prop 'videoHash', vod.videoHash %}
     {% prop 'video720Hash', vod.video720Hash %}
     {% prop 'video360Hash', vod.video360Hash %}
     {% prop 'video240Hash', vod.video240Hash %}
     {% prop 'thiccHash', vod.thiccHash %}
     {% endisland %}
+
   </div>
 
 
@@ -31,13 +30,6 @@
       {% prop 'gateways', gateways %}
       {% endisland %}
 
-      {# <div class="select is-primary">
-        <select class="gateway-selector">
-        {%- for gw in gateways %}
-          <option>{{ gw.hostname }} {%- if gw.note %} ({{ gw.note }}){% endif %}</option>
-        {% endfor -%}
-        </select>
-      </div> #}
     </div>
   </div>
 
@@ -72,7 +64,6 @@
           <li>
             <span>
               Source: {% island 'IpfsLink.svelte', 'client:load' %}
-              {% prop 'gateways', gateways %}
               {% prop 'cid', vod.videoSrcHash %}
               {% endisland %}
             </span>
@@ -85,21 +76,21 @@
               {% endisland %}</span></li>
           {% endif %}
           {%- if vod.video480Hash %}
-          <li><span>480p: {# {% island 'IpfsLink.svelte', 'client:load' %}
+          <li><span>480p: {% island 'IpfsLink.svelte', 'client:load' %}
               {% prop 'cid', vod.video480Hash %}
-              {% endisland %} #}</span></li>
+              {% endisland %}</span></li>
           {% endif %}
           {%- if vod.video360Hash %}
-          <li><span>360p: {# {% island 'IpfsLink.svelte', 'client:load' %}
+          <li><span>360p: {% island 'IpfsLink.svelte', 'client:load' %}
               {% prop 'cid', vod.video360Hash %}
-              {% endisland %} #}</span></li>
+              {% endisland %}</span></li>
           {% endif %}
 
           {%- if vod.video240Hash %}
             <li>
-              <span>240p: {# {% island 'IpfsLink.svelte', 'client:load' %}
+              <span>240p: {% island 'IpfsLink.svelte', 'client:load' %}
               {% prop 'cid', vod.video240Hash %}
-              {% endisland %} #}
+              {% endisland %}
               </span>
             </li>
           {% endif %}
