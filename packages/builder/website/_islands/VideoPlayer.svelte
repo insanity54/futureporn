@@ -21,39 +21,50 @@
 
   let player
   let eventsToEmit = ['timeupdate']
-  let videoSrcUrl = derived(defaultGateway, ($defaultGateway) => buildIpfsUrl($defaultGateway.pattern, videoSrcHash))
-  let video720Url = derived(defaultGateway, ($defaultGateway) => buildIpfsUrl($defaultGateway.pattern, video720Hash))
-  let video360Url = derived(defaultGateway, ($defaultGateway) => buildIpfsUrl($defaultGateway.pattern, video360Hash))
-  let video240Url = derived(defaultGateway, ($defaultGateway) => buildIpfsUrl($defaultGateway.pattern, video240Hash))
-  let thiccUrl = derived(defaultGateway, ($defaultGateway) => buildIpfsUrl($defaultGateway.pattern, thiccHash))
 
 
-  const unsub = videoSrcUrl.subscribe((url) => {
-    console.log(`change detected! ${url}`)
+  $: videoSrcUrl = buildIpfsUrl($defaultGateway.pattern, videoSrcHash);
+  $: video720Url = buildIpfsUrl($defaultGateway.pattern, video720Hash);
+  $: video360Url = buildIpfsUrl($defaultGateway.pattern, video360Hash);
+  $: video240Url = buildIpfsUrl($defaultGateway.pattern, video240Hash);
+  $: thiccUrl = buildIpfsUrl($defaultGateway.pattern, thiccHash);
+
+
+  // update the video player sources when the gateway is changed
+  const unsub = defaultGateway.subscribe((gw) => {
+    console.log(`change detected!`)
+    console.log(gw)
 
     if (typeof player !== 'undefined' && typeof player.source !== 'undefined') {
 
       let sources = []
 
-      if ($videoSrcUrl) sources.push({
-        src: $videoSrcUrl,
-        type: 'video/mp4'
+      if (videoSrcUrl) sources.push({
+        src: buildIpfsUrl($defaultGateway.pattern, videoSrcHash),
+        type: 'video/mp4',
+        size: 1080
       });
 
-      if ($video720Url) sources.push({
-        src: $video720Url,
-        type: 'video/mp4'
+      if (video720Url) sources.push({
+        src: buildIpfsUrl($defaultGateway.pattern, video720Hash),
+        type: 'video/mp4',
+        size: 720
       });
 
-      if ($video360Url) sources.push({
-        src: $video360Url,
-        type: 'video/mp4'
+      if (video360Url) sources.push({
+        src: buildIpfsUrl($defaultGateway.pattern, video360Hash),
+        type: 'video/mp4',
+        size: 360
       });
 
-      if ($video240Url) sources.push({
-        src: $video240Url,
-        type: 'video/mp4'
+      if (video240Url) sources.push({
+        src: buildIpfsUrl($defaultGateway.pattern, video240Hash),
+        type: 'video/mp4',
+        size: 240
       });
+
+      console.log('setting player sources to the following')
+      console.log(sources)
 
       player.source = {
         type: 'video',
@@ -78,16 +89,6 @@
 
 <slot></slot>
 
-<p>$videoSrcUrl:{$videoSrcUrl}</p>
-{#if $video720Url}
-  <p>$video720Url:{$video720Url}</p>
-{/if}
-{#if $video360Url}
-  <p>$video360Url:{$video360Url}</p>
-{/if}
-{#if $video240Url}
-  <p>$video240Url:{$video240Url}</p>
-{/if}
 
 {#if typeof window === "undefined"}
   <div class="video-placeholder"></div>
@@ -99,35 +100,37 @@
   >
 
     <video
-      poster="{$thiccUrl}"
-      src="{$videoSrcUrl}"
+      poster="{buildIpfsUrl($defaultGateway.pattern, thiccHash)}"
+      src="{buildIpfsUrl($defaultGateway.pattern, videoSrcHash)}"
     >
+      {#if videoSrcHash}
       <source 
-        src="{$videoSrcUrl}" 
+        src="{buildIpfsUrl($defaultGateway.pattern, videoSrcHash)}" 
         type="video/mp4"
         size="1080"
       >
+      {/if}
 
-      {#if $video720Url}
+      {#if video720Hash}
       <source 
-        src="{$video720Url}" 
+        src="{buildIpfsUrl($defaultGateway.pattern, videoSrcHash)}" 
         type="video/mp4"
         size="720"
       >
       {/if}
 
-      {#if $video360Url}
+      {#if video360Hash}
       <source 
-        src="{$video360Url}" 
+        src="{buildIpfsUrl($defaultGateway.pattern, video360Hash)}" 
         type="video/mp4"
         size="360"
       >
       {/if}
 
 
-      {#if $video240Url}
+      {#if video240Hash}
       <source 
-        src="{$video240Url}" 
+        src="{buildIpfsUrl($defaultGateway.pattern, video240Hash)}" 
         type="video/mp4"
         size="240"
       >
