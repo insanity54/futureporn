@@ -10,6 +10,7 @@
 <div class="container">
  
   <div class="block">
+    {%- if vod.videoSrcHash %}
     <video id="player" style="--plyr-color-main:#353fff;" controls data-poster="{{ vod.thiccHash | buildIpfsUrl }}">
       {# we originally called it videoHash, but then we switched to videoSrcHash #}
       {%- if vod.videoSrcHash %}
@@ -34,6 +35,7 @@
         <source src="{{ vod.video240Hash | buildIpfsUrl }}" size="240" type="video/mp4">
       {% endif %}
     </video>
+    {% endif %}
   </div>
 
 
@@ -54,20 +56,11 @@
           <p class="mt-0 mb-5">{{ vod.date | readableDate }}</p>
         {% endif %}
 
+      {%- if vod.videoSrcHash %}
       <h2 class="heading">
         Download Links
-        {# {% island 'IpfsGatewaySwitcher.svelte', 'client:load' %}
-        {% endisland %} #}
       </h2>
 
-      {# {% island 'IpfsLink.svelte', 'client:load' %}
-      {% prop 'cid', vod.videoSrcHash %}
-      {% endisland %}
-
-
-      {% island 'IpfsLink.svelte', 'client:load' %}
-      {% prop 'cid', vod.video240Hash %}
-      {% endisland %} #}
 
       <ul class="mb-5">
       {%- if vod.videoSrcHash %}
@@ -110,6 +103,7 @@
           <li><span>240p: <span class="tag">{{ vod.video240Hash | stripQueryString }}</span></span></li>
         {% endif %}
       </ul>
+      {% endif %}
 
 
       {%- if vod.announceUrl %}
