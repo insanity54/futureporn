@@ -1,7 +1,7 @@
 
 {
   "cluster": {
-    "peername": "futureporn-peer-5841",
+    "peername": "futureporn-peer-5103",
     "secret": "3acade7f761c91f5fe3d34c4f4d15a17f817bc3463ab4395958f302b222a023b",
     "leave_on_shutdown": false,
     "listen_multiaddress": [
