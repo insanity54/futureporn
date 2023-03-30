@@ -25,6 +25,7 @@ importers:
       '@11ty/eleventy-img': ^3.0.0
       '@11ty/eleventy-navigation': ^0.3.5
       '@11ty/eleventy-plugin-rss': ^1.2.0
+      '@fortawesome/fontawesome-free': ^5.15.4
       '@slinkity/svelte': ^1.0.0
       '@slinkity/vue': ^1.0.0
       '@types/markdown-it': ^12.2.3
@@ -63,10 +64,12 @@ importers:
       svelte: ^3.57.0
       svelte-local-storage-store: ^0.4.0
       svelte-plyr: ^0.1.3
+      svelte-session-manager: ^2.2.1
       url: ^0.11.0
       vite: ^4.1.4
       vue: ^3.2.47
     dependencies:
+      '@fortawesome/fontawesome-free': 5.15.4
       '@slinkity/svelte': 1.0.0_7prb7htae54d7yvse4iwyz3su4
       '@types/markdown-it': 12.2.3
       alpinejs: 3.12.0
@@ -84,6 +87,7 @@ importers:
       ramda: 0.28.0
       svelte: 3.57.0
       svelte-local-storage-store: 0.4.0_svelte@3.57.0
+      svelte-session-manager: 2.2.1
     devDependencies:
       '@11ty/eleventy': 2.0.0-canary.35
       '@11ty/eleventy-fetch': 3.0.0
@@ -986,6 +990,12 @@ packages:
     dependencies:
       fastify-plugin: 4.5.0
       hashlru: 2.3.0
+    dev: false
+
+  /@fortawesome/fontawesome-free/5.15.4:
+    resolution: {integrity: sha512-eYm8vijH/hpzr/6/1CJ/V/Eb1xQFW2nnUKArb3z+yUWv7HTwj6M7SP957oMjfZjAHU6qpoNc2wQvIxBLWYa/Jg==}
+    engines: {node: '>=6'}
+    requiresBuild: true
     dev: false
 
   /@hapi/boom/10.0.1:
@@ -4094,6 +4104,18 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
+  /mf-hosting-cloudflare/1.0.5:
+    resolution: {integrity: sha512-5BiMN9+O3tRrTX17/HGPDV8QhiVeli/NhBKptPvuGTlGxkdhUYgjilyQ7h5GjmU4vgACeJn3tfbea69pz2m5kQ==}
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /mf-hosting-frontend/1.7.1:
+    resolution: {integrity: sha512-Sl/cydtLBwT++Y7oc3w6onjGi0ySFGpICAAF8k+QE178/9PJxClJVzz0Ol6pUAEynWazDTo+t1o3jkpS5bAOqw==}
+    requiresBuild: true
+    dev: false
+    optional: true
+
   /micromatch/4.0.5:
     resolution: {integrity: sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==}
     engines: {node: '>=8.6'}
@@ -5818,6 +5840,13 @@ packages:
       sorcery: 0.10.0
       strip-indent: 3.0.0
       svelte: 3.57.0
+    dev: false
+
+  /svelte-session-manager/2.2.1:
+    resolution: {integrity: sha512-I6PFRX5NsZU9KFVWg+qF62rYIR+BbFdLVCC5Vdk7QTYJebp8qTBAIZD/bElwBftBmrW1yQQQ57ZTwci8JhrjHw==}
+    optionalDependencies:
+      mf-hosting-cloudflare: 1.0.5
+      mf-hosting-frontend: 1.7.1
     dev: false
 
   /svelte/3.57.0:

@@ -6,6 +6,7 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "@slinkity/svelte": "^1.0.0",
     "@types/markdown-it": "^12.2.3",
     "alpinejs": "^3.12.0",
@@ -22,7 +23,8 @@
     "postgres": "^3.3.3",
     "ramda": "^0.28.0",
     "svelte": "^3.57.0",
-    "svelte-local-storage-store": "^0.4.0"
+    "svelte-local-storage-store": "^0.4.0",
+    "svelte-session-manager": "^2.2.1"
   },
   "devDependencies": {
     "@11ty/eleventy": "2.0.0-canary.35",
@@ -59,15 +61,17 @@
   "scripts": {
     "serve": "npx http-server ./_site",
     "start": "node index.js",
-    "dev": "npx @11ty/eleventy --incremental --quiet --serve --config=./.eleventy.cjs",
+    "dev": "DEBUG=\"*\" npx @11ty/eleventy --serve --config=./.eleventy.cjs",
+    "dev:quiet": "npx @11ty/eleventy --quiet --serve --config=./.eleventy.cjs",
     "clean": "rm -rf ./_site && rm -rf ./.eleventy-temp-build",
-    "build": "pnpm run build:slow",
+    "build": "pnpm run build:slow && pnpm run workaround240",
     "build:fast": "pnpm run clean; FAST=true npx @11ty/eleventy --config ./.eleventy.cjs",
     "build:slow": "pnpm run clean; npx @11ty/eleventy --config ./.eleventy.cjs",
     "dev:index": "nodemon index.js --ignore \"_site\"",
     "dev:11ty": "npx @11ty/eleventy --config ./.eleventy.cjs --serve --incremental --quiet",
     "dev:11ty:fast": "FAST=true pnpm run dev:11ty",
-    "dev:11ty:slow": "pnpm run dev:11ty"
+    "dev:11ty:slow": "pnpm run dev:11ty",
+    "workaround240": "node ./removeUrlEncodedInputPaths.js ./_site"
   },
   "type": "commonjs"
 }

@@ -1,0 +1,152 @@
+
+{% block start %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="{{ description or metadata.description }}">
+    <meta property="og:title" content="{{ metadata.title }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ metadata.url }}" />
+    <meta property="og:image" content="{{ metadata.url }}favicon.ico" />
+    <meta property="og:description" content="{{ metadata.description }}" />
+    <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
+    {# <link rel="stylesheet" href="{% webpackAsset 'base.css' %}"> #}
+    <link rel="stylesheet" href="/@includes/styles/base.scss">
+
+    <link rel="canonical" href="{{ metadata.url }}">
+    <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
+
+    <title>{{ metadata.title }}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <h1 class="title">{{ metadata.title }}</h1>
+        </a>
+        <a 
+          role="button" 
+          class="navbar-burger" 
+          data-target="navMenu" 
+          aria-label="menu" 
+          aria-expanded="false"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+
+      <div class="navbar-menu" id="navMenu">
+        <a class="navbar-item is-expanded" href="/about">About</a>
+        <a class="navbar-item is-expanded" href="/faq">FAQ</a>
+        <a class="navbar-item is-expanded" href="/goals">Goals</a>
+        <a class="navbar-item is-expanded" href="/patrons">Patrons</a>
+        <a class="navbar-item is-expanded" href="/feed">RSS</a>
+        <a class="navbar-item is-expanded" href="/api">API</a>
+        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status</a>
+
+        {% set redirectUrl %}{{ page.url | absoluteUrl(metadata.url) | urlencode }}{% endset %}
+
+        {# {% clientOnlyIsland 'LoginButton.svelte', 'client:load' %}{% endclientOnlyIsland %} #}
+
+
+      </div>
+
+
+
+
+    </div>
+
+    </nav>
+    <div class="container">
+
+
+{% endblock %}
+
+
+{% block content %}
+    {{ content | safe }}
+{% endblock %}
+
+{% block footer %}
+
+
+
+    <footer class="footer">
+        
+
+        <div class="content">
+          <div class="columns">
+     
+              <div class="column is-12">
+                <p class="mt-4">
+                  Futureporn.net is made with ❤️ by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+                </p>
+                <p>
+                  Made possible by generous donations from
+
+                  {% set donors = patreon.patrons.all.concat(donors.list) %}
+
+                  {%- for donor in donors %}
+                    <span>{{ donor.attributes.full_name or donor.name }}</span>{% if loop.index === donors.length %} {% else %}, {% endif %}
+                  {% endfor %}
+                </p>
+                <p>
+                  VOD contributions by 
+                    {%- for c in contributors.list %}
+                      {% if (c.link) %}
+                        <a target="_blank" href="{{ c.link }}">{{ c.name }} <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+                      {% else %}
+                        <span>{{ c.name }}</span>
+                      {% endif %}
+                      </span>{% if loop.index === contributors.list.length %} {% else %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+                <p><a 
+                  target="_blank" 
+                  href="https://www.reddit.com/r/projektmelody/comments/qikzy0/futureporn_an_unofficial_projektmelody_chaturbate/"
+                  >Reddit Thread<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+              </div>
+          </div>
+
+        <div class="level">
+          <div class="level-left is-invisible">
+            <div data-controller="fap" class="taskbar">
+              <button data-fap-target="button" data-action="fap#fap" class="button is-large">
+                <span class="icon">
+                  💦
+                </span>
+                <span data-fap-target="count">69</span>
+                <span>&nbsp;Faps</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        </div>
+    </footer>
+  </div>
+  {% endblock %}
+
+
+    {% block scripts %}
+
+    <script type="module" src="/@includes/js/base.js"></script>
+    <script data-goatcounter="https://futureporn.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+    {% endblock %}
+
+{% block end %}
+  </body>
+</html>
+{% endblock %}

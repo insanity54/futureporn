@@ -89,7 +89,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
     metadata = await Image(src, opts);
   } catch (e) {
     console.warn(`catching error during image fetch ${e}`)
-    metadata = await Image('./website/favicon/favicon.png', opts)
+    metadata = await Image('./_website/favicon/favicon.png', opts)
   }
 
   let lowsrc = metadata.jpeg[0];
@@ -122,8 +122,10 @@ module.exports = function(eleventyConfig) {
     })
   )
 
-  eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
-  eleventyConfig.addPassthroughCopy({ "website/assets/img": "/img" });
+  eleventyConfig.addPassthroughCopy('public')
+  eleventyConfig.addPassthroughCopy({ "_website/favicon": "/" });
+  // eleventyConfig.addPassthroughCopy({ "_website/assets/img": "/img" });
+  // eleventyConfig.addPassthroughCopy({ "./node_modules/@fortawesome/fontawesome-free/webfonts": "/" });
 
 
   eleventyConfig.addPlugin(pluginRss);
@@ -206,6 +208,7 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("stripQueryString", text => {
+    if (!text) return '';
     return text.split(/[?#]/)[0];
   });
   eleventyConfig.addAsyncFilter("urlDecode", async (text) => {
@@ -243,12 +246,12 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
-  eleventyConfig.addPassthroughCopy({
-      "./website/img/gen/*.avif": "/img/gen"
-  });
-  eleventyConfig.addPassthroughCopy({
-      "./website/img/gen/*.png": "/img/gen"
-  });
+  // eleventyConfig.addPassthroughCopy({
+  //     "./website/img/gen/*.avif": "/img/gen"
+  // });
+  // eleventyConfig.addPassthroughCopy({
+  //     "./website/img/gen/*.png": "/img/gen"
+  // });
 
   eleventyConfig.addCollection("tagList", function(collection) {
     let tagSet = new Set();
@@ -322,7 +325,7 @@ module.exports = function(eleventyConfig) {
     dataTemplateEngine: "njk",
 
     dir: {
-      input: "website",
+      input: "_website",
       includes: "_includes",
       data: "_data",
       output: "_site"
