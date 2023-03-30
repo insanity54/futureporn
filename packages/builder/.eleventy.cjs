@@ -7,8 +7,10 @@ const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const { format, utcToZonedTime, } = require('date-fns-tz');
 const Image = require("@11ty/eleventy-img");
+
 const slinkity = require('slinkity')
 const svelte = require('@slinkity/svelte')
+
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -89,7 +91,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
     metadata = await Image(src, opts);
   } catch (e) {
     console.warn(`catching error during image fetch ${e}`)
-    metadata = await Image('./_website/favicon/favicon.png', opts)
+    metadata = await Image('./website/favicon/favicon.png', opts)
   }
 
   let lowsrc = metadata.jpeg[0];
@@ -114,6 +116,41 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
 
 module.exports = function(eleventyConfig) {
 
+  // eleventyConfig.on('eleventy.after', async ({ dir, runMode, outputMode, results }) => {
+  //   // Run me after the build ends
+  //   console.log(results.map((r) => r.outputPath).filter((r) => r.includes('.json')))
+  // });
+
+  // eleventyConfig.addPlugin(EleventyVitePlugin, {
+  //   viteOptions: {
+  //     appType: "mpa",
+  //     server: {
+  //       mode: 'development',
+  //       middlewareMode: true
+  //     },
+  //     build: {
+  //       rollupOptions: {
+  //         plugins: [
+  //           copy({
+  //             targets: [
+  //               { src: '.11ty-vite/api/*.json', dest: '_site/api' },
+  //               { src: '.11ty-vite/feed/*.xml', dest: '_site/feed' },
+  //               { src: '.11ty-vite/sitemap.xml', dest: '_site' }
+  //             ]
+  //           })
+  //         ]
+  //       },
+  //       assetsInclude: ['api/*.json'],
+  //       mode: "production",
+  //     },
+  //     resolve: {
+  //       alias: {
+  //         '/@root/node_modules': path.resolve('.', 'node_modules'),
+  //         '/@includes': path.resolve('.', 'website/_includes')
+  //       }
+  //     }
+  //   }
+  // });
 
   eleventyConfig.addPlugin(
     slinkity.plugin,
@@ -122,10 +159,8 @@ module.exports = function(eleventyConfig) {
     })
   )
 
-  eleventyConfig.addPassthroughCopy('public')
-  eleventyConfig.addPassthroughCopy({ "_website/favicon": "/" });
-  // eleventyConfig.addPassthroughCopy({ "_website/assets/img": "/img" });
-  // eleventyConfig.addPassthroughCopy({ "./node_modules/@fortawesome/fontawesome-free/webfonts": "/" });
+  eleventyConfig.addPassthroughCopy({ "website/favicon": "/" });
+  eleventyConfig.addPassthroughCopy({ "website/assets/img": "/img" });
 
 
   eleventyConfig.addPlugin(pluginRss);
@@ -208,7 +243,6 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addFilter("stripQueryString", text => {
-    if (!text) return '';
     return text.split(/[?#]/)[0];
   });
   eleventyConfig.addAsyncFilter("urlDecode", async (text) => {
@@ -246,12 +280,12 @@ module.exports = function(eleventyConfig) {
   });
 
   eleventyConfig.addNunjucksAsyncShortcode("image", imageShortcode);
-  // eleventyConfig.addPassthroughCopy({
-  //     "./website/img/gen/*.avif": "/img/gen"
-  // });
-  // eleventyConfig.addPassthroughCopy({
-  //     "./website/img/gen/*.png": "/img/gen"
-  // });
+  eleventyConfig.addPassthroughCopy({
+      "./website/img/gen/*.avif": "/img/gen"
+  });
+  eleventyConfig.addPassthroughCopy({
+      "./website/img/gen/*.png": "/img/gen"
+  });
 
   eleventyConfig.addCollection("tagList", function(collection) {
     let tagSet = new Set();
@@ -295,22 +329,22 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.setLibrary("md", markdownLibrary);
 
 
-  // // Browsersync Overrides
-  // eleventyConfig.setBrowserSyncConfig({
-  //   callbacks: {
-  //     ready: function(err, browserSync) {
-  //       const content_404 = fs.readFileSync('_site/404.html');
+  // Browsersync Overrides
+  eleventyConfig.setBrowserSyncConfig({
+    callbacks: {
+      ready: function(err, browserSync) {
+        const content_404 = fs.readFileSync('_site/404.html');
 
-  //       browserSync.addMiddleware("*", (req, res) => {
-  //         // Provides the 404 content without redirect.
-  //         res.write(content_404);
-  //         res.end();
-  //       });
-  //     },
-  //   },
-  //   ui: false,
-  //   ghostMode: false
-  // });
+        browserSync.addMiddleware("*", (req, res) => {
+          // Provides the 404 content without redirect.
+          res.write(content_404);
+          res.end();
+        });
+      },
+    },
+    ui: false,
+    ghostMode: false
+  });
 
 
   return {
@@ -325,7 +359,7 @@ module.exports = function(eleventyConfig) {
     dataTemplateEngine: "njk",
 
     dir: {
-      input: "_website",
+      input: "website",
       includes: "_includes",
       data: "_data",
       output: "_site"

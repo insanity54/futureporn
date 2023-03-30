@@ -1,4 +1,4 @@
-const copy = require('rollup-plugin-copy')
+
 
 export default {
   appType: "mpa",
