@@ -7,7 +7,9 @@
 
 
 {% block content %}
-<div class="container">
+  <div class="container">
+
+
  
    <div class="block">
     {% island 'VideoPlayer.svelte', 'client:load' %}
@@ -19,27 +21,22 @@
     {% endisland %}
   </div>
 
-      {%- if vod.video720Hash %}
-        <source src="{{ vod.video720Hash | buildIpfsUrl }}" size="720" type="video/mp4">
-      {% endif %}
 
-      {%- if vod.video480Hash %}
-        <source src="{{ vod.video480Hash | buildIpfsUrl }}" size="480" type="video/mp4">
-      {% endif %}
+  <div class="block">
+    <div class="box">
+      <p class="heading">IPFS Gateway Selector</p>
 
-      {%- if vod.video360Hash %}
-        <source src="{{ vod.video360Hash | buildIpfsUrl }}" size="360" type="video/mp4">
-      {% endif %}
+      {% island 'GatewaySelector.svelte', 'client:load' %}
+      {% prop 'freeGateways', gateways.free %}
+      {% prop 'premiumGateways', gateways.premium %}
+      {% endisland %}
 
-      {%- if vod.video240Hash %}
-        <source src="{{ vod.video240Hash | buildIpfsUrl }}" size="240" type="video/mp4">
-      {% endif %}
-    </video>
+    </div>
   </div>
 
 
-
   <div class="block">
+
 
     <div class="box">
 
@@ -55,10 +52,9 @@
           <p class="mt-0 mb-5">{{ vod.date | readableDate }}</p>
         {% endif %}
 
+
       <h2 class="heading">
         Download Links
-        {# {% island 'IpfsGatewaySwitcher.svelte', 'client:load' %}
-        {% endisland %} #}
       </h2>
 
       
@@ -75,24 +71,37 @@
           </li>
           {% endif %}
 
-      {%- if vod.video720Hash %}
-      <li><span>720p: <a href="{{ vod.video720Hash | buildIpfsUrl }}">{{ vod.video720Hash | buildIpfsUrl }}</a></span></li>
-      {% endif %}
-      {%- if vod.video480Hash %}
-      <li><span>480p: <a href="{{ vod.video480Hash | buildIpfsUrl }}">{{ vod.video480Hash | buildIpfsUrl }}</a></span></li>
-      {% endif %}
-      {%- if vod.video360Hash %}
-      <li><span>360p: <a href="{{ vod.video360Hash | buildIpfsUrl }}">{{ vod.video360Hash | buildIpfsUrl }}</a></span></li>
-      {% endif %}
-      {%- if vod.video240Hash %}
-      <li><span>240p: <a href="{{ vod.video240Hash | buildIpfsUrl }}">{{ vod.video240Hash | buildIpfsUrl }}</a></span></li>
-      {% endif %}
-      </ul>
+          {%- if vod.video720Hash %}
+          <li><span>720p: {% island 'IpfsLink.svelte', 'client:load' %}
+              {% prop 'cid', vod.video720Hash | stripQueryString %}
+              {% endisland %}</span></li>
+          {% endif %}
+          {%- if vod.video480Hash %}
+          <li><span>480p: {% island 'IpfsLink.svelte', 'client:load' %}
+              {% prop 'cid', vod.video480Hash | stripQueryString %}
+              {% endisland %}</span></li>
+          {% endif %}
+          {%- if vod.video360Hash %}
+          <li><span>360p: {% island 'IpfsLink.svelte', 'client:load' %}
+              {% prop 'cid', vod.video360Hash | stripQueryString %}
+              {% endisland %}</span></li>
+          {% endif %}
+
+          {%- if vod.video240Hash %}
+            <li>
+              <span>240p: {% island 'IpfsLink.svelte', 'client:load' %}
+              {% prop 'cid', vod.video240Hash | stripQueryString %}
+              {% endisland %}
+              </span>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
 
 
       <h2 class="heading">IPFS Content IDs</h2>
 
-      <ul class="mb-5">
+      <ul>
         {%- if vod.videoSrcHash %}
           <li><span>Source: <span class="tag">{{ vod.videoSrcHash | stripQueryString }}</span></span></li>
         {% endif %}
@@ -166,7 +175,6 @@
 
 {% block scripts %}
   {{ super() }}
-  {# <script type="module" src="/@root/node_modules/plyr/dist/plyr.min.js"></script> #}
   <script type="module" src="/@includes/js/player.js"></script>
 {% endblock %}
 
