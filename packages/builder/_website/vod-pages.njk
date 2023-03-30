@@ -1,0 +1,13 @@
+---
+layout: layouts/vod.njk
+pagination:
+  data: db.vods
+  size: 1
+  alias: vod
+  addAllPagesToCollections: false
+permalink: "/vods/{{ vod.date | safeDate }}/"
+
+tags: 
+  - vod
+---
+

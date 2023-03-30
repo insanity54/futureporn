@@ -1,0 +1,48 @@
+
+@charset "utf-8";
+
+
+
+@import './variables.scss';
+@import '/@root/node_modules/bulma/bulma.sass';
+@import '/@root/node_modules/bulma-prefers-dark/bulma-prefers-dark.sass';
+
+
+
+@import "/@root/node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "/@root/node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
+@import "/@root/node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+
+html {
+  background-image: linear-gradient(#1d1058, #1c1a5b);
+}
+
+
+div.card-content p {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 1rem;
+  white-space: nowrap;
+}
+
+a.pagination-link,
+a.pagination-next,
+a.pagination-previous,
+progress.progress,
+button.button {
+  vertical-align: unset;
+}
+
+figure.image {
+  background-image: linear-gradient(45deg, #1d1058, #7854be);
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+figure.is-rounded {
+  border-radius: 50%;
+}
+
+nav.navbar {
+  user-select: none;
+}
