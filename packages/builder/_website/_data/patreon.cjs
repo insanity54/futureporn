@@ -102,7 +102,7 @@ async function getPatronData (access_token) {
     let data = await EleventyFetch(
       encodeURI(`https://www.patreon.com/api/oauth2/v2/campaigns/${campaignId}/members?include=user,currently_entitled_tiers,currently_entitled_tiers.benefits&fields[tier]=title&fields[benefit]=title&fields[user]=image_url,full_name&fields[member]=full_name,lifetime_support_cents,currently_entitled_amount_cents,patron_status`), 
       {
-        duration: '1d',
+        duration: '5m',
         type: 'json',
         fetchOptions: {
           headers: {
