@@ -70,6 +70,30 @@
 
       let sources = []
 
+      sources.push({
+        src: 'https://stream.mux.com/ORtFf3I0202ECZz3k2Y4S3XyiiUxA2ivk6xqjjLYO14C8.m3u8',
+        type: 'video/mux'
+      })
+//   if (!Hls.isSupported()) {
+//     video.src = source;
+//   } else {
+//     // For more Hls.js options, see https://github.com/dailymotion/hls.js
+//     const hls = new Hls();
+//     hls.loadSource(source);
+//     hls.attachMedia(video);
+//     window.hls = hls;
+    
+//     // Handle changing captions
+//     player.on('languagechange', () => {
+//       // Caption support is still flaky. See: https://github.com/sampotts/plyr/issues/994
+//       setTimeout(() => hls.subtitleTrack = player.currentTrack, 50);
+//     });
+//   }
+  
+//   // Expose player so it can be used from the console
+//   window.player = player;
+// });
+
       if (videoSrcUrl) sources.push({
         src: buildIpfsUrl($defaultGateway.pattern, videoSrcHash),
         type: 'video/mp4',
