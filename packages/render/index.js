@@ -81,75 +81,84 @@ async function stat (cid) {
 }
 
 
-async function download (cid, size) {
-  if (typeof cid === 'undefined') throw new Error('cid is undefined');
+/**
+ * greets ChatGPT
+ */
+async function download(cid, fileSize) {
+  if (!cid) throw new Error('cid is undefined');
 
-  let progressReportTimer 
+  logger.log({ level: 'debug', message: `downloading cid:${cid}`})
 
-  // retry up to 5 times
-  for (let i = 0; i < 5; i++) {
+  const MAX_RETRY_ATTEMPTS = 5;
+  const REQUEST_TIMEOUT_MS = 1000 * 60 * 60 * 3; // 3 hours
+  const PROGRESS_REPORT_INTERVAL_MS = 1000 * 60; // 1 minute
+
+  const ipfsHashRegex = /[^a-zA-Z0-9_-]/g;
+  const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4.tar`);
+  const options = {
+    method: 'POST',
+    body: '',
+    searchParams: {
+      arg: cid,
+      archive: true,
+      compress: false
+    },
+    timeout: {
+      request: REQUEST_TIMEOUT_MS
+    }
+  };
+
+  let progressReportTimer = null;
+  let lastTransferredSize = 0;
+  let stalledTimeMs = 0;
+  let isDownloadStalled = false;
+
+  for (let retryCount = 0; retryCount < MAX_RETRY_ATTEMPTS; retryCount++) {
     try {
-      logger.log({level: 'debug', message: 'tryharding to download!'})
-      const gotStream = got.stream(
-        'http://127.0.0.1:5001/api/v0/get',
-        {
-          method: 'POST',
-          body: '',
-          searchParams: {
-            arg: cid,
-            // Even if I switch archive to false, we get the same tar response.
-            // apparently there is no way via the API to get anything other than a tar stream
-            // see: https://discuss.ipfs.tech/t/download-more-bytes-when-using-curl-command/562
-            // see: https://github.com/ipfs/kubo/issues/6477
-            // 
-            // so we are just putting archive: true, compress: false to future-proof.
-            // in case a default is ever set, we will be on the setting that we are coded to handle
-            archive: true, 
-            compress: false
-          },
-          timeout: {
-            request: 1000*60*60*3 // 3 hour timeout
-          }
-        }
-      )
-      cid = ipfsHashRegex.exec(cid)[0]
-      const localFilePath = path.join(process.env.FUTUREPORN_WORKDIR, `${cid}.mp4.tar`)
-      logger.log({ level: 'info', message: `Download Attempt ${i+1}. DL ${cid} from IPFS to ${localFilePath}` })
-
+      logger.log({ level: 'debug', message: 'Downloading...' });
+      const gotStream = got.stream('http://127.0.0.1:5001/api/v0/get', options);
 
       progressReportTimer = setInterval(() => {
-        if (typeof size !== 'undefined') {
-          // accurate percentage if we know the filesize
-          const progressPercentage = ((gotStream.downloadProgress.transferred / size) * 100).toFixed(2)
-          logger.log({ level: 'info', message: `transferred:${gotStream.downloadProgress.transferred}, size:${size}, ${progressPercentage}% transferred.` })
+        const transferredSize = gotStream.downloadProgress.transferred;
+        const progressPercentage = fileSize ? ((transferredSize / fileSize) * 100).toFixed(2) : null;
+
+        logger.log({
+          level: 'info',
+          message: fileSize
+            ? `transferred: ${transferredSize}, size: ${fileSize}, ${progressPercentage}% transferred.`
+            : JSON.stringify(gotStream.downloadProgress)
+        });
+
+        // Check if the download has stalled
+        if (transferredSize === lastTransferredSize) {
+          stalledTimeMs += PROGRESS_REPORT_INTERVAL_MS;
+          if (stalledTimeMs >= 5 * 60 * 1000) { // 5 minutes
+            isDownloadStalled = true;
+            throw new Error('Download stalled for more than 5 minutes.');
+          }
         } else {
-          // generic progress
-          logger.log({ level: 'info', message: JSON.stringify(gotStream.downloadProgress) })
+          stalledTimeMs = 0;
         }
-      }, reportInterval)
 
+        lastTransferredSize = transferredSize;
+      }, PROGRESS_REPORT_INTERVAL_MS);
 
-
-
-
-      await pipeline(
-        gotStream,
-        fs.createWriteStream(localFilePath)
-      )
-
-
-      logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` })
-      
+      await pipeline(gotStream, fs.createWriteStream(localFilePath));
+      logger.log({ level: 'info', message: `Downloaded ${cid} to ${localFilePath}` });
       return localFilePath;
-    } catch (e) {
-      logger.log({ level: 'error', message: 'Error while downloading!' })
-      logger.log({ level: 'error', message: e })
-
+    } catch (error) {
+      logger.log({ level: 'error', message: 'Error while downloading!' });
+      logger.log({ level: 'error', message: error });
     } finally {
-      clearInterval(progressReportTimer)
+      clearInterval(progressReportTimer);
+
+      if (isDownloadStalled) {
+        throw new Error('Download stalled for more than 5 minutes.');
+      }
     }
   }
 }
+
 
 async function extract (tarFile, cid) {
 

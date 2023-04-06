@@ -3,27 +3,20 @@ layout: layouts/simple.njk
 ---
 
 
-<h2>testbed.</h2>
-<h3>testbed?</h3>
-<h4>testbed!</h4>
 
-<div>
-  <video
-    id="my-video"
-    class="video-js vjs-lime"
-    controls
-    preload="auto"
-    width="64"
-    height="48"
-    poster="/@root/website/assets/img/cj_clippy.jpeg"
-  >
-    <source src="/@root/website/assets/video/test.mp4" type="video/mp4" />
-    <p class="vjs-no-js">
-      To view this video please enable JavaScript, and consider upgrading to a
-      web browser that
-      <a href="https://videojs.com/html5-video-support/" target="_blank"
-        >supports HTML5 video</a
-      >
-    </p>
-  </video>
-</div>
+
+<video 
+  id="my-player" 
+  class="video-js vjs-16-9 vjs-theme-fantasy" 
+  controls 
+  preload="auto" 
+  width="100%"
+  data-setup='{
+    "timelineHoverPreviews": true,
+    "plugins": {
+      "httpSourceSelector": {}
+    }
+  }'
+>
+  <source src="IhLmCS02qQLSpnk9R8c01E01grFmuBLDLockITidrKdlrg" type="video/mux" />
+</video>
