@@ -5,7 +5,7 @@ pagination:
   size: 1
   alias: vod
   addAllPagesToCollections: false
-permalink: "/vods/{{ vod.date | safeDate }}/"
+permalink: "/vods/{{ vod.attributes.date | safeDate }}/"
 
 tags: 
   - vod
