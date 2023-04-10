@@ -174,6 +174,15 @@ module.exports = function(eleventyConfig) {
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
 
+  // greets https://github.com/11ty/eleventy-plugin-rss/blob/5cf83502e29b88b32772f0274fcf9dd4041b4549/src/dateRfc3339.js
+  eleventyConfig.addFilter("isoStringToRfc3339", function (s) {
+    // remove milliseconds
+    let split = s.split(".");
+    split.pop();
+
+    return split.join("") + "Z";
+  })
+
   eleventyConfig.addFilter("isArchiveComplete", function (vods) {
     const totalVodCount = vods.length
     const completedVodCount = filterIpfsCompleted(vods)
@@ -218,12 +227,14 @@ module.exports = function(eleventyConfig) {
     // return duc.default(text);
   });
   eleventyConfig.addFilter("readableDate", dateObj => {
-    return DateTime.fromJSDate(dateObj, {zone: 'utc'}).toFormat("dd LLL yyyy");
+    const date = typeof dateObj === 'string' ? new Date(dateObj) : dateObj;
+    return DateTime.fromJSDate(date, {zone: 'utc'}).toFormat("dd LLL yyyy");
   });
 
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-date-string
   eleventyConfig.addFilter('htmlDateString', (dateObj) => {
-    return DateTime.fromJSDate(dateObj, {zone: 'utc'}).toFormat('yyyy-LL-dd');
+    const date = typeof dateObj === 'string' ? new Date(dateObj) : dateObj;
+    return DateTime.fromJSDate(date, {zone: 'utc'}).toFormat('yyyy-LL-dd');
   });
 
   // Get the first `n` elements of a collection.

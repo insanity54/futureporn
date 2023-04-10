@@ -2,35 +2,34 @@
 {# {% set imageUrl =  %} #}
 {# {% set imageData = await EleventyFetch(imageUrl).then(r => r.buffer()) %} #}
 
-{{ vod.data.thiccHash }}
 <div class="column is-half-mobile is-one-third-tablet is-one-fifth-desktop">
   <div class="card">
-    <a href="/vods/{{ vod.date | safeDate | url }}">
+    <a href="/vods/{{ vod.attributes.date | safeDate | url }}">
       <div class="card-image">
           <figure class="image is-16by9">
             {% set imageUrl = './_website/favicon/favicon.png' %}
 
-            {% if vod.thiccHash %}
-              {% set imageUrl = vod.thiccHash | buildIpfsUrl %}
+            {% if vod.attributes.thiccHash %}
+              {% set imageUrl = vod.attributes.thiccHash | buildIpfsUrl %}
             {% endif %}
 
-            {% if vod.announceTitle %}
-              {% set imageTitle = vod.announceTitle %}
+            {% if vod.attributes.announceTitle %}
+              {% set imageTitle = vod.attributes.announceTitle %}
             {% else %}
-              {% set imageTitle = vod.title %}
+              {% set imageTitle = vod.attributes.title %}
             {% endif %}
 
             {% image imageUrl, undefined, "" %}
           </figure>
       </div>
       <div class="card-content">
-        <h3 class="heading">{{ vod.title or vod.announceTitle }}</h3>
-        <h4 class="heading">{{ vod.date | htmlDateString }}</h3>
+        <h3 class="heading">{{ vod.attributes.title or vod.attributes.announceTitle }}</h3>
+        <h4 class="heading">{{ vod.attributes.date | htmlDateString }}</h3>
         <p class="description is-size-7">
-          {% if vod.data.announceTitle %}
-            {{ vod.data.announceTitle }}
-          {% elseif vod.data.title %}
-            {{ vod.data.title }}
+          {% if vod.attributes.announceTitle %}
+            {{ vod.attributes.announceTitle }}
+          {% elseif vod.attributes.title %}
+            {{ vod.attributes.title }}
           {% endif %}
         </p>
       </div>
