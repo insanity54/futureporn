@@ -16,7 +16,6 @@
     <meta property="og:image" content="{{ metadata.url }}favicon.ico" />
     <meta property="og:description" content="{{ metadata.description }}" />
     <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
-    {# <link rel="stylesheet" href="{% webpackAsset 'base.css' %}"> #}
     <link rel="stylesheet" href="/@includes/styles/base.scss">
 
     <link rel="canonical" href="{{ metadata.url }}">
@@ -25,7 +24,13 @@
     <title>{{ metadata.title }}</title>
     {% endblock %}
   </head>
-  <body>
+  <body 
+    x-data="{ 
+      lastVisitedPath: $persist('/'),
+      jwt: $persist(''),
+    }"
+    x-init="lastVisitedPath=window.location.pathname"
+  >
     <nav class="navbar" role="navigation" aria-label="main navigation">
 
       <div class="navbar-brand">
@@ -52,11 +57,37 @@
         <a class="navbar-item is-expanded" href="/patrons">Patrons</a>
         <a class="navbar-item is-expanded" href="/feed">RSS</a>
         <a class="navbar-item is-expanded" href="/api">API</a>
-        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status</a>
 
-        {% set redirectUrl %}{{ page.url | absoluteUrl(metadata.url) | urlencode }}{% endset %}
+        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
 
-        {# {% clientOnlyIsland 'LoginButton.svelte', 'client:load' %}{% endclientOnlyIsland %} #}
+        <a 
+          class="navbar-item is-expanded"
+        >
+          <a 
+            x-show="jwt!==''"
+            x-on:click="jwt=''"
+            href="#"
+            class="button is-warning is-outlined"
+          >
+            <span class="icon">
+              <i class="fas fa-right-from-bracket"></i>
+            </span>
+            <span>Log out</span>
+          </a>
+          <a
+            x-show="jwt===''"
+            href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
+            class="button is-warning is-outlined"
+          >
+            <span class="icon">
+              <i class="fab fa-patreon"></i>
+            </span>
+            <span>Log in</span>
+          </a>
+        </a>
+
+
+
 
 
       </div>
@@ -140,6 +171,7 @@
 
 
     {% block scripts %}
+
 
     <script type="module" src="/@includes/js/base.js"></script>
     <script data-goatcounter="https://futureporn.goatcounter.com/count"

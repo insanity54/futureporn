@@ -8,7 +8,6 @@ const markdownItAnchor = require("markdown-it-anchor");
 const { format, utcToZonedTime, } = require('date-fns-tz');
 const Image = require("@11ty/eleventy-img");
 const slinkity = require('slinkity')
-const svelte = require('@slinkity/svelte')
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -118,7 +117,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPlugin(
     slinkity.plugin,
     slinkity.defineConfig({
-      renderers: [svelte()]
+      renderers: []
     })
   )
 

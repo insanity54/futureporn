@@ -3,8 +3,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="icon" href="data:image/x-icon;base64,">
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.da52e258.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,18 +16,21 @@
     <meta property="og:image" content="https://futureporn.net/favicon.ico" />
     <meta property="og:description" content="ProjektMelody fan site focused on long term preservation of her Chaturbate VODs" />
     <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
-    
-    
+    <link rel="stylesheet" href="/@includes/styles/base.scss">
 
     <link rel="canonical" href="https://futureporn.net/">
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="https://futureporn.net/feed/feed.xml" />
 
     <title>🔞💦 Futureporn.net</title>
     
-    <script type="module" crossorigin src="/assets/base.746db6a9.js"></script>
-    <link rel="stylesheet" href="/assets/base.e0faca26.css">
   </head>
-  <body>
+  <body 
+    x-data="{ 
+      lastVisitedPath: $persist('/'),
+      jwt: $persist(''),
+    }"
+    x-init="lastVisitedPath=window.location.pathname"
+  >
     <nav class="navbar" role="navigation" aria-label="main navigation">
 
       <div class="navbar-brand">
@@ -54,11 +57,37 @@
         <a class="navbar-item is-expanded" href="/patrons">Patrons</a>
         <a class="navbar-item is-expanded" href="/feed">RSS</a>
         <a class="navbar-item is-expanded" href="/api">API</a>
-        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status</a>
 
-        
+        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
 
-        
+        <a 
+          class="navbar-item is-expanded"
+        >
+          <a 
+            x-show="jwt!==''"
+            x-on:click="jwt=''"
+            href="#"
+            class="button is-warning is-outlined"
+          >
+            <span class="icon">
+              <i class="fas fa-right-from-bracket"></i>
+            </span>
+            <span>Log out</span>
+          </a>
+          <a
+            x-show="jwt===''"
+            href="http://localhost:1337/api/connect/patreon"
+            class="button is-warning is-outlined"
+          >
+            <span class="icon">
+              <i class="fab fa-patreon"></i>
+            </span>
+            <span>Log in</span>
+          </a>
+        </a>
+
+
+
 
 
       </div>
@@ -117,12 +146,12 @@
 
       
       
-      <li><p>☐ Transcode a 240p version of each stream. 247/252 (98%)</p></li>
+      <li><p>☐ Transcode a 240p version of each stream. 252/252 (100%)</p></li>
       
 
       
       
-      <li><p>☐ Generate thumbnail for each stream. 226/252 (89%)</p></li>
+      <li><p>☐ Generate thumbnail for each stream. 252/252 (100%)</p></li>
       
 
     </ul>
@@ -280,7 +309,8 @@
 
     
 
-    
+
+    <script type="module" src="/@includes/js/base.js"></script>
     <script data-goatcounter="https://futureporn.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
     

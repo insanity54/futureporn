@@ -1,10 +1,15 @@
 
-/** 
- * icons 
- * @todo move this to scss once I figure out how tf to do that
- */
-// import '@fortawesome/fontawesome-free/js/all.js';
+import Alpine from 'alpinejs'
+import persist from '@alpinejs/persist'
+import auth from '/@includes/alpine/auth.js'
+import player from '/@includes/alpine/player.js'
 
+Alpine.plugin(persist)
+Alpine.data('auth', auth)
+Alpine.data('player', player)
+window.Alpine = Alpine
+
+Alpine.start()
 
 
 // handler for the burger menu
@@ -29,3 +34,5 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
+

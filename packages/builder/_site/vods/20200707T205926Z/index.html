@@ -3,10 +3,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    
-
-    <link rel="icon" href="data:image/x-icon;base64,">
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.da52e258.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     
   
     <meta charset="utf-8">
@@ -19,23 +17,31 @@
     <meta property="og:image" content="https://futureporn.net/favicon.ico" />
     <meta property="og:description" content="ProjektMelody fan site focused on long term preservation of her Chaturbate VODs" />
     <meta name="RATING" content="RTA-5042-1996-1400-1577-RTA" />
-    
-    
+    <link rel="stylesheet" href="/@includes/styles/base.scss">
 
     <link rel="canonical" href="https://futureporn.net/">
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="https://futureporn.net/feed/feed.xml" />
 
     <title>🔞💦 Futureporn.net</title>
     
-  
+  <style>
+    [x-cloak] { display: none !important; }
+    video { height: 100% }
+  </style>
+  <link rel="stylesheet" href="/@includes/styles/player.scss">
+  <link rel="stylesheet" href="/@root/node_modules/plyr/dist/plyr.css">
+  <link rel="stylesheet" href="/@root/node_modules/@mux/videojs-kit/dist/index.css">
+  <link rel="stylesheet" href="/@root/node_modules/@videojs/themes/dist/fantasy/index.css">
 
-    <script type="module" crossorigin src="/assets/index.140da9c1.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/base.746db6a9.js">
-    <link rel="modulepreload" crossorigin href="/assets/_slinkity_props_inputPath_.__website_vod-pages.6d72b607.js">
-    <link rel="stylesheet" href="/assets/base.e0faca26.css">
-    <link rel="stylesheet" href="/assets/_slinkity_props_inputPath_.082db77e.css">
+
   </head>
-  <body>
+  <body 
+    x-data="{ 
+      lastVisitedPath: $persist('/'),
+      jwt: $persist(''),
+    }"
+    x-init="lastVisitedPath=window.location.pathname"
+  >
     <nav class="navbar" role="navigation" aria-label="main navigation">
 
       <div class="navbar-brand">
@@ -62,11 +68,37 @@
         <a class="navbar-item is-expanded" href="/patrons">Patrons</a>
         <a class="navbar-item is-expanded" href="/feed">RSS</a>
         <a class="navbar-item is-expanded" href="/api">API</a>
-        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status</a>
 
-        
+        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
 
-        
+        <a 
+          class="navbar-item is-expanded"
+        >
+          <a 
+            x-show="jwt!==''"
+            x-on:click="jwt=''"
+            href="#"
+            class="button is-warning is-outlined"
+          >
+            <span class="icon">
+              <i class="fas fa-right-from-bracket"></i>
+            </span>
+            <span>Log out</span>
+          </a>
+          <a
+            x-show="jwt===''"
+            href="http://localhost:1337/api/connect/patreon"
+            class="button is-warning is-outlined"
+          >
+            <span class="icon">
+              <i class="fab fa-patreon"></i>
+            </span>
+            <span>Log in</span>
+          </a>
+        </a>
+
+
+
 
 
       </div>
@@ -84,24 +116,78 @@
 
 
 
-  <div class="container">
 
 
+  <div 
+    x-data="player"
+    class="container" 
+  >
+
+    
+    <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" x-show="false" x-cloak></span>
+    <span x-cloak x-show="false" x-ref="backendUrl">http://localhost:1337</span>
+
+    <p>this.$refs.muxPlaybackId.innerHTML:<span x-text="$refs.muxPlaybackId.innerHTML"></span></p>
+    <p>muxPlaybackId.:<span x-text="muxPlaybackId"></span></p>
+    <p>hasMux:<span x-text="hasMux"></span></p>
+    <p>$refs.backendUrl.innerHTML:<span x-text="$refs.backendUrl.innerHTML"></span></p>
+    <p>backendUrl:<span x-text="backendUrl"></span></p>
+
+  <div class="notification is-warning">
+    <button class="delete"></button>
+    <span x-text="errors"></span>
+  </div>
  
    <div class="block">
-    <slinkity-root data-id="0xaL2l"><slinkity-fragment></slinkity-fragment>
+    <div class="box p-0 m-0">
 
 
-<video style="--plyr-color-main: #353fff;" id="player" poster="https://ipfs.io/ipfs/bafkreid35wwotpj4f7qnhdohj7h4pfhxaddr6g76ape3i4jdubkcon3eki" class="s-B4ghQn4Ia5Ib"><source src="https://ipfs.io/ipfs/bafybeiclvtb654ace3cy6r4sfj36msqgrgy6wpmp6hwcczsahutqv2tm6a" type="video/mp4" size="1080" class="s-B4ghQn4Ia5Ib"><source src="https://ipfs.io/ipfs/bafybeiaxeyktqqxq24swrlye2wwo667gulixobntcxq7vwl7lx74jjzjju" type="video/mp4" size="240" class="s-B4ghQn4Ia5Ib"></video></slinkity-root>
-    
-  </div>
+
+    <video
+      x-show="preference==='public'||hasMux===false"
+      preload="none"
+      id="public-player"
+    >
+      <source src="https://ipfs.io/ipfs/bafybeiclvtb654ace3cy6r4sfj36msqgrgy6wpmp6hwcczsahutqv2tm6a" type="video/mp4" />
+      
+      <source src="https://ipfs.io/ipfs/bafybeiaxeyktqqxq24swrlye2wwo667gulixobntcxq7vwl7lx74jjzjju?filename=projektmelody-chaturbate-20200707T205926Z-240p.mp4" type="video/mp4" />
+      
+    </video>
+
+    <video 
+      
+      x-show="preference==='patron'&&hasMux===true"
+      x-ref="patronPlayer"
+      id="patron-player" 
+      class="video-js vjs-16-9 vjs-theme-fantasy" 
+      controls
+      preload="none" 
+      width="100%"
+      data-setup=''
+    >
+
+    </video>
+
+    <div
+      x-show="hasMux" 
+      class="m-3 p-3"
+    >
+      <p class="heading">Video Source Selector</p>
+
+      <div class="control">
+        <label class="radio">
+          <input x-model="preference" value="public" type="radio" name="answer">
+          Public (IPFS)
+        </label>
+        <label class="radio">
+          <input x-model="preference" value="patron" type="radio" name="answer">
+          Patron (CDN)
+        </label>
+      </div>
 
 
-  <div class="block">
-    <div class="box">
-      <p class="heading">IPFS Gateway Selector</p>
 
-      <slinkity-root data-id="oviqrX"><div class="select is-primary"><select class="gateway-selector"><option value="ipfs.io">ipfs.io</option><option value="ipfs.dweb.link">ipfs.dweb.link</option><slinkity-fragment></slinkity-fragment></select></div></slinkity-root>
+    </div>
 
     </div>
   </div>
@@ -130,14 +216,16 @@
       <div class="mb-5">
 
         <ul class="mb-5">
+            
           <li>
             <span>
-              Source: <slinkity-root data-id="oMFSe0"><a href="https://ipfs.io/ipfs/bafybeiclvtb654ace3cy6r4sfj36msqgrgy6wpmp6hwcczsahutqv2tm6a">https://ipfs.io/ipfs/bafybeiclvtb654ace3cy6r4sfj36msqgrgy6wpmp6hwcczsahutqv2tm6a</a><slinkity-fragment></slinkity-fragment></slinkity-root>
+              Source: <a href="https://ipfs.io/ipfs/bafybeiclvtb654ace3cy6r4sfj36msqgrgy6wpmp6hwcczsahutqv2tm6a">https://ipfs.io/ipfs/bafybeiclvtb654ace3cy6r4sfj36msqgrgy6wpmp6hwcczsahutqv2tm6a</a>
             </span>
           </li>
           
+            
             <li>
-              <span>240p: <slinkity-root data-id="0roc9O"><a href="https://ipfs.io/ipfs/bafybeiaxeyktqqxq24swrlye2wwo667gulixobntcxq7vwl7lx74jjzjju">https://ipfs.io/ipfs/bafybeiaxeyktqqxq24swrlye2wwo667gulixobntcxq7vwl7lx74jjzjju</a><slinkity-fragment></slinkity-fragment></slinkity-root>
+              <span>240p: <a href="https://ipfs.io/ipfs/bafybeiaxeyktqqxq24swrlye2wwo667gulixobntcxq7vwl7lx74jjzjju?filename=projektmelody-chaturbate-20200707T205926Z-240p.mp4">https://ipfs.io/ipfs/bafybeiaxeyktqqxq24swrlye2wwo667gulixobntcxq7vwl7lx74jjzjju?filename=projektmelody-chaturbate-20200707T205926Z-240p.mp4</a>
               </span>
             </li>
           
@@ -307,13 +395,13 @@
     
   
 
-    
+
+    <script type="module" src="/@includes/js/base.js"></script>
     <script data-goatcounter="https://futureporn.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
     
-  
-  
-  <script src="plyr/dist/plyr.js"></script>
+  <script type="module" src="/@includes/js/player.js"></script>
+
 
 
 

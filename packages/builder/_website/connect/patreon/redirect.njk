@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+  {# 
+  After user auths,
+  they are redirected to this page.
+
+  This page grabs the access_token from the query string,
+  exchanges it with strapi for a jwt
+  then persists the jwt
+
+  After a jwt is stored, this page redirects the user to whatever page they were previously on.
+
+  #}
+
+<html>
+<head>
+  <style>
+
+  html body {
+    background-color: black;
+    color: white;
+  }
+
+  a:visited, a {
+    color: cyan;
+  }
+
+  [x-cloak] { display: none !important; }
+  </style>
+
+
+  <script type="module" src="/@includes/js/base.js"></script>
+
+</head>
+<body 
+  x-data="auth"
+>
+
+  
+
+  <span x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
+
+  <div x-show="error===''" class="loading">
+    <p>Redirecting...</p>
+  </div>
+
+  <div class="is-danger" x-cloak x-show="error!==''">
+    <p>Error</p>
+    <p x-text="error"></p>
+    <a href="/">Home</a>
+  </div>
+
+  <div x-cloak x-show="done">
+    <a x-bind:href="lastVisitedPath">Click here if you are not automatically redirected</a>
+  </div>
+  
+</body>
+</html>
+
+

@@ -2,60 +2,94 @@
 
 {% block head %}
   {{ super() }}
+  <style>
+    [x-cloak] { display: none !important; }
+    video { height: 100% }
+  </style>
   <link rel="stylesheet" href="/@includes/styles/player.scss">
+  <link rel="stylesheet" href="/@root/node_modules/plyr/dist/plyr.css">
+  <link rel="stylesheet" href="/@root/node_modules/@mux/videojs-kit/dist/index.css">
+  <link rel="stylesheet" href="/@root/node_modules/@videojs/themes/dist/fantasy/index.css">
+
 {% endblock %}
 
 
 {% block content %}
-  <div class="container">
 
 
+  <div 
+    x-data="player"
+    class="container" 
+  >
+
+    {% set muxPlaybackId = vod.attributes.mux_video_uploader_mux_asset.data.attributes.playback_id %}
+    <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" x-show="false" x-cloak>{{ muxPlaybackId }}</span>
+    <span x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
+
+    <p>this.$refs.muxPlaybackId.innerHTML:<span x-text="$refs.muxPlaybackId.innerHTML"></span></p>
+    <p>muxPlaybackId.:<span x-text="muxPlaybackId"></span></p>
+    <p>hasMux:<span x-text="hasMux"></span></p>
+    <p>$refs.backendUrl.innerHTML:<span x-text="$refs.backendUrl.innerHTML"></span></p>
+    <p>backendUrl:<span x-text="backendUrl"></span></p>
+
+  <div class="notification is-warning">
+    <button class="delete"></button>
+    <span x-text="errors"></span>
+  </div>
  
    <div class="block">
-    {% island 'VideoPlayer.svelte', 'client:load' %}
-    {% prop 'videoSrcHash', vod.attributes.videoSrcHash | stripQueryString %}
-    {% prop 'video720Hash', vod.attributes.video720Hash | stripQueryString %}
-    {% prop 'video360Hash', vod.attributes.video360Hash | stripQueryString %}
-    {% prop 'video240Hash', vod.attributes.video240Hash | stripQueryString %}
-    {% prop 'thiccHash', vod.attributes.thiccHash | stripQueryString %}
-    {% endisland %}
-    {# <video 
-      id="my-player" 
-      class="video-js vjs-16-9 vjs-theme-fantasy" 
-      controls 
-      preload="auto" 
-      width="100%"
-      data-setup='{
-        "timelineHoverPreviews": true,
-        "plugins": {
-          "httpSourceSelector": {
-            default: "low"
-          }
-        }
-      }'
-    >
-      
+    <div class="box p-0 m-0">
 
+
+
+    <video
+      x-show="preference==='public'||hasMux===false"
+      preload="none"
+      id="public-player"
+    >
       {%- if vod.attributes.videoSrcHash %}
       <source src="{{ vod.attributes.videoSrcHash | buildIpfsUrl }}" type="video/mp4" />
       {% endif %}
 
-      {%- if vod.attributes.videoSrcHash %}
+      {%- if vod.attributes.video240Hash %}
       <source src="{{ vod.attributes.video240Hash | buildIpfsUrl }}" type="video/mp4" />
       {% endif %}
+    </video>
 
-    </video> #}
-  </div>
+    <video 
+      {# x-show="preference==='patron'&&hasMux===true&&jwt!==''" #}
+      x-show="preference==='patron'&&hasMux===true"
+      x-ref="patronPlayer"
+      id="patron-player" 
+      class="video-js vjs-16-9 vjs-theme-fantasy" 
+      controls
+      preload="none" 
+      width="100%"
+      data-setup=''
+    >
+
+    </video>
+
+    <div
+      x-show="hasMux" 
+      class="m-3 p-3"
+    >
+      <p class="heading">Video Source Selector</p>
+
+      <div class="control">
+        <label class="radio">
+          <input x-model="preference" value="public" type="radio" name="answer">
+          Public (IPFS)
+        </label>
+        <label class="radio">
+          <input x-model="preference" value="patron" type="radio" name="answer">
+          Patron (CDN)
+        </label>
+      </div>
 
 
-  <div class="block">
-    <div class="box">
-      <p class="heading">IPFS Gateway Selector</p>
 
-      {% island 'GatewaySelector.svelte', 'client:load' %}
-      {% prop 'freeGateways', gateways.free %}
-      {% prop 'premiumGateways', gateways.premium %}
-      {% endisland %}
+    </div>
 
     </div>
   </div>
@@ -88,36 +122,29 @@
 
         <ul class="mb-5">
           {%- if vod.attributes.videoSrcHash %}
+            {% set urlSrc = vod.attributes.videoSrcHash | buildIpfsUrl %}
           <li>
             <span>
-              Source: {% island 'IpfsLink.svelte', 'client:load' %}
-              {% prop 'cid', vod.attributes.videoSrcHash | stripQueryString %}
-              {% endisland %}
+              Source: <a href="{{ urlSrc }}">{{ urlSrc }}</a>
             </span>
           </li>
           {% endif %}
 
           {%- if vod.attributes.video720Hash %}
-          <li><span>720p: {% island 'IpfsLink.svelte', 'client:load' %}
-              {% prop 'cid', vod.attributes.video720Hash | stripQueryString %}
-              {% endisland %}</span></li>
+            {% set url720 = vod.attributes.video720Hash | buildIpfsUrl %}
+          <li><span>720p: <a href="{{ url720 }}">{{ url720 }}</a></span></li>
           {% endif %}
           {%- if vod.attributes.video480Hash %}
-          <li><span>480p: {% island 'IpfsLink.svelte', 'client:load' %}
-              {% prop 'cid', vod.attributes.video480Hash | stripQueryString %}
-              {% endisland %}</span></li>
+          <li><span>480p: <a href="{{ vod.attributes.video480Hash | buildIpfsUrl }}"></a></span></li>
           {% endif %}
           {%- if vod.attributes.video360Hash %}
-          <li><span>360p: {% island 'IpfsLink.svelte', 'client:load' %}
-              {% prop 'cid', vod.attributes.video360Hash | stripQueryString %}
-              {% endisland %}</span></li>
+          <li><span>360p: <a href="{{ vod.attributes.video360Hash | buildIpfsUrl }}"></a></span></li>
           {% endif %}
 
           {%- if vod.attributes.video240Hash %}
+            {% set url240 = vod.attributes.video240Hash | buildIpfsUrl %}
             <li>
-              <span>240p: {% island 'IpfsLink.svelte', 'client:load' %}
-              {% prop 'cid', vod.attributes.video240Hash | stripQueryString %}
-              {% endisland %}
+              <span>240p: <a href="{{ url240 }}">{{ url240 }}</a>
               </span>
             </li>
           {% endif %}
@@ -178,13 +205,13 @@
         {% if pagination.href.previous %}
           <p>Prev Vod:
           <a 
-          href="{{ pagination.href.previous }}">{{ pagination.page.previous.title or pagination.page.previous.announceTitle }}</a>
+          href="{{ pagination.href.previous }}">{{ pagination.page.previous.attributes.title or pagination.page.previous.attributes.announceTitle }}</a>
           </p>
         {% endif %}
         {% if pagination.href.next %}
           <p>Next Vod:
           <a 
-          href="{{ pagination.href.next }}">{{ pagination.page.next.title or pagination.page.next.announceTitle }}
+          href="{{ pagination.href.next }}">{{ pagination.page.next.attributes.title or pagination.page.next.attributes.announceTitle }}
           </a>
           </p>
         {% endif %}
@@ -201,9 +228,8 @@
 
 {% block scripts %}
   {{ super() }}
-  {# <script type="text/javascript" src="/@root/node_modules/@mux/videojs-kit/dist/index.js"></script> #}
-  {# <script type="module" src="/@includes/js/player.js"></script> #}
-  <script src="plyr/dist/plyr.js"></script>
+  <script type="module" src="/@includes/js/player.js"></script>
+
 {% endblock %}
 
 

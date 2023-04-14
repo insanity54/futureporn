@@ -6,7 +6,8 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4",
+    "@alpinejs/persist": "^3.12.0",
+    "@fortawesome/fontawesome-free": "^6.4.0",
     "@mux/videojs-kit": "^0.11.4",
     "@slinkity/svelte": "^1.0.0",
     "@types/markdown-it": "^12.2.3",

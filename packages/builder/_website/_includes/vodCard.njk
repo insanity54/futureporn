@@ -32,16 +32,27 @@
             {{ vod.attributes.title }}
           {% endif %}
         </p>
+
+          <footer class="mt-3 card-footer">
+            {% if vod.attributes.videoSrcHash %}
+            <div class="card-footer-item">
+              <span class="icon">
+                <i class="fas fa-video"></i>
+              </span>
+              <span>Public</span>
+            </div>
+            {% endif %}
+            {% if vod.attributes.mux_video_uploader_mux_asset.data.attributes.playback_id %}
+            <div class="card-footer-item">
+              <span class="icon">
+                <i class="fab fa-patreon"></i>
+              </span>
+              <span>Patron</span>
+            </div>
+            {% endif %}
+          </footer>
       </div>
     </div>
   </a>
 </div>
 
-
-{# 
-<picture>
-  <source srcset="{% getUrl image | resize({ width: 1440, height: 460 }) | webp %} 1x, {% getUrl image | resize({ width: 2560, height: 800 }) | webp %} 2x" media="(min-width: 640px)">
-  <source srcset="{% getUrl image | resize({ width: 640, height: 320 }) | webp %} 1x, {% getUrl image | resize({ width: 1280, height: 640 }) | webp %} 2x">
-  <source srcset="{% getUrl image | resize({ width: 1440, height: 460 }) %} 1x, {% getUrl image | resize({ width: 2560, height: 800 }) %} 2x" media="(min-width: 640px)">
-  <img class="articleHero-image" srcset="{% getUrl image | resize({ width: 640, height: 320 }) %} 1x, {% getUrl image | resize({ width: 1280, height: 640 }) %} 2x" alt="{{ image.title }}">
-</picture> #}
