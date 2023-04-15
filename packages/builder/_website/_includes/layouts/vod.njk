@@ -26,14 +26,10 @@
     <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" x-show="false" x-cloak>{{ muxPlaybackId }}</span>
     <span x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
 
-    <p>this.$refs.muxPlaybackId.innerHTML:<span x-text="$refs.muxPlaybackId.innerHTML"></span></p>
-    <p>muxPlaybackId.:<span x-text="muxPlaybackId"></span></p>
-    <p>hasMux:<span x-text="hasMux"></span></p>
-    <p>$refs.backendUrl.innerHTML:<span x-text="$refs.backendUrl.innerHTML"></span></p>
-    <p>backendUrl:<span x-text="backendUrl"></span></p>
 
-  <div class="notification is-warning">
-    <button class="delete"></button>
+
+  <div x-show="errors.length>0" class="notification is-warning">
+    <button x-on:click="errors=[]" class="delete"></button>
     <span x-text="errors"></span>
   </div>
  
@@ -65,7 +61,6 @@
       controls
       preload="none" 
       width="100%"
-      data-setup=''
     >
 
     </video>

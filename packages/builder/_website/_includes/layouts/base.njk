@@ -27,11 +27,11 @@
   <body 
     x-data="{ 
       lastVisitedPath: $persist('/'),
-      jwt: $persist(''),
     }"
     x-init="lastVisitedPath=window.location.pathname"
   >
     <nav class="navbar" role="navigation" aria-label="main navigation">
+
 
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
@@ -64,8 +64,8 @@
           class="navbar-item is-expanded"
         >
           <a 
-            x-show="jwt!==''"
-            x-on:click="jwt=''"
+            x-show="$store.env.jwt!==''"
+            x-on:click="$store.env.jwt=''"
             href="#"
             class="button is-warning is-outlined"
           >
@@ -75,7 +75,7 @@
             <span>Log out</span>
           </a>
           <a
-            x-show="jwt===''"
+            x-show="$store.env.jwt===''"
             href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
             class="button is-warning is-outlined"
           >

@@ -7,6 +7,10 @@ import player from '/@includes/alpine/player.js'
 Alpine.plugin(persist)
 Alpine.data('auth', auth)
 Alpine.data('player', player)
+Alpine.store('env', {
+  taco: 'yes, please!',
+  jwt: Alpine.$persist('')
+})
 window.Alpine = Alpine
 
 Alpine.start()

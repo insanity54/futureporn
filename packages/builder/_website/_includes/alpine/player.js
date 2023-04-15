@@ -1,3 +1,6 @@
+import videojs from '@mux/videojs-kit/dist/index.vhs.js';
+
+
 export default function () {
   return {
     hasMux: false,
@@ -34,17 +37,24 @@ export default function () {
       }
     },
     async getPlaybackToken() {
-      const res = await fetch(`${this.backendUrl}/api/mux/secure?playbackId=${this.muxPlaybackId}`)
+      const res = await fetch(`${this.backendUrl}/api/mux/secure?id=${this.muxPlaybackId}`, {
+        headers: {
+          'Authorization': `Bearer ${Alpine.store('env').jwt}`
+        }
+      })
       const json = await res.json()
-      if (json?.jwt === undefined) throw new Error('Failed to get token. Please try again later.');
+      if (json?.token === undefined) throw new Error('Failed to get token. Please try again later.');
       else {
-        console.log(`getPlaybackToken result looks good. here is the jwt:${json.jwt}`)
-        this.playbackJwt = json.jwt
+        console.log(`getPlaybackToken result looks good. here is the jwt:${json.token}`)
+        this.playbackJwt = json.token
       }
     },
     setVideoSrc() {
       // set video src to `https://stream.mux.com/`
-      this.$refs.patronPlayer.src({ type: 'video/mux', src: `${playbackId}?token=${playbackJwt}` });
-    }
+      const player = videojs('patron-player', {
+        "timelineHoverPreviews": true
+      });
+      player.src({ type: 'video/mux', src: `${this.muxPlaybackId}?token=${this.playbackJwt}` });
+    },
   }
 }

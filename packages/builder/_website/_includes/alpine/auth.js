@@ -1,7 +1,6 @@
 export default function () {
   return {
     open: false,
-    jwt: this.$persist(''),
     avatar: this.$persist('http://placekitten.com/32/32'),
     lastVisitedPath: this.$persist('/'),
     accessToken: '',
@@ -36,7 +35,7 @@ export default function () {
       if (json?.jwt === undefined) throw new Error('Failed to get token. Please try again later.');
       else {
         console.log(`getJwt result looks good. here is the jwt:${json.jwt}`)
-        this.jwt = json.jwt
+        Alpine.store('env').jwt = json.jwt
       }
     },
     redirect() {
