@@ -6,19 +6,19 @@ permalink: '/public/api/v1.json'
   "vods": [
     {% for vod in db.vods %}
       {
-        "title": "{{ vod.title | urlencode }}",
-        "videoSrcHash": "{{ vod.videoSrcHash }}",
-        "video720Hash": "{{ vod.video720Hash }}",
-        "video480Hash": "{{ vod.video480Hash }}",
-        "video360Hash": "{{ vod.video360Hash }}",
-        "video240Hash": "{{ vod.video240Hash }}",
-        "thinHash": "{{ vod.thinHash }}",
-        "thiccHash": "{{ vod.thiccHash }}",
-        "announceTitle": "{{ vod.announceTitle | urlencode }}",
-        "announceUrl": "{{ vod.announceUrl }}",
-        "date": "{{ vod.date }}",
-        "note": "{{ vod.note }}",
-        "url": "{{ vod.url }}"
+        "title": "{{ vod.attributes.title | urlencode }}",
+        "videoSrcHash": "{{ vod.attributes.videoSrcHash }}",
+        "video720Hash": "{{ vod.attributes.video720Hash }}",
+        "video480Hash": "{{ vod.attributes.video480Hash }}",
+        "video360Hash": "{{ vod.attributes.video360Hash }}",
+        "video240Hash": "{{ vod.attributes.video240Hash }}",
+        "thinHash": "{{ vod.attributes.thinHash }}",
+        "thiccHash": "{{ vod.attributes.thiccHash }}",
+        "announceTitle": "{{ vod.attributes.announceTitle | urlencode }}",
+        "announceUrl": "{{ vod.attributes.announceUrl }}",
+        "date": "{{ vod.attributes.date }}",
+        "note": "{{ vod.attributes.note }}",
+        "url": "{{ vod.attributes.url }}"
       }{% if not loop.last %},{% endif %}
     {% endfor %}
   ]
