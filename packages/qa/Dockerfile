@@ -10,7 +10,7 @@ ENV PATH /opt/node_modules/.bin:$PATH
 RUN pnpm config set network-timeout 600000 -g && pnpm install --production
 WORKDIR /opt/app
 COPY ./ .
-RUN pnpm build
+RUN pnpm run build
 FROM gplane/pnpm:node16-alpine
 RUN apk add --no-cache vips-dev
 
