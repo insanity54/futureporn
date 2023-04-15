@@ -1,3 +1,5 @@
+_site/
+
 .11ty-vite
 
 # it's important that .cache stay .gitignore, as 
