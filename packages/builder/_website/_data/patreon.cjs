@@ -53,11 +53,10 @@ const tokenFile = path.join(dataDir, 'patreonTokens.json')
 
 
 
-const { PATREON_CLIENT_ID, PATREON_CLIENT_SECRET, NGROK_TOKEN } = process.env
+const { PATREON_CLIENT_ID, PATREON_CLIENT_SECRET } = process.env
 
 if (typeof PATREON_CLIENT_ID === 'undefined') throw new Error('PATREON_CLIENT_ID must be defined in env, but it was undefined.');
 if (typeof PATREON_CLIENT_SECRET === 'undefined') throw new Error('PATREON_CLIENT_SECRET must be defined in env, but it was undefined.');
-if (typeof NGROK_TOKEN === 'undefined') throw new Error('NGROK_TOKEN must be defined in env, but it was undefined');
 
 
 
