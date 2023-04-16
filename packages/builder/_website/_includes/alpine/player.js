@@ -9,7 +9,27 @@ export default function () {
     errors: [],
     playbackJwt: '',
     backendUrl: '',
-    async init() {
+    isPlayerSelector () {
+      return (
+        this.hasMux &&
+        Alpine.store('env').jwt !== ''
+      )
+    },
+    isPatronPlayer () {
+      return (
+        Alpine.store('env').jwt !== '' &&
+        this.hasMux && 
+        this.preference === 'patron'
+      )
+    },
+    isPublicPlayer () {
+      return (
+        !this.hasMux ||
+        Alpine.store('env').jwt === '' ||
+        this.preference === 'public'
+      )
+    },
+    init () {
       // Thanks to 11ty templates, the muxPlaybackId is in the dom.
       // if it exists for this vod, we update the alpine data.
       if (this.$refs.muxPlaybackId.innerHTML !== '') {
@@ -20,6 +40,9 @@ export default function () {
       if (this.$refs.backendUrl.innerHTML !== '') {
         this.backendUrl = this.$refs.backendUrl.innerHTML
       }
+    },
+    async loadPatronPlayer() {
+
 
       // Patrons will have a strapi jwt in their localStorage.
       // We need to use this jwt to auth with the backend and GET /api/mux/secure?playbackId=(...)
@@ -43,7 +66,7 @@ export default function () {
         }
       })
       const json = await res.json()
-      if (json?.token === undefined) throw new Error('Failed to get token. Please try again later.');
+      if (json?.token === undefined) throw new Error('Failed to get playback token. Please try again later.');
       else {
         console.log(`getPlaybackToken result looks good. here is the jwt:${json.token}`)
         this.playbackJwt = json.token

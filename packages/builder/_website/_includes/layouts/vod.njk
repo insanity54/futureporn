@@ -16,78 +16,89 @@
 
 {% block content %}
 
-
-  <div 
+  <div
+    class="container"
     x-data="player"
-    class="container" 
   >
 
+    {# some variables for use in patron player #}
     {% set muxPlaybackId = vod.attributes.mux_video_uploader_mux_asset.data.attributes.playback_id %}
     <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" x-show="false" x-cloak>{{ muxPlaybackId }}</span>
     <span x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
 
-
-
-  <div x-show="errors.length>0" class="notification is-warning">
-    <button x-on:click="errors=[]" class="delete"></button>
-    <span x-text="errors"></span>
-  </div>
- 
-   <div class="block">
-    <div class="box p-0 m-0">
-
-
-
-    <video
-      x-show="preference==='public'||hasMux===false"
-      preload="none"
-      id="public-player"
-    >
-      {%- if vod.attributes.videoSrcHash %}
-      <source src="{{ vod.attributes.videoSrcHash | buildIpfsUrl }}" type="video/mp4" />
-      {% endif %}
-
-      {%- if vod.attributes.video240Hash %}
-      <source src="{{ vod.attributes.video240Hash | buildIpfsUrl }}" type="video/mp4" />
-      {% endif %}
-    </video>
-
-    <video 
-      {# x-show="preference==='patron'&&hasMux===true&&jwt!==''" #}
-      x-show="preference==='patron'&&hasMux===true"
-      x-ref="patronPlayer"
-      id="patron-player" 
-      class="video-js vjs-16-9 vjs-theme-fantasy" 
-      controls
-      preload="none" 
-      width="100%"
-    >
-
-    </video>
-
     <div
-      x-show="hasMux" 
-      class="m-3 p-3"
+      class="container m-0 p-0"
     >
-      <p class="heading">Video Source Selector</p>
 
-      <div class="control">
-        <label class="radio">
-          <input x-model="preference" value="public" type="radio" name="answer">
-          Public (IPFS)
-        </label>
-        <label class="radio">
-          <input x-model="preference" value="patron" type="radio" name="answer">
-          Patron (CDN)
-        </label>
+      <div 
+        x-show="errors.length>0"
+        x-cloak
+        class="notification is-warning"
+      >
+
+        <button 
+          x-on:click="errors=[]" 
+          class="delete"
+        ></button>
+        <span x-text="errors"></span>
       </div>
 
+      <div
+        x-cloak
+        x-show="isPublicPlayer()"
+      >
+        <video
+          preload="none"
+          id="public-player"
+        >
+          {%- if vod.attributes.videoSrcHash %}
+          <source src="{{ vod.attributes.videoSrcHash | buildIpfsUrl }}" type="video/mp4" />
+          {% endif %}
 
+          {%- if vod.attributes.video240Hash %}
+          <source src="{{ vod.attributes.video240Hash | buildIpfsUrl }}" type="video/mp4" />
+          {% endif %}
+        </video>
+      </div>
 
+      <div
+        x-cloak
+        x-show="isPatronPlayer()"
+        x-init="loadPatronPlayer()"
+      >
+        <video 
+          x-ref="patronPlayer"
+          id="patron-player" 
+          class="video-js vjs-16-9 vjs-theme-fantasy" 
+          controls
+          preload="none" 
+          width="100%"
+        >
+        </video>
+      </div>
+      <div
+        x-cloak
+        x-show="isPlayerSelector()"
+        class="box"
+      >
+        <p class="heading">Video Source Selector</p>
+
+          <div class="control">
+            <label class="radio">
+              <input x-model="preference" value="public" type="radio" name="answer">
+              Public (IPFS)
+            </label>
+            <label class="radio">
+              <input x-model="preference" value="patron" type="radio" name="answer">
+              Patron (CDN)
+            </label>
+          </div>
+      </div>
     </div>
 
-    </div>
   </div>
+
+
 
 
   <div class="block">

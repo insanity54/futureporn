@@ -30,13 +30,9 @@ export default function () {
       }
     },
     async getJwt() {
-      const res = await fetch(`${this.$refs.backendUrl.innerHTML}/api/auth/patreon/callback?access_token=${this.accessToken}`, {
-        headers: {
-          'Authorization': `Bearer ${this.accessToken}`
-        }
-      })
+      const res = await fetch(`${this.$refs.backendUrl.innerHTML}/api/auth/patreon/callback?access_token=${this.accessToken}`)
       const json = await res.json()
-      if (json?.jwt === undefined) throw new Error('Failed to get token. Please try again later.');
+      if (json?.jwt === undefined) throw new Error('Failed to get auth token. Please try again later.');
       else {
         console.log(`getJwt result looks good. here is the jwt:${json.jwt}`)
         Alpine.store('env').jwt = json.jwt
