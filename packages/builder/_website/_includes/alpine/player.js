@@ -40,10 +40,14 @@ export default function () {
       if (this.$refs.backendUrl.innerHTML !== '') {
         this.backendUrl = this.$refs.backendUrl.innerHTML
       }
+
+      if (this.isPatronPlayer()) {
+        this.loadPatronPlayer()
+      }
     },
     async loadPatronPlayer() {
 
-
+      console.log('>> loading patron player')
       // Patrons will have a strapi jwt in their localStorage.
       // We need to use this jwt to auth with the backend and GET /api/mux/secure?playbackId=(...)
       // The playbackId is the Mux playback ID of the video the viewer wants to watch.
@@ -68,7 +72,6 @@ export default function () {
       const json = await res.json()
       if (json?.token === undefined) throw new Error('Failed to get playback token. Please try again later.');
       else {
-        console.log(`getPlaybackToken result looks good. here is the jwt:${json.token}`)
         this.playbackJwt = json.token
       }
     },

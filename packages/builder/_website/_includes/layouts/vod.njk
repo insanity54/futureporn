@@ -64,7 +64,6 @@
       <div
         x-cloak
         x-show="isPatronPlayer()"
-        x-init="loadPatronPlayer()"
       >
         <video 
           x-ref="patronPlayer"
@@ -89,7 +88,7 @@
               Public (IPFS)
             </label>
             <label class="radio">
-              <input x-model="preference" value="patron" type="radio" name="answer">
+              <input x-on:click="loadPatronPlayer()" x-model="preference" value="patron" type="radio" name="answer">
               Patron (CDN)
             </label>
           </div>

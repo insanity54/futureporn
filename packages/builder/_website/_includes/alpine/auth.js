@@ -25,7 +25,6 @@ export default function () {
         throw new Error('Failed to get access_token from auth portal.');
       }
       else {
-        console.log(`getAccessToken result is looking good. here is the access_token:${params.access_token} (${typeof params.access_token})`)
         this.accessToken = params.access_token
       }
     },
@@ -34,7 +33,6 @@ export default function () {
       const json = await res.json()
       if (json?.jwt === undefined) throw new Error('Failed to get auth token. Please try again later.');
       else {
-        console.log(`getJwt result looks good. here is the jwt:${json.jwt}`)
         Alpine.store('env').jwt = json.jwt
       }
     },
