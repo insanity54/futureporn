@@ -1,0 +1,82 @@
+---
+layout: layouts/base.njk
+---
+
+
+<div x-data="user" class="content">
+
+  <div class="box">
+    <p class="title">User Profile</p>
+
+    <a 
+      x-cloak 
+      x-show="$store.env.jwt===''" 
+      class="button is-primary" 
+      href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
+    >
+    Log In
+    </a>
+
+    <div
+      x-cloak 
+      x-show="$store.env.jwt!==''" 
+      x-transition
+    >
+
+      <div>
+        <span x-text="username" class="subtitle mr-2"></span>
+        <button 
+          class="button is-warning is-outlined is-small mb-5"
+          x-on:click="$store.env.jwt=''"
+        >
+          <span class="icon">
+            <i class="fab fa-patreon"></i>
+          </span>
+          <span>Log Out</span>
+        </button>
+      </div>
+
+
+      <p>Thank you so much for supporting Futureporn!</p>
+
+
+      <h3 class="heading">Optional Perks</h3>
+        
+
+        <div  class="mb-5">
+          <label class="checkbox noselect">
+            <input 
+              type="checkbox"
+              x-model="isNamePublic"
+            >
+            Publically display name (<span x-text="username"></span>) on the patrons page.
+          </label>
+          <p><i>This setting does not apply immediately. It takes a few days for the patrons page to update.</i></p>
+        </div>
+
+
+        <button
+          class="button is-primary"
+          :class="{
+            'is-loading': isLoading,
+            'is-success': isSuccess,
+            'is-warning': isDirty&&!isSuccess,
+          }"
+          x-on:click="updateIsNamePublic"
+        >
+        <span x-show="!isDirty" class="icon">
+          <i class="fas fa-save"></i>
+        </span>
+        <span x-cloak x-show="isDirty&&isSuccess" class="icon">
+          <i class="fas fa-check"></i>
+        </span>
+        <span x-cloak x-show="isDirty&&!isSuccess" class="icon">
+          <i class="fas fa-x"></i>
+        </span>
+        <span>Save</span>
+      </button>
+
+    </div>
+
+  </div>
+</div>

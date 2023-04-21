@@ -1,11 +1,12 @@
 export default function () {
   return {
     open: false,
-    avatar: this.$persist('http://placekitten.com/32/32'),
     lastVisitedPath: this.$persist('/'),
     accessToken: '',
     error: '',
     done: false,
+    jwt: Alpine.store('env').jwt,
+    
     async init() {
       try {
         this.getAccessToken()

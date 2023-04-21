@@ -43,6 +43,8 @@ figure.is-rounded {
   border-radius: 50%;
 }
 
-nav.navbar {
+nav.navbar, .noselect {
   user-select: none;
 }
+
+[x-cloak] { display: none !important; }

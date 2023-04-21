@@ -25,11 +25,10 @@
     {% endblock %}
   </head>
   <body 
-    x-data="{ 
-      lastVisitedPath: $persist('/'),
-    }"
-    x-init="lastVisitedPath=window.location.pathname"
+
   >
+    <span id="backend-url" x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
+
     <nav class="navbar" role="navigation" aria-label="main navigation">
 
 
@@ -50,7 +49,10 @@
         </a>
       </div>
 
-      <div class="navbar-menu" id="navMenu">
+      <div 
+        class="navbar-menu" 
+        id="navMenu"
+      >
         <a class="navbar-item is-expanded" href="/about">About</a>
         <a class="navbar-item is-expanded" href="/faq">FAQ</a>
         <a class="navbar-item is-expanded" href="/goals">Goals</a>
@@ -61,29 +63,26 @@
         <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
 
         <a 
+          x-data="user"
+          x-show="$store.env.jwt!==''"
           class="navbar-item is-expanded"
+          href="/profile"
         >
-          <a 
-            x-show="$store.env.jwt!==''"
-            x-on:click="$store.env.jwt=''"
-            href="#"
-            class="button is-warning is-outlined"
-          >
-            <span class="icon">
-              <i class="fas fa-right-from-bracket"></i>
-            </span>
-            <span>Log out</span>
-          </a>
-          <a
-            x-show="$store.env.jwt===''"
-            href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
-            class="button is-warning is-outlined"
-          >
-            <span class="icon">
-              <i class="fab fa-patreon"></i>
-            </span>
-            <span>Log in</span>
-          </a>
+          <span x-text="username"></span>
+        </a>
+        
+
+
+        <a
+          x-data="auth"
+          x-show="$store.env.jwt===''"
+          href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
+          class="button is-warning is-outlined"
+        >
+          <span class="icon">
+            <i class="fab fa-patreon"></i>
+          </span>
+          <span>Log in</span>
         </a>
 
 
@@ -99,6 +98,7 @@
 
     </nav>
     <div class="container">
+
 
 
 {% endblock %}

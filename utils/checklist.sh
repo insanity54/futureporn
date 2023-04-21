@@ -15,34 +15,33 @@ echo "This is a process checklist of tasks that must be completed after a new VO
 echo "Press [Enter] to complete a task."
 echo ""
 
+echo "[TASK] Open Portal"
+echo "  ex: xdg-open https://portal.futureporn.net/admin"
+read
+
+echo "[TASK] add date, announceUrl, announceTitle, title to Portal"
+read
+
 echo "[TASK] add the file to ipfs"
 echo "  ex: ipfs add --cid-version=1 ./file.mp4"
 read
 
-echo "[TASK] add the CID to the cluster"
-echo "  ex: ipfs-cluster-ctl pin add <CID>"
+echo "[TASK] add videoSrcHash to Portal"
 read
 
 echo "[TASK] backup the file to B2"
 echo "  ex: b2-linux upload-file futureporn ./file.mp4 file.mp4"
 read
 
-echo "[TASK] add the videoSrcHash,title,tags,annouceTitle,announceUrl,etc. to the db (pgAdmin)"
-echo "  use: pgAdmin"
+echo "[TASK] add B2 URL to Portal (videoSrc)"
 read
 
-echo "[TASK] Build the site"
-echo "  ex: git checkout main"
-echo "      pn run build"
-echo "  @todo: NOTIFY ???/upload to trigger 'futureporn/builder' to build"
+echo "[TASK] publish VOD on Portal"
 read
 
-echo "[TASK] publish"
-echo "  ex: git add _site/"
-echo '      git commit -m "update"'
-echo "      git push origin main"
+echo "[TASK] Trigger a website build"
+echo "  ex: https://app.fleek.co/#/sites/futureporn/deploys?accountId=insanity54-team"
 read
-
 
 
 

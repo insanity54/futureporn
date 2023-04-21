@@ -37,7 +37,7 @@
 
   
 
-  <span x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
+  <span id="backend-url" x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
 
   <div x-show="error===''" class="loading">
     <p>Redirecting...</p>

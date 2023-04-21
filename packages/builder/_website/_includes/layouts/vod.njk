@@ -16,6 +16,7 @@
 
 {% block content %}
 
+
   <div
     class="container"
     x-data="player"
@@ -23,7 +24,7 @@
 
     {# some variables for use in patron player #}
     {% set muxPlaybackId = vod.attributes.mux_video_uploader_mux_asset.data.attributes.playback_id %}
-    <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" x-show="false" x-cloak>{{ muxPlaybackId }}</span>
+    <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" >{{ muxPlaybackId }}</span>
     <span x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
 
     <div
@@ -52,11 +53,11 @@
           id="public-player"
         >
           {%- if vod.attributes.videoSrcHash %}
-          <source src="{{ vod.attributes.videoSrcHash | buildIpfsUrl }}" type="video/mp4" />
+          <source src="{{ vod.attributes.videoSrcHash | stripQueryString | buildIpfsUrl ~ '?filename=pmel.mp4' }}" type="video/mp4" />
           {% endif %}
 
           {%- if vod.attributes.video240Hash %}
-          <source src="{{ vod.attributes.video240Hash | buildIpfsUrl }}" type="video/mp4" />
+          <source src="{{ vod.attributes.video240Hash | stripQueryString | buildIpfsUrl }}" type="video/mp4" />
           {% endif %}
         </video>
       </div>
@@ -122,35 +123,49 @@
         Download Links
       </h2>
 
+      {% set urlSrc = vod.attributes.videoSrcHash | stripQueryString | buildIpfsUrl %}
+      {% set urlSrcFilename = 'projektmelody_chaturbate_' ~ vod.attributes.date | safeDate ~ '.mp4' %}
+      {% set urlSrcWithFilename = urlSrc ~ '?filename=' ~ urlSrcFilename %}
+
+      {% set url240 = vod.attributes.video240Hash | stripQueryString | buildIpfsUrl %}
+      {% set url240Filename = 'projektmelody_chaturbate_' ~ vod.attributes.date | safeDate ~ '_240p.mp4' %}
+      {% set url240WithFilename = urlSrc ~ '?filename=' ~ url240Filename %}
+
+      <span x-cloak x-show="false" x-ref="urlSrc">{{ urlSrc }}</span>
+      <span x-cloak x-show="false" x-ref="urlSrcFilename">{{ urlSrcFilename }}</span>
       
       <div class="mb-5">
 
+
         <ul class="mb-5">
           {%- if vod.attributes.videoSrcHash %}
-            {% set urlSrc = vod.attributes.videoSrcHash | buildIpfsUrl %}
           <li>
-            <span>
-              Source: <a href="{{ urlSrc }}">{{ urlSrc }}</a>
-            </span>
+            <a
+              class="button is-info is-small mb-1"
+              href="{{ urlSrcWithFilename }}"
+              download="{{ urlSrcFilename }}"
+            >
+              <span>Source</span>
+              <span class="icon">
+                <i class="fas fa-external-link-alt"></i>
+              </span>
+            </a>
           </li>
           {% endif %}
 
-          {%- if vod.attributes.video720Hash %}
-            {% set url720 = vod.attributes.video720Hash | buildIpfsUrl %}
-          <li><span>720p: <a href="{{ url720 }}">{{ url720 }}</a></span></li>
-          {% endif %}
-          {%- if vod.attributes.video480Hash %}
-          <li><span>480p: <a href="{{ vod.attributes.video480Hash | buildIpfsUrl }}"></a></span></li>
-          {% endif %}
-          {%- if vod.attributes.video360Hash %}
-          <li><span>360p: <a href="{{ vod.attributes.video360Hash | buildIpfsUrl }}"></a></span></li>
-          {% endif %}
 
           {%- if vod.attributes.video240Hash %}
-            {% set url240 = vod.attributes.video240Hash | buildIpfsUrl %}
             <li>
-              <span>240p: <a href="{{ url240 }}">{{ url240 }}</a>
-              </span>
+              <a
+                class="button is-info is-small"
+                href="{{ url240WithFilename }}"
+                download="{{ url240Filename }}"
+              > 
+                <span>240p</span>
+                <span class="icon">
+                  <i class="fas fa-external-link-alt"></i>
+                </span>
+              </a>
             </li>
           {% endif %}
         </ul>
@@ -162,15 +177,6 @@
       <ul>
         {%- if vod.attributes.videoSrcHash %}
           <li><span>Source: <span class="tag">{{ vod.attributes.videoSrcHash | stripQueryString }}</span></span></li>
-        {% endif %}
-        {%- if vod.attributes.video720Hash %}
-          <li><span>Source: <span class="tag">{{ vod.attributes.video720Hash | stripQueryString }}</span></span></li>
-        {% endif %}
-        {%- if vod.attributes.video480Hash %}
-          <li><span>Source: <span class="tag">{{ vod.attributes.video480Hash | stripQueryString }}</span></span></li>
-        {% endif %}
-        {%- if vod.attributes.video360Hash %}
-          <li><span>Source: <span class="tag">{{ vod.attributes.video360Hash | stripQueryString }}</span></span></li>
         {% endif %}
         {%- if vod.attributes.video240Hash %}
           <li><span>240p: <span class="tag">{{ vod.attributes.video240Hash | stripQueryString }}</span></span></li>

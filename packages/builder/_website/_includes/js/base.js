@@ -3,12 +3,14 @@ import Alpine from 'alpinejs'
 import persist from '@alpinejs/persist'
 import auth from '/@includes/alpine/auth.js'
 import player from '/@includes/alpine/player.js'
+import user from '/@includes/alpine/user.js'
 
 Alpine.plugin(persist)
 Alpine.data('auth', auth)
+Alpine.data('user', user)
 Alpine.data('player', player)
 Alpine.store('env', {
-  taco: 'yes, please!',
+  backendUrl: document.querySelector('#backend-url').innerHTML, // can't access $refs at this point
   jwt: Alpine.$persist('')
 })
 window.Alpine = Alpine
