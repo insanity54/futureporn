@@ -19,15 +19,15 @@
 
 
 
-// require('dotenv').config()
+require('dotenv').config()
 // const { oauth } = require('patreon')
 // // const OAuth = require('oauth')
 // const { format: formatUrl } = require('url')
 // const fsp = require('fs/promises')
 // const os = require('node:os')
 // const path = require('node:path')
-// // const fetch = require('node-fetch')
-// const EleventyFetch = require('@11ty/eleventy-fetch')
+const fetch = require('node-fetch')
+const EleventyFetch = require('@11ty/eleventy-fetch')
 // // const redacted = require('./redacted.json')
 
 
@@ -38,10 +38,15 @@
 
 
 
-// const { PATREON_CLIENT_ID, PATREON_CLIENT_SECRET } = process.env
+new Array(
+  'PATREON_ACCESS_TOKEN',
+  'PATREON_REFRESH_TOKEN',
+  'PATREON_CLIENT_ID',
+  'PATREON_CLIENT_SECRET',
+).forEach((ev) => { 
+  if (typeof process.env[ev] === 'undefined') throw new Error(`${ev} is undefined in env`) 
+})
 
-// if (typeof PATREON_CLIENT_ID === 'undefined') throw new Error('PATREON_CLIENT_ID must be defined in env, but it was undefined.');
-// if (typeof PATREON_CLIENT_SECRET === 'undefined') throw new Error('PATREON_CLIENT_SECRET must be defined in env, but it was undefined.');
 
 
 
@@ -61,41 +66,6 @@
 //   return fsp.writeFile(tokenFile, JSON.stringify(token, 0, 2), { encoding: 'utf-8' })
 // }
 
-// async function getPatronData (access_token) {
-//   try {
-
-//     // // const url = `https://www.patreon.com/api/oauth2/v2/campaigns/${campaignID}/members?include=benefits&fields[member]=full_name,patron_status&fields[tier]=title,benefits&fields[benefit]=title&fields[reward]=title,amount_cents`;
-//     // // find the list of tiers
-//     // let tierData = EleventyFetch(
-//     //   encodeURI(`https://www.patreon.com/api/oauth2/v2/campaigns/${campaignId}/tier`),
-//     //   {
-//     //     duration: '1d',
-//     //     type: 'json',
-//     //     fetchOptions: {
-//     //       headers: {
-//     //         Authorization: `Bearer ${access_token}`
-//     //       }
-//     //     }
-//     //   }
-//     // )
-
-//     // // filter the list of tiers, showing only tiers with the "Your username displayed on Futureporn.net" benefit
-//     // let applicableTiers = tierData.filter((td) => td.some(td.relationships))
-
-
-//     let data = await EleventyFetch(
-//       encodeURI(`https://www.patreon.com/api/oauth2/v2/campaigns/${campaignId}/members?include=user,currently_entitled_tiers,currently_entitled_tiers.benefits&fields[tier]=title&fields[benefit]=title&fields[user]=image_url,full_name&fields[member]=full_name,lifetime_support_cents,currently_entitled_amount_cents,patron_status`), 
-//       {
-//         duration: '5m',
-//         type: 'json',
-//         fetchOptions: {
-//           headers: {
-//             Authorization: `Bearer ${access_token}`
-//           }
-//         }
-//       }
-//     );
-
 //     // console.log(JSON.stringify(data, 0, 2))
 //     // console.log('---')
 //     // process.exit()
@@ -107,23 +77,6 @@
 //   }
 // }
 
-// async function getGoalData (access_token) {
-//   try {
-//     const data = await EleventyFetch('https://www.patreon.com/api/oauth2/v2/campaigns/8012692?include=goals&fields%5Bgoal%5D=title,amount_cents,completed_percentage,description', {
-//       duration: '1d',
-//       type: 'json',
-//       fetchOptions: {
-//         headers: {
-//           Authorization: `Bearer ${access_token}`
-//         }
-//       }
-//     })
-//     return data
-//   } catch (e) {
-//     console.error('error while fetching goal data')
-//     console.error(e)
-//   }
-// }
 
 
 // async function getAccessToken (refresh = false) {
@@ -234,19 +187,71 @@
 // }
 
 
+async function getAccessToken () {
+  return process.env.PATREON_ACCESS_TOKEN
+}
+
+
+async function refreshAccessToken (refresh_token) {
+  console.log(`  refreshing access token.`)
+  const res = await fetch(
+    encodeURI(
+      'www.patreon.com/api/oauth2/token'
+      + `?grant_type=refresh_token`
+      + `&refresh_token=${refresh_token}`
+      + `&client_id=${process.env.PATREON_CLIENT_ID}`
+      + `&client_secret=${process.env.PATREON_CLIENT_SECRET}`
+    )
+  )
+}
+
+async function getPatreonData (access_token, attempts = 1) {
+  try {
+    let patronData = await EleventyFetch(
+      encodeURI(`https://www.patreon.com/api/oauth2/v2/campaigns/${campaignId}/members?include=user,currently_entitled_tiers,currently_entitled_tiers.benefits&fields[tier]=title&fields[benefit]=title&fields[user]=image_url,full_name&fields[member]=full_name,lifetime_support_cents,currently_entitled_amount_cents,patron_status`), 
+      {
+        duration: '5m',
+        type: 'json',
+        fetchOptions: {
+          headers: {
+            Authorization: `Bearer ${access_token}`
+          }
+        }
+      }
+    );
+    const goalData = await EleventyFetch('https://www.patreon.com/api/oauth2/v2/campaigns/8012692?include=goals&fields%5Bgoal%5D=title,amount_cents,completed_percentage,description', {
+      duration: '1d',
+      type: 'json',
+      fetchOptions: {
+        headers: {
+          Authorization: `Bearer ${access_token}`
+        }
+      }
+    })
+    return {
+      patronData,
+      goalData
+    }
+  } catch (e) {
+    console.error(e)
+    console.error(`  Attempt ${attempts} failed getting patreon data. trying again.`)
+    let access_token = await refreshAccessToken(process.env.PATREON_REFRESH_TOKEN)
+    return getPatreonData(access_token, attempts+1)
+  }
+}
 
 module.exports = async function() {
-  // await init()
   // let patronData, goalData, access_token
-  // access_token = await getAccessToken(false)
+  // access_token = await getAccessToken()
 
   // // get data from patreon.
   // // if there is any error, get a new oauth token.
   // try {
-  //   patronData = await getPatronData(access_token)
+
+  //   let { patronData, goalData } = await getPatronData(access_token)
   //   goalData = await getGoalData(access_token)
   // } catch (e) {
-  //   console.error('error during patreon.cjs main functino ')
+  //   console.error('error during patreon.cjs main functino. lets get a new access_token from Patreon.')
   //   console.error(e)
 
   //   access_token = await getAccessToken(true)
@@ -257,7 +262,7 @@ module.exports = async function() {
   // const patrons = parsePatronData(patronData)
   // const goals = parseGoalsData(goalData)
 
-  // // console.log(patrons.active)
+  // console.log(patrons.active)
 
 
   // temporary disable
