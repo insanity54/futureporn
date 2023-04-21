@@ -46,18 +46,12 @@ importers:
       '@mux/videojs-kit':
         specifier: ^0.11.4
         version: 0.11.4
-      '@slinkity/vue':
-        specifier: ^1.0.0
-        version: 1.0.0(slinkity@1.0.0-canary.0)(vite@4.1.4)(vue@3.2.47)
       '@types/markdown-it':
         specifier: ^12.2.3
         version: 12.2.3
       '@videojs/themes':
         specifier: ^1.0.1
         version: 1.0.1
-      '@vime/core':
-        specifier: ^5.4.0
-        version: 5.4.0
       abort-controller:
         specifier: ^3.0.0
         version: 3.0.0
@@ -106,9 +100,6 @@ importers:
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
-      hls.js:
-        specifier: ^1.3.5
-        version: 1.3.5
       logform:
         specifier: ^2.5.1
         version: 2.5.1
@@ -121,9 +112,6 @@ importers:
       markdown-it-anchor:
         specifier: ^8.6.7
         version: 8.6.7(@types/markdown-it@12.2.3)(markdown-it@13.0.1)
-      native-file-system-adapter:
-        specifier: ^3.0.0
-        version: 3.0.0
       node-fetch:
         specifier: ^2.0.0
         version: 2.6.9
@@ -133,9 +121,6 @@ importers:
       open:
         specifier: ^8.4.1
         version: 8.4.1
-      patreon:
-        specifier: ^0.4.1
-        version: 0.4.1
       please-upgrade-node:
         specifier: ^3.2.0
         version: 3.2.0
@@ -157,21 +142,6 @@ importers:
       slinkity:
         specifier: 1.0.0-canary.0
         version: 1.0.0-canary.0(@11ty/eleventy@2.0.0-canary.35)(sass@1.58.0)
-      streamsaver:
-        specifier: ^2.0.6
-        version: 2.0.6
-      svelte:
-        specifier: ^3.57.0
-        version: 3.57.0
-      svelte-local-storage-store:
-        specifier: ^0.4.0
-        version: 0.4.0(svelte@3.57.0)
-      svelte-plyr:
-        specifier: ^0.1.3
-        version: 0.1.3
-      svelte-session-manager:
-        specifier: ^2.2.1
-        version: 2.2.1
       url:
         specifier: ^0.11.0
         version: 0.11.0
@@ -184,9 +154,6 @@ importers:
       vue:
         specifier: ^3.2.47
         version: 3.2.47
-      web-streams-polyfill:
-        specifier: ^3.2.1
-        version: 3.2.1
 
   packages/capture:
     dependencies:
@@ -1075,25 +1042,6 @@ packages:
     resolution: {integrity: sha512-sXXKG+uL9IrKqViTtao2Ws6dy0znu9sOaP1di/jKGW1M6VssO8vlpXCQcpZ+jisQ1tTFAC5Jo/EOzFbggBagFQ==}
     dev: true
 
-  /@slinkity/vue@1.0.0(slinkity@1.0.0-canary.0)(vite@4.1.4)(vue@3.2.47):
-    resolution: {integrity: sha512-kjKFBaiI8QKX/YtNOdXSbXSUuvQmnqHtTn9VJPm37Y24X2eCTjE/7AnrMAOPoXU1mV0rtHvBU13hBiUyObX/Fw==}
-    peerDependencies:
-      slinkity: ^1.0.0-canary.0
-      vue: ^3.2.28
-    dependencies:
-      '@vitejs/plugin-vue': 4.0.0(vite@4.1.4)(vue@3.2.47)
-      slinkity: 1.0.0-canary.0(@11ty/eleventy@2.0.0-canary.35)(sass@1.58.0)
-      vue: 3.2.47
-    transitivePeerDependencies:
-      - vite
-    dev: false
-
-  /@stencil/core@2.5.2:
-    resolution: {integrity: sha512-bgjPXkSzzg1WnTgVUm6m5ZzpKt602WmA/QljODAW1xVN40OHJdbGblzF/F6MFzqv2c5Cy30CB41arc8qADIdcQ==}
-    engines: {node: '>=12.10.0', npm: '>=6.0.0'}
-    hasBin: true
-    dev: false
-
   /@szmarczak/http-timer@5.0.1:
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
     engines: {node: '>=14.16'}
@@ -1105,10 +1053,6 @@ packages:
     resolution: {integrity: sha512-SvSrYXfWSc7R4eqnOzbQF4TZmfpNSM9FrSWLU3EUnWBuyZqNBOrv1B1JA3byUDPUl9z4Ab3jeZG2eDdySlgNMg==}
     dependencies:
       '@types/node': 18.13.0
-    dev: false
-
-  /@types/fscreen@1.0.1:
-    resolution: {integrity: sha512-hV2d0BreihMGtrg+EdAFOIl/O2EL5vhAheHJUztGE/lPFZIN8ZCpGFL8hCbtyi1CfhKjDRCf47sHjP+FwJ4q0Q==}
     dev: false
 
   /@types/glob@7.2.0:
@@ -1211,27 +1155,6 @@ packages:
       '@babel/runtime': 7.21.0
       global: 4.4.0
       is-function: 1.0.2
-    dev: false
-
-  /@vime/core@5.4.0:
-    resolution: {integrity: sha512-ZP19/+9RDeX8q0dPGW1Au77/c7hqb8Lsd/4zV0pAsld+op/cYVMoByu5wd6luQ0R6AKwe/mYdNTDatAHZlhHZw==}
-    dependencies:
-      '@stencil/core': 2.5.2
-      '@types/fscreen': 1.0.1
-      fscreen: 1.2.0
-      mitt: 3.0.0
-      stencil-wormhole: 3.4.1
-    dev: false
-
-  /@vitejs/plugin-vue@4.0.0(vite@4.1.4)(vue@3.2.47):
-    resolution: {integrity: sha512-e0X4jErIxAB5oLtDqbHvHpJe/uWNkdpYV83AOG2xo2tEVSzCzewgJMtREZM30wXnM5ls90hxiOtAuVU6H5JgbA==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    peerDependencies:
-      vite: ^4.0.0
-      vue: ^3.2.25
-    dependencies:
-      vite: 4.1.4(sass@1.58.0)
-      vue: 3.2.47
     dev: false
 
   /@vue/compiler-core@3.2.47:
@@ -2360,12 +2283,6 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /encoding@0.1.13:
-    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
-    dependencies:
-      iconv-lite: 0.6.3
-    dev: false
-
   /end-of-stream@1.4.4:
     resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
     dependencies:
@@ -3042,10 +2959,6 @@ packages:
       mime-types: 2.1.35
     dev: false
 
-  /form-urlencoded@2.0.9:
-    resolution: {integrity: sha512-fWUzNiOnYa126vFAT6TFXd1mhJrvD8IqmQ9ilZPjkLYQfaRreBr5fIUoOpPlWtqaAG64nzoE7u5zSetifab9IA==}
-    dev: false
-
   /formdata-node@5.0.0:
     resolution: {integrity: sha512-zrGsVVS56jJo+htsVv7ffXuzie91a2NrU1cPamvtPaSyRX++SH+4KXlGoOt+ncgDJ4bFA2SAQ+QGA+p4l1vciw==}
     engines: {node: '>= 14.17'}
@@ -3101,10 +3014,6 @@ packages:
 
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
-
-  /fscreen@1.2.0:
-    resolution: {integrity: sha512-hlq4+BU0hlPmwsFjwGGzZ+OZ9N/wq9Ljg/sq3pX+2CD7hrJsX9tJgWWK/wiNTFM212CLHWhicOoqwXyZGGetJg==}
-    dev: false
 
   /fsevents@2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
@@ -3449,13 +3358,6 @@ packages:
       safer-buffer: 2.1.2
     dev: false
 
-  /iconv-lite@0.6.3:
-    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      safer-buffer: 2.1.2
-    dev: false
-
   /ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
     dev: false
@@ -3659,13 +3561,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /is-plain-object@2.0.4:
-    resolution: {integrity: sha512-h5PpgXkWitc38BBMYawTYMWJHFZJVnBquFE57xFpjB8pJFiF6gZ+bU+WyI/yqXiFR5mdLsgYNaPe8uao6Uv9Og==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      isobject: 3.0.1
-    dev: false
-
   /is-plain-object@3.0.1:
     resolution: {integrity: sha512-Xnpx182SBMrr/aBik8y+GuR4U1L9FqMSojwDQwPMmxyC6bvEqly9UBCxhauBF5vNh2gwWJNX6oDV7O+OM4z34g==}
     engines: {node: '>=0.10.0'}
@@ -3762,18 +3657,6 @@ packages:
     engines: {node: '>=6.0'}
     dev: false
 
-  /isobject@3.0.1:
-    resolution: {integrity: sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==}
-    engines: {node: '>=0.10.0'}
-    dev: false
-
-  /isomorphic-fetch@2.2.1:
-    resolution: {integrity: sha512-9c4TNAKYXM5PRyVcwUZrF3W09nQ+sO7+jydgs4ZGW9dhsLG2VOlISJABombdQqQRXCwuYG3sYV/puGf5rp0qmA==}
-    dependencies:
-      node-fetch: 1.7.3
-      whatwg-fetch: 3.6.2
-    dev: false
-
   /isstream@0.1.2:
     resolution: {integrity: sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==}
     dev: false
@@ -3844,10 +3727,6 @@ packages:
 
   /json-stringify-safe@5.0.1:
     resolution: {integrity: sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==}
-    dev: false
-
-  /jsonapi-datastore@0.4.0-beta:
-    resolution: {integrity: sha512-RkI3oL1Ww6HefMEVZXdBLmdVY/s4P5FlRzccyXb7QmsuyTQqYDXgI8QN6Py8QJRZF05f4b4gecdeBz/oTOgRVA==}
     dev: false
 
   /jsonfile@4.0.0:
@@ -4124,18 +4003,6 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
-  /mf-hosting-cloudflare@1.0.5:
-    resolution: {integrity: sha512-5BiMN9+O3tRrTX17/HGPDV8QhiVeli/NhBKptPvuGTlGxkdhUYgjilyQ7h5GjmU4vgACeJn3tfbea69pz2m5kQ==}
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /mf-hosting-frontend@1.7.3:
-    resolution: {integrity: sha512-x78CnuC1W6PrdLQyvstkeNv2uoc7uAbtFGsNNkTFIg+HJd7kVIoc4vSylMx10W4lS2yYTiR1GDpQ5VA2n9QQkQ==}
-    requiresBuild: true
-    dev: false
-    optional: true
-
   /micromatch@4.0.5:
     resolution: {integrity: sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==}
     engines: {node: '>=8.6'}
@@ -4229,10 +4096,6 @@ packages:
     dependencies:
       minipass: 3.3.6
       yallist: 4.0.0
-    dev: false
-
-  /mitt@3.0.0:
-    resolution: {integrity: sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==}
     dev: false
 
   /mkdirp-classic@0.5.3:
@@ -4386,13 +4249,6 @@ packages:
     resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}
     dev: false
 
-  /native-file-system-adapter@3.0.0:
-    resolution: {integrity: sha512-IXwQiLiS7UlrlUetr9rHp+6uAAHT3291w2FGse5rdrQ7YXKtZHaqC4+tEXHMXVcevwsJNB3c7q9KO1Iu3IxgLw==}
-    engines: {node: '>=14.8.0'}
-    optionalDependencies:
-      fetch-blob: 3.2.0
-    dev: false
-
   /negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
@@ -4434,13 +4290,6 @@ packages:
   /node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
-
-  /node-fetch@1.7.3:
-    resolution: {integrity: sha512-NhZ4CsKx7cYm2vSrBAr2PvFOe6sWDf0UYLRqA6svUYg7+/TSfVAu49jYC4BvQ4Sms9SZgdqGBgroqfDhJdTyKQ==}
-    dependencies:
-      encoding: 0.1.13
-      is-stream: 1.1.0
-    dev: false
 
   /node-fetch@2.6.1:
     resolution: {integrity: sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==}
@@ -4759,16 +4608,6 @@ packages:
   /pathval@1.1.1:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
     dev: true
-
-  /patreon@0.4.1:
-    resolution: {integrity: sha512-aLhjx4rg2BArTq0Kg61MrM4dkJnTQ9kPN8F6a2IlQoYVEtIH7kUK/dprClTx+QYQKlXMfKksN9NCux1YarQJsQ==}
-    engines: {node: '>6.2.1'}
-    dependencies:
-      form-urlencoded: 2.0.9
-      is-plain-object: 2.0.4
-      isomorphic-fetch: 2.2.1
-      jsonapi-datastore: 0.4.0-beta
-    dev: false
 
   /performance-now@2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
@@ -5794,14 +5633,6 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /stencil-wormhole@3.4.1:
-    resolution: {integrity: sha512-ppYTcWTJnIl4ZAKwF39LTA9f/ypHfbVefsHdN2hpMQGrR57wt1TieZo9tlCM/r1Y4SFiZ5yz/cjho564C921Xw==}
-    dev: false
-
-  /streamsaver@2.0.6:
-    resolution: {integrity: sha512-LK4e7TfCV8HzuM0PKXuVUfKyCB1FtT9L0EGxsFk5Up8njj0bXK8pJM9+Wq2Nya7/jslmCQwRK39LFm55h7NBTw==}
-    dev: false
-
   /streamx@2.13.2:
     resolution: {integrity: sha512-+TWqixPhGDXEG9L/XczSbhfkmwAtGs3BJX5QNU6cvno+pOLKeszByWcnaTu6dg8efsTYqR8ZZuXWHhZfgrxMvA==}
     dependencies:
@@ -5915,31 +5746,6 @@ packages:
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
-    dev: false
-
-  /svelte-local-storage-store@0.4.0(svelte@3.57.0):
-    resolution: {integrity: sha512-ctPykTt4S3BE5bF0mfV0jKiUR1qlmqLvnAkQvYHLeb9wRyO1MdIFDVI23X+TZEFleATHkTaOpYZswIvf3b2tWA==}
-    engines: {node: '>=0.14'}
-    peerDependencies:
-      svelte: ^3.48.0
-    dependencies:
-      svelte: 3.57.0
-    dev: false
-
-  /svelte-plyr@0.1.3:
-    resolution: {integrity: sha512-mTeIHQcUCzWwJJHQCmCIrcXVHXKaUUYPdxfTtOL/k1J1eZRuIiHj7icMUkZgIR3V1ZsV4Rn6UmwoRrNMnP9XfA==}
-    dev: false
-
-  /svelte-session-manager@2.2.1:
-    resolution: {integrity: sha512-I6PFRX5NsZU9KFVWg+qF62rYIR+BbFdLVCC5Vdk7QTYJebp8qTBAIZD/bElwBftBmrW1yQQQ57ZTwci8JhrjHw==}
-    optionalDependencies:
-      mf-hosting-cloudflare: 1.0.5
-      mf-hosting-frontend: 1.7.3
-    dev: false
-
-  /svelte@3.57.0:
-    resolution: {integrity: sha512-WMXEvF+RtAaclw0t3bPDTUe19pplMlfyKDsixbHQYgCWi9+O9VN0kXU1OppzrB9gPAvz4NALuoca2LfW2bOjTQ==}
-    engines: {node: '>= 8'}
     dev: false
 
   /tar-fs@2.1.1:
@@ -6407,10 +6213,6 @@ packages:
 
   /webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-    dev: false
-
-  /whatwg-fetch@3.6.2:
-    resolution: {integrity: sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==}
     dev: false
 
   /whatwg-url@5.0.0:
