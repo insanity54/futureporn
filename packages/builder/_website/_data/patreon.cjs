@@ -38,14 +38,14 @@ const EleventyFetch = require('@11ty/eleventy-fetch')
 
 
 
-new Array(
-  'PATREON_ACCESS_TOKEN',
-  'PATREON_REFRESH_TOKEN',
-  'PATREON_CLIENT_ID',
-  'PATREON_CLIENT_SECRET',
-).forEach((ev) => { 
-  if (typeof process.env[ev] === 'undefined') throw new Error(`${ev} is undefined in env`) 
-})
+// new Array(
+//   'PATREON_ACCESS_TOKEN',
+//   'PATREON_REFRESH_TOKEN',
+//   'PATREON_CLIENT_ID',
+//   'PATREON_CLIENT_SECRET',
+// ).forEach((ev) => { 
+//   if (typeof process.env[ev] === 'undefined') throw new Error(`${ev} is undefined in env`) 
+// })
 
 
 
