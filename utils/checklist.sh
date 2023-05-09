@@ -43,8 +43,6 @@ echo "[TASK] Trigger a website build"
 echo "  ex: https://app.fleek.co/#/sites/futureporn/deploys?accountId=insanity54-team"
 read
 
-
-
 echo "[TASK] Take a break"
 echo "  ex: walk"
 echo "  ex: sleep"

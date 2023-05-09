@@ -1,0 +1,52 @@
+---
+layout: layouts/base.njk
+---
+
+
+
+<div x-data="upload" >
+
+  <div class="box">
+
+    <div x-cloak x-show="$store.auth.jwt!==''">
+      <h1 class="title">Video Upload</h1>
+
+      <div class="columns">
+        <div class="column is-half">
+          <h2 class="subtitle is-size-4">Metadata</h2>
+          <div class="control mt-3">
+            <div><label class="heading" for="vtuber">LewdTuber *</label></div>
+            <div id="vtuber" class="select">
+              <select>
+                <option>ProjektMelody</option>
+              </select>
+            </div>
+          </div>
+          <div class="control mt-3">
+            <div><label class="heading" for="date">Stream Date *</label></div>
+            <input x-model="date" id="date" class="input" type="date" placeholder="2022-12-30">
+          </div>
+          <div class="control mt-3">
+            <div><label class="heading" for="note">Note</label></div>
+            <textarea x-model="note" id="note" class="textarea" placeholder="e.g. this vod is higher resolution than the one on futureporn."></textarea>
+          </div>
+        </div>
+        <div class="column is-half">
+          <div 
+            x-show="$store.auth.jwt!==''" 
+            id="uppy-dashboard"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <template x-if="$store.auth.jwt===''">
+      <div>
+        <p>Please <a x-bind:href="$store.env.loginUrl">log in</a> to continue</p>
+      </div>
+    </template>
+  </div>
+</div>

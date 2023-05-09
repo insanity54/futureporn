@@ -1,21 +1,28 @@
 
+window.backend = document.querySelector('#backend-url').innerHTML
+
 import Alpine from 'alpinejs'
 import persist from '@alpinejs/persist'
-import auth from '/@includes/alpine/auth.js'
-import player from '/@includes/alpine/player.js'
-import user from '/@includes/alpine/user.js'
+import registerEnvStore from '/@includes/alpine/stores/env.js'
+import registerAuthStore from '/@includes/alpine/stores/auth.js'
+import auth from '/@includes/alpine/components/auth.js'
+import player from '/@includes/alpine/components/player.js'
+import user from '/@includes/alpine/components/user.js'
+import upload from '/@includes/alpine/components/upload.js'
 
 Alpine.plugin(persist)
-Alpine.data('auth', auth)
-Alpine.data('user', user)
-Alpine.data('player', player)
-Alpine.store('env', {
-  backendUrl: document.querySelector('#backend-url').innerHTML, // can't access $refs at this point
-  jwt: Alpine.$persist('')
-})
-window.Alpine = Alpine
+registerEnvStore(Alpine)
+registerAuthStore(Alpine)
 
-Alpine.start()
+window.auth = auth;
+window.player = player;
+window.upload = upload;
+window.user = user;
+window.Alpine = Alpine;
+
+queueMicrotask(() => {
+  Alpine.start();
+});
 
 
 // handler for the burger menu

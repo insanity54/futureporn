@@ -1,0 +1,25 @@
+{% extends "layouts/base.njk" %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    {{ content | safe }}
+{% endblock %}
+
+
+{% block footer %}
+  {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="module" src="/@includes/js/profile.js"></script>
+{% endblock %}
+
+
+{% block end %}
+  {{ super() }}
+{% endblock %}

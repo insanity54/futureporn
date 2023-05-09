@@ -1,6 +1,7 @@
 ---
-layout: layouts/base.njk
+layout: layouts/profile.njk
 ---
+
 
 
 <div x-data="user" class="content">
@@ -10,7 +11,7 @@ layout: layouts/base.njk
 
     <a 
       x-cloak 
-      x-show="$store.env.jwt===''" 
+      x-show="$store.auth.jwt===''" 
       class="button is-primary" 
       href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
     >
@@ -19,15 +20,15 @@ layout: layouts/base.njk
 
     <div
       x-cloak 
-      x-show="$store.env.jwt!==''" 
+      x-show="$store.auth.jwt!==''" 
       x-transition
     >
 
       <div>
-        <span x-text="username" class="subtitle mr-2"></span>
+        <span x-text="$store.auth.username" class="subtitle mr-2"></span>
         <button 
           class="button is-warning is-outlined is-small mb-5"
-          x-on:click="$store.env.jwt=''"
+          x-on:click="$store.auth.logout"
         >
           <span class="icon">
             <i class="fab fa-patreon"></i>
@@ -37,11 +38,11 @@ layout: layouts/base.njk
       </div>
 
 
-      <p>Thank you so much for supporting Futureporn!</p>
 
-
-      <h3 class="heading">Optional Perks</h3>
+      <section class="mb-5">
+      <h3 class="heading">Patron Perks</h3>
         
+      <p>Thank you so much for supporting Futureporn!</p>
 
         <div  class="mb-5">
           <label class="checkbox noselect">
@@ -49,7 +50,7 @@ layout: layouts/base.njk
               type="checkbox"
               x-model="isNamePublic"
             >
-            Publically display name (<span x-text="username"></span>) on the patrons page.
+            Publically display my name (<span x-text="$store.auth.username"></span>) on the patrons page.
           </label>
           <p><i>This setting does not apply immediately. It takes a few days for the patrons page to update.</i></p>
         </div>
@@ -75,6 +76,7 @@ layout: layouts/base.njk
         </span>
         <span>Save</span>
       </button>
+      </section>
 
     </div>
 

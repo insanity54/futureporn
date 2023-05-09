@@ -14,18 +14,18 @@
   </div>
   <div class="message-body has-text-centered">
     <div class="columns">
-      {# the most recently funded goal #}
+      <!-- the most recently funded goal -->
       <div class="column is-one-third">
         {% set fundedGoal = patreon.goals.complete[patreon.goals.complete.length-1] %}
         <p class="subtitle">${{ (fundedGoal.amount_cents*(fundedGoal.completed_percentage*0.01)/100) | round }} of ${{ fundedGoal.amount_cents / 100 }} ({{ fundedGoal.completed_percentage}}%)</p>
 
         <div class="mb-5 tag is-success is-rounded" style="width:100%">FUNDED</div>
 
-        <p>{{ fundedGoal.description | stripHtml }}</p>
+        <p>{{ fundedGoal.description }}</p>
       </div>
 
 
-      {# the next unfunded goal #}
+      <!-- the next unfunded goal -->
       <div class="column is-two-thirds">
 
         {% set unfundedGoal = patreon.goals.incomplete[0] %}
@@ -33,7 +33,7 @@
 
         <progress class="progress is-info is-large" value="{{ unfundedGoal.completed_percentage }}" max="100">{{ unfundedGoal.completed_percentage }}%</progress>
 
-        <p>{{ unfundedGoal.description | stripHtml }}</p>
+        <p>{{ unfundedGoal.description }}</p>
       </div>
     </div>
 

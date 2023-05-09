@@ -22,12 +22,14 @@
     <link rel="alternate" type="application/rss+xml" title="Subscribe to see what's new" href="{{ metadata.url }}feed/feed.xml" />
 
     <title>{{ metadata.title }}</title>
+
     {% endblock %}
   </head>
   <body 
 
   >
-    <span id="backend-url" x-cloak x-show="false" x-ref="backendUrl">{{ env.STRAPI_BACKEND_URL }}</span>
+    <span id="backend-url" x-cloak x-show="false" x-ref="backend">{{ env.STRAPI_BACKEND_URL }}</span>
+
 
     <nav class="navbar" role="navigation" aria-label="main navigation">
 
@@ -52,6 +54,7 @@
       <div 
         class="navbar-menu" 
         id="navMenu"
+        x-data
       >
         <a class="navbar-item is-expanded" href="/about">About</a>
         <a class="navbar-item is-expanded" href="/faq">FAQ</a>
@@ -60,30 +63,52 @@
         <a class="navbar-item is-expanded" href="/feed">RSS</a>
         <a class="navbar-item is-expanded" href="/api">API</a>
 
-        <a class="navbar-item is-expanded" target="_blank" href="https://status.futureporn.net">Status <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
-
-        <a 
-          x-data="user"
-          x-show="$store.env.jwt!==''"
-          class="navbar-item is-expanded"
-          href="/profile"
-        >
-          <span x-text="username"></span>
-        </a>
-        
+        <div class="navbar-item is-expanded">
+          <a target="_blank" href="https://status.futureporn.net">
+            <span>Status</span>
+            <span class="icon">
+              <i class="fas fa-external-link-alt">
+              </i>
+            </span>
+          </a>
+        </div>
 
 
-        <a
-          x-data="auth"
-          x-show="$store.env.jwt===''"
-          href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
-          class="button is-warning is-outlined"
-        >
-          <span class="icon">
-            <i class="fab fa-patreon"></i>
-          </span>
-          <span>Log in</span>
-        </a>
+        <div class="navbar-item">
+          <a x-bind:disabled="$store.auth.jwt===''" class="button " href="/upload">
+            <span class="icon">
+              <i class="fas fa-upload" aria-hidden="true"></i>
+            </span>
+            <span>Upload</span>
+          </a>
+        </div>
+
+        <div class="navbar-item" style="min-width: 12em;">
+          <a 
+            x-cloak 
+            x-transition 
+            x-show="$store.auth.jwt!==''" 
+            class="button" 
+            href="/profile"
+          >
+            <span class="icon">
+              <i class="fas fa-user-large" aria-hidden="true"></i>
+            </span>
+            <span x-text="$store.auth.username"></span>
+          </a>
+
+          <a
+            x-cloak
+            x-show="$store.auth.jwt===''"
+            href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
+            class="button is-warning is-outlined"
+          >
+            <span class="icon">
+              <i class="fab fa-patreon"></i>
+            </span>
+            <span>Log in</span>
+          </a>
+        </div>
 
 
 
@@ -117,37 +142,55 @@
 
         <div class="content">
           <div class="columns">
-     
-              <div class="column is-12">
-                <p class="mt-4">
-                  Futureporn.net is made with ❤️ by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
-                </p>
-                <p>
-                  Made possible by generous donations from
+            <div class="column is-12">
+              <p class="mt-4 heading">
+                Sitemap
+              </p>
+              <ul>
+                <li><a href="#top">&uarr; Top of page</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/faq">FAQ</a></li>
+                <li><a href="/goals">Goals</a></li>
+                <li><a href="/patrons">Patrons</a></li>
+                <li><a href="/feed">RSS Feed</a></li>
+                <li><a href="/api">API</a></li>
+                <li><a href="https://status.futureporn.net/" target="_blank">Status</a></li>
+                <li><a href="/upload">Upload</a></li>
+                <li><a href="/profile">Profile</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column is-12">
+              <p class="mt-4">
+                Futureporn.net is made with ❤️ by <a target="_blank" href="https://twitter.com/CJ_Clippy">CJ_Clippy <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+              </p>
+              <p>
+                Made possible by generous donations from
 
-                  {% set donors = patreon.patrons.all.concat(donors.list) %}
+                {% set donorsAndPatrons = patreon.patrons.concat(donors.list) %}
 
-                  {%- for donor in donors %}
-                    <span>{{ donor.attributes.full_name or donor.name }}</span>{% if loop.index === donors.length %} {% else %}, {% endif %}
+                {%- for donor in donorsAndPatrons %}
+                  <span>{{ donor.attributes.full_name or donor.username }}</span>{% if loop.index === donorsAndPatrons.length %} {% else %}, {% endif %}
+                {% endfor %}
+              </p>
+              <p>
+                VOD contributions by 
+                  {%- for c in contributors.list %}
+                    {% if (c.link) %}
+                      <a target="_blank" href="{{ c.link }}">{{ c.name }} <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+                    {% else %}
+                      <span>{{ c.name }}</span>
+                    {% endif %}
+                    </span>{% if loop.index === contributors.list.length %} {% else %}, {% endif %}
                   {% endfor %}
-                </p>
-                <p>
-                  VOD contributions by 
-                    {%- for c in contributors.list %}
-                      {% if (c.link) %}
-                        <a target="_blank" href="{{ c.link }}">{{ c.name }} <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
-                      {% else %}
-                        <span>{{ c.name }}</span>
-                      {% endif %}
-                      </span>{% if loop.index === contributors.list.length %} {% else %}, {% endif %}
-                    {% endfor %}
-                </p>
-                <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
-                <p><a 
-                  target="_blank" 
-                  href="https://www.reddit.com/r/projektmelody/comments/qikzy0/futureporn_an_unofficial_projektmelody_chaturbate/"
-                  >Reddit Thread<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
-              </div>
+              </p>
+              <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+              <p><a 
+                target="_blank" 
+                href="https://www.reddit.com/r/projektmelody/comments/qikzy0/futureporn_an_unofficial_projektmelody_chaturbate/"
+                >Reddit Thread<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+            </div>
           </div>
 
         <div class="level">

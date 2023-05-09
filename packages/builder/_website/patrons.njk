@@ -11,32 +11,21 @@ eleventyNavigation:
     <div class="box">
 
           <p class="title">Patron List</p>
-          <p class="subtitle">Futureporn.net continues to improve thanks to these generous supporters.</p>
-          {# <a class="button mb-5 is-primary is-rounded" href="https://patreon.com/CJ_Clippy" target="_blank">Patreon</a> #}
+          <p class="subtitle">Futureporn.net continues to improve thanks to <strong>{{ patreon.patronCount }} generous supporters.</strong></p>
 
-          <p><i>*patron list temporarily disabled*</i></p>
-
-          {% if metadata.patrons.length < 1 %}
-          <article class="mt-5 message is-warning">
-            <div class="message-body">
-              <p>None yet! Care to be the first? <a target="_blank" href="https://patreon.com/CJ_Clippy">Support CJ_Clippy on Patreon<span class="icon"><i class="fas fa-external-link-alt"></i></span></a>.</p>
-            </div>
-          </article>
-          {% else %}
+          {% set donorsAndPatrons = patreon.patrons.concat(donors.list) %}
 
           <div class="patron-list columns is-mobile is-multiline">
-          {%- for patron in patreon.patrons.active %}
+          {%- for patron in donorsAndPatrons %}
 
             <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
               <div class="box">
                 <article class="media">
-                  <div class="media-left">
-                    {% image patron.attributes.image_url, "image is-32x32", patron.attributes.full_name, undefined, [32] %}
-                  </div>
+
                   <div class="media-content">
                     <div class="content">
                       <p>
-                        <strong>{{ patron.attributes.full_name }}</strong>
+                        <strong>{{ patron.username }}</strong>
                       </p>
                     </div>
                   </div>
@@ -46,9 +35,8 @@ eleventyNavigation:
           {% endfor %}
           </div>
 
-          <p>Want to get your name on this list? <a href="https://patreon.com/CJ_Clippy" target="_blank">Become a patron today!<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+          <p>Want to get your name on this list? <a href="https://patreon.com/CJ_Clippy" target="_blank">Become a patron today!<span class="icon"><i class="fas fa-external-link-alt"></i></span></a> and <a href="/profile">opt-in</a> to have your username displayed on the website.</p>
 
-          {% endif %}
 
         </div>
 

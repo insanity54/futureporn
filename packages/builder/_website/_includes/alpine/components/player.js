@@ -1,14 +1,14 @@
 import videojs from '@mux/videojs-kit/dist/index.vhs.js';
 
 
-export default function () {
+export default function player () {
   return {
     hasMux: false,
     muxPlaybackId: '',
     preference: this.$persist('public'),
     errors: [],
     playbackJwt: '',
-    backendUrl: '',
+    backend: '',
     isPlayerSelector () {
       return (
         this.hasMux &&
@@ -37,8 +37,8 @@ export default function () {
         this.muxPlaybackId = this.$refs.muxPlaybackId.innerHTML
       }
 
-      if (this.$refs.backendUrl.innerHTML !== '') {
-        this.backendUrl = this.$refs.backendUrl.innerHTML
+      if (this.$refs.backend.innerHTML !== '') {
+        this.backend = this.$refs.backend.innerHTML
       }
 
       if (this.isPatronPlayer()) {
@@ -64,7 +64,7 @@ export default function () {
       }
     },
     async getPlaybackToken() {
-      const res = await fetch(`${this.backendUrl}/api/mux/secure?id=${this.muxPlaybackId}`, {
+      const res = await fetch(`${this.backend}/api/mux/secure?id=${this.muxPlaybackId}`, {
         headers: {
           'Authorization': `Bearer ${Alpine.store('env').jwt}`
         }

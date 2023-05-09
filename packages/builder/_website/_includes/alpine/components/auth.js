@@ -1,12 +1,10 @@
-export default function () {
+export default function auth () {
   return {
     open: false,
     lastVisitedPath: this.$persist('/'),
     accessToken: '',
     error: '',
-    done: false,
-    jwt: Alpine.store('env').jwt,
-    
+    done: false,    
     async init() {
       try {
         this.getAccessToken()
@@ -21,7 +19,6 @@ export default function () {
       const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
       });
-
       if (params?.access_token === undefined || params?.access_token === null) {
         throw new Error('Failed to get access_token from auth portal.');
       }
@@ -30,18 +27,21 @@ export default function () {
       }
     },
     async getJwt() {
-      const res = await fetch(`${this.$refs.backendUrl.innerHTML}/api/auth/patreon/callback?access_token=${this.accessToken}`)
+      const res = await fetch(`${this.$refs.backend.innerHTML}/api/auth/patreon/callback?access_token=${this.accessToken}`)
       const json = await res.json()
       if (json?.jwt === undefined) throw new Error('Failed to get auth token. Please try again later.');
       else {
-        Alpine.store('env').jwt = json.jwt
+        console.log(JSON.stringify(json))
+        if (json.jwt) Alpine.store('auth').jwt = json.jwt;
+        if (json.user.username) Alpine.store('auth').username = json.user.username;
+        if (json.user.id) Alpine.store('auth').userId = json.user.id;
       }
     },
     redirect() {
       // this is for redirecting 
       // from /connect/patreon/redirect
       // to whatever page the user was previously at
-      window.location.pathname = this.lastVisitedPath
+      window.location.pathname = this.lastVisitedPath      
       this.done = true
     }
   }
