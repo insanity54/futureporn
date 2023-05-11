@@ -21,7 +21,7 @@ module.exports = async function() {
       'sort[0]': 'date',
       'pagination[page]': humanReadableRequestCount,
       'pagination[pageSize]': pageSize,
-      'populate[0]': 'mux_video_uploader_mux_asset'
+      'populate[0]': 'muxAsset'
     });
     const url = `https://portal.futureporn.net/api/vods?${params}`
     // const `https://portal.futureporn.net/api/vods?sort[0]=date&pagination[page]=${humanReadableRequestCount}&pagination[pageSize]=${pageSize}`
@@ -38,8 +38,8 @@ module.exports = async function() {
     vods = vods.concat(response.data)
   }
 
-
-  console.log(vods.find(v => v.id === 125).attributes.mux_video_uploader_mux_asset.data)
+  // show a sample
+  console.log(vods.find(v => v.id === 125))
 
   // const sortedVods = vods.sort((a, b) => new Date(a.attributes.date).valueOf() - new Date(b.attributes.date).valueOf() )
 
