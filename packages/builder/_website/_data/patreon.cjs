@@ -83,12 +83,7 @@ module.exports = async function() {
 
   const patrons = await EleventyFetch(`${process.env.STRAPI_URL}/api/patreon/patrons`, {
     duration: "1m",
-    type: "json",
-    fetchOptions: {
-      headers: {
-        'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
-      }
-    }
+    type: "json"
   })
 
   console.log(patrons)
