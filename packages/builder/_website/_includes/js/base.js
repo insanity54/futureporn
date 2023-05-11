@@ -1,5 +1,6 @@
 
 window.backend = document.querySelector('#backend-url').innerHTML
+window.companionUrl = document.querySelector('#companion-url').innerHTML
 
 import Alpine from 'alpinejs'
 import persist from '@alpinejs/persist'

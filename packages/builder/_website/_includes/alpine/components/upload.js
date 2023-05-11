@@ -57,12 +57,12 @@ export default function upload () {
           }
         )
         .use(RemoteSources, {
-          companionUrl: 'http://localhost:5000',
+          companionUrl: window.companionUrl,
           sources: ['Box', 'OneDrive', 'Dropbox', 'GoogleDrive', 'Url'],
         })
         .use(AwsS3Multipart, {
           limit: 6,
-          companionUrl: 'http://localhost:5000',
+          companionUrl: window.companionUrl,
           companionHeaders: {
             Authorization: `Bearer ${Alpine.store('auth').jwt}`
           }
