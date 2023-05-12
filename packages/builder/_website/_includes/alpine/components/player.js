@@ -8,6 +8,8 @@ export default function player () {
     preference: this.$persist('public'),
     errors: [],
     playbackJwt: '',
+    gifJwt: '',
+    thumbnailJwt: '',
     backend: '',
     muxEnvKey: 'bmvsfoe2j5d6655ad9g6u82ls',
     isPlayerSelector () {
@@ -72,6 +74,8 @@ export default function player () {
       const json = await res.json()
       if (json?.token === undefined) throw new Error('Failed to get playback tokens. Please try again later.');
       else {
+        console.log(`eyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy`)
+        console.log(json)
         this.playbackJwt = json.token,
         this.gifJwt = json.giftToken,
         this.thumbnailJwt = json.thumbnailToken
@@ -93,7 +97,7 @@ export default function player () {
       player.src({ type: 'video/mux', src: `${this.muxPlaybackId}?token=${this.playbackJwt}` });
       player.timelineHoverPreviews({
         enabled: true, 
-        src: `https://image.mux.com/${this.muxPlaybackId}/storyboard.vtt?token=${this.thumbnailToken}`
+        src: `https://image.mux.com/${this.muxPlaybackId}/storyboard.vtt?token=${this.thumbnailJwt}`
       });
     },
   }

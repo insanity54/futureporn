@@ -93,6 +93,16 @@ module.exports = async function() {
     }
   })
 
+  const muxAllocationCount = await EleventyFetch(`${process.env.STRAPI_URL}/api/patreon/muxAllocationCount`, {
+    duration: '1m',
+    type: 'json',
+    fetchOptions: {
+      headers: {
+        'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
+      }
+    }
+  })
+
 
   const pledgeSum = campaignData?.data?.attributes?.pledge_sum
   const patronCount = campaignData?.data?.attributes?.patron_count
@@ -138,5 +148,5 @@ module.exports = async function() {
   console.log(goals.incomplete)
 
 
-  return { patrons, goals, patronCount }
+  return { patrons, goals, patronCount, muxAllocationCount }
 };
