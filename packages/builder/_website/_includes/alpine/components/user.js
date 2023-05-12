@@ -5,20 +5,24 @@ export default function user () {
     isLoading: false,
     isSuccess: false,
     isDirty: false,
+    isPatron: false,
     init () {
       this.fetchUser()
     },
     async fetchUser () {
-      const res = await fetch(`${Alpine.store('env').backend}/api/users/me`, {
+      const res = await fetch(`${Alpine.store('env').backend}/api/profile/me`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${Alpine.store('auth').jwt}`
         }
       })
       const json = await res.json()
+      console.log('here is the user json')
+      console.log(json)
       this.id = json.id
       this.username = json.username
       this.isNamePublic = json.isNamePublic || false
+      this.isPatron = (json?.role?.type === 'patron') ? true : false
     },
     async updateIsNamePublic () {
       this.isLoading = true

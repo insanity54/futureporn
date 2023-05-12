@@ -39,7 +39,7 @@ layout: layouts/profile.njk
 
 
 
-      <section class="mb-5">
+      <section x-cloak x-show="isPatron" class="mb-5">
       <h3 class="heading">Patron Perks</h3>
         
       <p>Thank you so much for supporting Futureporn!</p>
@@ -50,7 +50,7 @@ layout: layouts/profile.njk
               type="checkbox"
               x-model="isNamePublic"
             >
-            Publically display my name (<span x-text="$store.auth.username"></span>) on the patrons page.
+            Publically display <b x-text="$store.auth.username"></b> on the patrons page.
           </label>
           <p><i>This setting does not apply immediately. It takes a few days for the patrons page to update.</i></p>
         </div>
@@ -76,6 +76,10 @@ layout: layouts/profile.njk
         </span>
         <span>Save</span>
       </button>
+      </section>
+
+      <section x-cloak x-show="!isPatron">
+        <p>Welcome to Futureporn, <span x-text="$store.auth.username"></span>! It seems that you are not a patron yet. Please log out and log in again if you believe this is an error. Thank you for your interest!</p>
       </section>
 
     </div>
