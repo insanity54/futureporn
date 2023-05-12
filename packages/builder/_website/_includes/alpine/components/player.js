@@ -49,7 +49,7 @@ export default function player () {
 
       console.log('>> loading patron player')
       // Patrons will have a strapi jwt in their localStorage.
-      // We need to use this jwt to auth with the backend and GET /api/mux/secure?playbackId=(...)
+      // We need to use this jwt to auth with the backend and GET /api/mux-asset/secure?playbackId=(...)
       // The playbackId is the Mux playback ID of the video the viewer wants to watch.
       // the backend signs a new JWT using it's MUX private key, and sends it to the frontend client.
       // the new JWT is appended to the video source url, which proves authorization to Mux.
@@ -64,7 +64,7 @@ export default function player () {
       }
     },
     async getPlaybackToken() {
-      const res = await fetch(`${this.backend}/api/mux/secure?id=${this.muxPlaybackId}`, {
+      const res = await fetch(`${this.backend}/api/mux-asset/secure?id=${this.muxPlaybackId}`, {
         headers: {
           'Authorization': `Bearer ${Alpine.store('auth').jwt}`
         }
