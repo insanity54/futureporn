@@ -73,20 +73,26 @@ async function getPatreonData (accessToken, campaignId, attempts = 1) {
 
 
 module.exports = async function() {
-  
+
+  console.log(`lets get patreon campaign data`)  
   const campaignData = await EleventyFetch('https://www.patreon.com/api/campaigns/8012692', {
     duration: "1d",
     type: "json"
   })
 
-  console.log(campaignData)
 
-  const patrons = await EleventyFetch(`${process.env.STRAPI_URL}/api/patreon/patrons`, {
+  const patronsUrl = `${process.env.STRAPI_URL}/api/patreon/patrons`
+  console.log(`lets get public patron list from ${patronsUrl}`)
+  const patrons = await EleventyFetch(patronsUrl, {
     duration: "1m",
-    type: "json"
+    type: "json",
+    fetchOptions: {
+      headers: {
+        'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
+      }
+    }
   })
 
-  console.log(patrons)
 
   const pledgeSum = campaignData?.data?.attributes?.pledge_sum
   const patronCount = campaignData?.data?.attributes?.patron_count

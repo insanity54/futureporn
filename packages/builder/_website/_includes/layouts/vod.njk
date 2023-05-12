@@ -23,14 +23,13 @@
   >
 
     {# some variables for use in patron player #}
-    {% set muxPlaybackId = vod.attributes.mux_video_uploader_mux_asset.data.attributes.playback_id %}
+    {% set muxPlaybackId = vod.attributes.muxAsset.data.attributes.playbackId %}
     <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" >{{ muxPlaybackId }}</span>
     <span x-cloak x-show="false" x-ref="backend">{{ env.STRAPI_BACKEND_URL }}</span>
 
     <div
       class="container m-0 p-0"
     >
-
       <div 
         x-show="errors.length>0"
         x-cloak

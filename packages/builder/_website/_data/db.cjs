@@ -21,14 +21,18 @@ module.exports = async function() {
       'sort[0]': 'date',
       'pagination[page]': humanReadableRequestCount,
       'pagination[pageSize]': pageSize,
-      'populate[0]': 'muxAsset'
+      'populate': '*'
     });
-    const url = `https://portal.futureporn.net/api/vods?${params}`
-    // const `https://portal.futureporn.net/api/vods?sort[0]=date&pagination[page]=${humanReadableRequestCount}&pagination[pageSize]=${pageSize}`
-    console.log(`url:${url}`)
+    const url = `${process.env.STRAPI_URL}/api/vods?${params}`
+    console.log(`url:${url} with key ${process.env.STRAPI_API_KEY}`)
     const response = await EleventyFetch(url, {
       duration: '1m',
-      type: 'json'
+      type: 'json',
+      fetchOptions: {
+        headers: {
+          'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
+        }
+      }
     })
     if (requestCounter === 0) {
       totalVodCount = response.meta.pagination.total
@@ -39,7 +43,8 @@ module.exports = async function() {
   }
 
   // show a sample
-  console.log(vods.find(v => v.id === 125))
+  console.log(vods[vods.length-1])
+  console.log(vods[0])
 
   // const sortedVods = vods.sort((a, b) => new Date(a.attributes.date).valueOf() - new Date(b.attributes.date).valueOf() )
 
