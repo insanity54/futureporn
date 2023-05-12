@@ -12,12 +12,12 @@ export default function player () {
     isPlayerSelector () {
       return (
         this.hasMux &&
-        Alpine.store('env').jwt !== ''
+        Alpine.store('auth').jwt !== ''
       )
     },
     isPatronPlayer () {
       return (
-        Alpine.store('env').jwt !== '' &&
+        Alpine.store('auth').jwt !== '' &&
         this.hasMux && 
         this.preference === 'patron'
       )
@@ -25,7 +25,7 @@ export default function player () {
     isPublicPlayer () {
       return (
         !this.hasMux ||
-        Alpine.store('env').jwt === '' ||
+        Alpine.store('auth').jwt === '' ||
         this.preference === 'public'
       )
     },
@@ -66,7 +66,7 @@ export default function player () {
     async getPlaybackToken() {
       const res = await fetch(`${this.backend}/api/mux/secure?id=${this.muxPlaybackId}`, {
         headers: {
-          'Authorization': `Bearer ${Alpine.store('env').jwt}`
+          'Authorization': `Bearer ${Alpine.store('auth').jwt}`
         }
       })
       const json = await res.json()
