@@ -9,6 +9,7 @@ export default function player () {
     errors: [],
     playbackJwt: '',
     backend: '',
+    muxEnvKey: 'bmvsfoe2j5d6655ad9g6u82ls',
     isPlayerSelector () {
       return (
         this.hasMux &&
@@ -47,7 +48,6 @@ export default function player () {
     },
     async loadPatronPlayer() {
 
-      console.log('>> loading patron player')
       // Patrons will have a strapi jwt in their localStorage.
       // We need to use this jwt to auth with the backend and GET /api/mux-asset/secure?playbackId=(...)
       // The playbackId is the Mux playback ID of the video the viewer wants to watch.
@@ -57,30 +57,44 @@ export default function player () {
       // steps:
       // get signed playback JWT
       try {
-        await this.getPlaybackToken()
+        await this.getPlaybackTokens()
         this.setVideoSrc()
       } catch (e) {
         this.errors.push(e)
       }
     },
-    async getPlaybackToken() {
+    async getPlaybackTokens() {
       const res = await fetch(`${this.backend}/api/mux-asset/secure?id=${this.muxPlaybackId}`, {
         headers: {
           'Authorization': `Bearer ${Alpine.store('auth').jwt}`
         }
       })
       const json = await res.json()
-      if (json?.token === undefined) throw new Error('Failed to get playback token. Please try again later.');
+      if (json?.token === undefined) throw new Error('Failed to get playback tokens. Please try again later.');
       else {
-        this.playbackJwt = json.token
+        this.playbackJwt = json.token,
+        this.gifJwt = json.giftToken,
+        this.thumbnailJwt = json.thumbnailToken
       }
     },
     setVideoSrc() {
       // set video src to `https://stream.mux.com/`
       const player = videojs('patron-player', {
-        "timelineHoverPreviews": true
+        plugins: {
+          mux: {
+            debug: false,
+            data: {
+              env_key: this.muxEnvKey,
+              video_title: 'Example Title'
+            }
+          }
+        }
       });
       player.src({ type: 'video/mux', src: `${this.muxPlaybackId}?token=${this.playbackJwt}` });
+      player.timelineHoverPreviews({
+        enabled: true, 
+        src: `https://image.mux.com/${this.muxPlaybackId}/storyboard.vtt?token=${this.thumbnailToken}`
+      });
     },
   }
 }
