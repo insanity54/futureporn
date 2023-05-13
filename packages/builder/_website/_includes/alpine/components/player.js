@@ -72,7 +72,7 @@ export default function player () {
         }
       })
       const json = await res.json()
-      if (json?.token === undefined) throw new Error('Failed to get playback tokens. Please try again later.');
+      if (json?.playbackToken === undefined) throw new Error('Failed to get playback tokens. Please try again later.');
       else {
         console.log(`eyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy`)
         console.log(json)
