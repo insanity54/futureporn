@@ -14,7 +14,7 @@ https://futureporn.net/
 
 * [Futureporn Quality Assurance](https://github.com/insanity54/futureporn-qa) Futurebutt (Discord bot) Backend task runner
 * [Futureporn Uppy](https://github.com/insanity54/futureporn-uppy) Video uploader helper
-* [Futureporn Strapi](https://github.com/insanity54/futureporn-strapi) Backend API server
+* Futureporn Strapi Backend API server (closed source for now)
 * [Futureporn Upptime](https://github.com/insanity54/futureporn-status) Live system status
 
 ## Notes
