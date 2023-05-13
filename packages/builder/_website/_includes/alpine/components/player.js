@@ -7,9 +7,9 @@ export default function player () {
     muxPlaybackId: '',
     preference: this.$persist('public'),
     errors: [],
-    playbackJwt: '',
-    gifJwt: '',
-    thumbnailJwt: '',
+    playbackToken: '',
+    gifToken: '',
+    thumbnailToken: '',
     backend: '',
     muxEnvKey: 'bmvsfoe2j5d6655ad9g6u82ls',
     isPlayerSelector () {
@@ -76,9 +76,9 @@ export default function player () {
       else {
         console.log(`eyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy`)
         console.log(json)
-        this.playbackJwt = json.token,
-        this.gifJwt = json.giftToken,
-        this.thumbnailJwt = json.thumbnailToken
+        this.playbackToken = json.playbackToken,
+        // this.gifToken = json.gifToken,
+        this.storyboardToken = json.storyboardToken
       }
     },
     setVideoSrc() {
@@ -94,10 +94,10 @@ export default function player () {
           }
         }
       });
-      player.src({ type: 'video/mux', src: `${this.muxPlaybackId}?token=${this.playbackJwt}` });
+      player.src({ type: 'video/mux', src: `${this.muxPlaybackId}?token=${this.playbackToken}` });
       player.timelineHoverPreviews({
         enabled: true, 
-        src: `https://image.mux.com/${this.muxPlaybackId}/storyboard.vtt?token=${this.thumbnailJwt}`
+        src: `https://image.mux.com/${this.muxPlaybackId}/storyboard.vtt?token=${this.storyboardToken}`
       });
     },
   }
