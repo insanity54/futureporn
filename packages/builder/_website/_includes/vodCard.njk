@@ -1,9 +1,9 @@
 
-{# {% set imageUrl =  %} #}
-{# {% set imageData = await EleventyFetch(imageUrl).then(r => r.buffer()) %} #}
+
 
 <div class="column is-half-mobile is-one-third-tablet is-one-fifth-desktop">
   <div class="card">
+
     <a href="/vods/{{ vod.attributes.date | safeDate | url }}">
       <div class="card-image">
           <figure class="image is-16by9">
@@ -42,7 +42,7 @@
               <span>Public</span>
             </div>
             {% endif %}
-            {% if vod.attributes.muxAsset.data.attributes.playbackId %}
+            {% if vod.attributes.muxAsset.data.attributes.playbackId and not vod.attributes.muxAsset.data.attributes.deletionQueuedAt %}
             <div class="card-footer-item">
               <span class="icon">
                 <i class="fab fa-patreon"></i>

@@ -35,7 +35,7 @@ export default function player () {
     init () {
       // Thanks to 11ty templates, the muxPlaybackId is in the dom.
       // if it exists for this vod, we update the alpine data.
-      if (this.$refs.muxPlaybackId.innerHTML !== '') {
+      if (this.$refs.muxPlaybackId.innerHTML !== '' && this.$refs.muxDeletionQueuedAt.innerHTML === '') {
         this.hasMux = true
         this.muxPlaybackId = this.$refs.muxPlaybackId.innerHTML
       }

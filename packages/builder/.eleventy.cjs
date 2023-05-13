@@ -27,8 +27,10 @@ const filterIpfsCompleted = (vods) => {
   return golo.length;
 }
 
-const filterThumbnailCompleted = (vods) => 
-  vods.filter((v) => v.thiccHash !== null).length;
+const filterThumbnailCompleted = (vods) => {
+  const completed = vods.filter((v) => (v?.attributes?.thumbnail?.data?.attributes?.url))
+  return completed.length
+}
 
 
 const filterB2Completed = (vods) => {
@@ -40,13 +42,14 @@ const filterB2Completed = (vods) => {
 }
 
 const filter240pTranscodeCompleted = (vods) => {
-  let completed = vods.filter((v) => v.video240Hash !== null)
+  let completed = vods.filter((v) => v?.attributes?.video240Hash !== null)
   return completed.length
 }
 
 
 async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
 
+  console.log(`doing imageShortcode ${src}`)
   Image.concurrency = 7
   let opts = {
     outputDir: '_site/img',
@@ -83,7 +86,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
       }
       const timeout = setTimeout(() => {
         abortController.abort();
-      }, 500);
+      }, 10000);
     }
     metadata = await Image(src, opts);
   } catch (e) {
