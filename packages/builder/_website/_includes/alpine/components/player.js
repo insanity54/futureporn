@@ -8,7 +8,6 @@ export default function player () {
     preference: this.$persist('public'),
     errors: [],
     playbackToken: '',
-    gifToken: '',
     thumbnailToken: '',
     backend: '',
     muxEnvKey: 'bmvsfoe2j5d6655ad9g6u82ls',
@@ -74,10 +73,7 @@ export default function player () {
       const json = await res.json()
       if (json?.playbackToken === undefined) throw new Error('Failed to get playback tokens. Please try again later.');
       else {
-        console.log(`eyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy`)
-        console.log(json)
         this.playbackToken = json.playbackToken,
-        // this.gifToken = json.gifToken,
         this.storyboardToken = json.storyboardToken
       }
     },

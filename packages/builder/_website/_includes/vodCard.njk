@@ -9,8 +9,8 @@
           <figure class="image is-16by9">
             {% set imageUrl = './_website/favicon/favicon.png' %}
 
-            {% if vod.attributes.thiccHash %}
-              {% set imageUrl = vod.attributes.thiccHash | buildIpfsUrl %}
+            {% if vod.attributes.thumbnail.data %}
+              {% set imageUrl = vod.attributes.thumbnail.data.attributes.url %}
             {% endif %}
 
             {% if vod.attributes.announceTitle %}
