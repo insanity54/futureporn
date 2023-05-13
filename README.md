@@ -8,7 +8,14 @@ https://futureporn.net/
 
 * [Static website generation](https://github.com/insanity54/futureporn/tree/main/website)
 * [Infrastructure playbooks](https://github.com/insanity54/futureporn/tree/main/ansible/roles) (partially deprecated)
-* [Issue Tracker](https://github.com/insanity54/futureporn/issues)
+* [Projects & Issue Tracker](https://github.com/insanity54/futureporn/issues)
+
+## Other interesting components
+
+* [Futureporn Quality Assurance](https://github.com/insanity54/futureporn-qa) Futurebutt (Discord bot) Backend task runner
+* [Futureporn Uppy](https://github.com/insanity54/futureporn-uppy) Video uploader companion
+* [Futureporn Strapi](https://github.com/insanity54/futureporn-strapi) Backend API server
+
 
 ## Notes
 
