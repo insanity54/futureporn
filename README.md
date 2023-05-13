@@ -1,16 +1,21 @@
 # futureporn
 
-![capture workflow](https://github.com/insanity54/futureporn/actions/workflows/capture.js.yml/badge.svg) ![scout workflow](https://github.com/insanity54/futureporn/actions/workflows/scout.js.yml/badge.svg) ![qa workflow](https://github.com/insanity54/futureporn/actions/workflows/qa.js.yml/badge.svg)
-
 Unofficial ProjektMelody Chaturbate VOD Archive. For Adults Only. (NSFW)
 
 https://futureporn.net/
 
 ## What this codebase does
 
-* [Infrastructure playbooks](https://github.com/insanity54/futureporn/tree/main/ansible/roles) (spin up, spin down) for VPS-based Chaturbate VOD recording
-* [Index of VOD metadata](https://github.com/insanity54/futureporn/tree/main/website/vods)
-* [Static website generation](https://github.com/insanity54/futureporn/tree/main/website) 
+* [Static website generation](https://github.com/insanity54/futureporn/tree/main/website)
+* [Infrastructure playbooks](https://github.com/insanity54/futureporn/tree/main/ansible/roles) (partially deprecated)
+* [Projects & Issue Tracker](https://github.com/insanity54/futureporn/issues)
+
+## Other interesting components
+
+* [Futureporn Quality Assurance](https://github.com/insanity54/futureporn-qa) Futurebutt (Discord bot) Backend task runner
+* [Futureporn Uppy](https://github.com/insanity54/futureporn-uppy) Video uploader helper
+* Futureporn Strapi Backend API server (closed source for now)
+* [Futureporn Upptime](https://github.com/insanity54/futureporn-status) Live system status
 
 ## Notes
 
