@@ -24,6 +24,8 @@
 
     {# some variables for use in patron player #}
     {% set muxPlaybackId = vod.attributes.muxAsset.data.attributes.playbackId %}
+    {% set videoSrcHash = vod.attributes.videoSrcHash %}
+    <span x-cloak x-show="false" x-ref="videoSrcHash" class="">{{ videoSrcHash }}</span>
     <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" >{{ muxPlaybackId }}</span>
     <span x-cloak x-show="false" x-ref="backend">{{ env.STRAPI_BACKEND_URL }}</span>
 
@@ -41,6 +43,13 @@
           class="delete"
         ></button>
         <span x-text="errors"></span>
+      </div>
+
+      <p x-cloak x-show="this.hasMux">this video has a mux</p>
+      <p x-cloak x-show="this.hasIpfs">this video has an ipfs</p>
+
+      <div x-cloak x-show="!isPatronPlayer() && !isPublicPlayer()" class="notification is-info">
+        <p>Sorry, we don't have the video available right now. Do you happen to have a copy? If so, you can <a href="/upload">upload it here</a>.</p>
       </div>
 
       <div

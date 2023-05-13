@@ -4,6 +4,7 @@ import videojs from '@mux/videojs-kit/dist/index.vhs.js';
 export default function player () {
   return {
     hasMux: false,
+    hasIpfs: false,
     muxPlaybackId: '',
     preference: this.$persist('public'),
     errors: [],
@@ -25,7 +26,7 @@ export default function player () {
       )
     },
     isPublicPlayer () {
-      return (
+      return this.hasIpfs && (
         !this.hasMux ||
         Alpine.store('auth').jwt === '' ||
         this.preference === 'public'
@@ -37,6 +38,10 @@ export default function player () {
       if (this.$refs.muxPlaybackId.innerHTML !== '') {
         this.hasMux = true
         this.muxPlaybackId = this.$refs.muxPlaybackId.innerHTML
+      }
+
+      if (this.$refs.videoSrcHash.innerHTML !== '') {
+        this.hasIpfs = true
       }
 
       if (this.$refs.backend.innerHTML !== '') {

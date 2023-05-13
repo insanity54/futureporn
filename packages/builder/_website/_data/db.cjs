@@ -25,6 +25,7 @@ module.exports = async function() {
       'populate[0]': 'thumbnail',
       'populate[1]': 'tags',
       'populate[2]': 'videoSrcB2',
+      'populate[3]': 'muxAsset',
     });
     const url = `${process.env.STRAPI_URL}/api/vods?${params}`
     console.log(`url:${url} with key ${process.env.STRAPI_API_KEY}`)
