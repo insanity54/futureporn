@@ -63,11 +63,11 @@
           id="public-player"
         >
           {%- if vod.attributes.videoSrcHash %}
-          <source src="{{ vod.attributes.videoSrcHash | stripQueryString | buildIpfsUrl ~ '?filename=pmel.mp4' }}" type="video/mp4" />
+          <source src="{{ vod.attributes.videoSrcHash | stripQueryString | buildIpfsUrl }}" size="1080" type="video/mp4" />
           {% endif %}
 
           {%- if vod.attributes.video240Hash %}
-          <source src="{{ vod.attributes.video240Hash | stripQueryString | buildIpfsUrl }}" type="video/mp4" />
+          <source src="{{ vod.attributes.video240Hash | stripQueryString | buildIpfsUrl }}" size="240" type="video/mp4" />
           {% endif %}
         </video>
       </div>
