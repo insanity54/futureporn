@@ -86,7 +86,7 @@ async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width:
       }
       const timeout = setTimeout(() => {
         abortController.abort();
-      }, 10000);
+      }, 5000);
     }
     metadata = await Image(src, opts);
   } catch (e) {
