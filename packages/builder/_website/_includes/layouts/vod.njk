@@ -23,9 +23,11 @@
   >
 
     {# some variables for use in patron player #}
+    {% set videoDate = vod.attributes.date %}
     {% set muxPlaybackId = vod.attributes.muxAsset.data.attributes.playbackId %}
     {% set muxDeletionQueuedAt = vod.attributes.muxAsset.data.attributes.deletionQueuedAt %}
     {% set videoSrcHash = vod.attributes.videoSrcHash %}
+    <span x-cloak x-show="false" x-ref="videoDate" class="">{{ videoDate }}</span>
     <span x-cloak x-show="false" x-ref="videoSrcHash" class="">{{ videoSrcHash }}</span>
     <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" >{{ muxPlaybackId }}</span>
     <span x-cloak x-show="false" x-ref="muxDeletionQueuedAt" >{{ muxDeletionQueuedAt }}</span>

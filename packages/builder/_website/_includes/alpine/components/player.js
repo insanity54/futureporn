@@ -11,6 +11,7 @@ export default function player () {
     playbackToken: '',
     thumbnailToken: '',
     backend: '',
+    videoDate: '',
     muxEnvKey: 'bmvsfoe2j5d6655ad9g6u82ls',
     isPlayerSelector () {
       return (
@@ -46,6 +47,10 @@ export default function player () {
 
       if (this.$refs.backend.innerHTML !== '') {
         this.backend = this.$refs.backend.innerHTML
+      }
+
+      if (this.$refs.videoDate.innerHTML !== '') {
+        this.videoDate = this.$refs.videoDate.innerHTML
       }
 
       if (this.isPatronPlayer()) {
@@ -90,7 +95,7 @@ export default function player () {
             debug: false,
             data: {
               env_key: this.muxEnvKey,
-              video_title: 'Example Title'
+              video_title: this.videoDate
             }
           }
         }
