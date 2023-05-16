@@ -25,7 +25,7 @@ layout: layouts/profile.njk
     >
 
       <div>
-        <span x-text="$store.auth.username" class="subtitle mr-2"></span>
+        <span x-text="$store.auth.username" class="subtitle mr-2"></span>(<span x-text="role"></span>)
         <button 
           class="button is-warning is-outlined is-small mb-5"
           x-on:click="$store.auth.logout"
