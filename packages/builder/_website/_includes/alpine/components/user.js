@@ -20,7 +20,7 @@ export default function user () {
       console.log('here is the user json')
       console.log(json)
       this.id = json.id
-      Alpine.store('user').role = json?.role?.type
+      Alpine.store('user').role = (!!json?.role?.type) ? json.role.type : 'public'
       this.username = json.username
       this.isNamePublic = json.isNamePublic || false
       this.isPatron = (json?.role?.type === 'patron') ? true : false

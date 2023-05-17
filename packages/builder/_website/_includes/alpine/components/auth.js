@@ -4,7 +4,7 @@ export default function auth () {
     lastVisitedPath: this.$persist('/'),
     accessToken: '',
     error: '',
-    done: false,    
+    done: false,
     async init() {
       try {
         this.getAccessToken()
