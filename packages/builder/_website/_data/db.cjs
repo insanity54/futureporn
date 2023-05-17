@@ -29,25 +29,23 @@ module.exports = async function() {
     });
     const url = `${process.env.STRAPI_URL}/api/vods?${params}`
     console.log(`url:${url} with key ${process.env.STRAPI_API_KEY}`)
-    // const response = await EleventyFetch(url, {
-    //   duration: '1s',
-    //   type: 'json',
-    //   fetchOptions: {
-    //     headers: {
-    //       'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
-    //     }
-    //   }
-    // })
-
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
+    const response = await EleventyFetch(url, {
+      duration: '1s',
+      type: 'json',
+      fetchOptions: {
+        headers: {
+          'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
+        }
       }
     })
-    const response = await res.json()
-    console.log(res)
-    console.log(response)
+
+    // const res = await fetch(url, {
+    //   method: 'GET',
+    //   headers: {
+    //     'Authorization': `Bearer ${process.env.STRAPI_API_KEY}`
+    //   }
+    // })
+    // const response = await res.json()
     if (requestCounter === 0) {
       totalVodCount = response.meta.pagination.total
       totalRequestsNeeded = Math.ceil(totalVodCount/pageSize)
