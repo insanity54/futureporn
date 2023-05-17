@@ -127,6 +127,9 @@ importers:
       markdown-it-anchor:
         specifier: ^8.6.7
         version: 8.6.7(@types/markdown-it@12.2.3)(markdown-it@13.0.1)
+      netlify-plugin-cache:
+        specifier: ^1.0.3
+        version: 1.0.3
       node-fetch:
         specifier: ^2.6.11
         version: 2.6.11
@@ -4687,6 +4690,10 @@ packages:
 
   /neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+    dev: false
+
+  /netlify-plugin-cache@1.0.3:
+    resolution: {integrity: sha512-CTOwNWrTOP59T6y6unxQNnp1WX702v2R/faR5peSH94ebrYfyY4zT5IsRcIiHKq57jXeyCrhy0GLuTN8ktzuQg==}
     dev: false
 
   /nice-try@1.0.5:

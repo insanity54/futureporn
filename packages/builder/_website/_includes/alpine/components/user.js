@@ -6,7 +6,6 @@ export default function user () {
     isSuccess: false,
     isDirty: false,
     isPatron: false,
-    role: '',
     init () {
       this.fetchUser()
     },
@@ -21,7 +20,7 @@ export default function user () {
       console.log('here is the user json')
       console.log(json)
       this.id = json.id
-      this.role = json?.role?.type
+      Alpine.store('user').role = json?.role?.type
       this.username = json.username
       this.isNamePublic = json.isNamePublic || false
       this.isPatron = (json?.role?.type === 'patron') ? true : false

@@ -25,7 +25,7 @@ layout: layouts/profile.njk
     >
 
       <div>
-        <span x-text="$store.auth.username" class="subtitle mr-2"></span>(<span x-text="role"></span>)
+        <span x-text="$store.auth.username" class="subtitle mr-2"></span>(<span x-text="$store.user.role"></span>)
         <button 
           class="button is-warning is-outlined is-small mb-5"
           x-on:click="$store.auth.logout"
@@ -39,7 +39,7 @@ layout: layouts/profile.njk
 
 
 
-      <section x-cloak x-show="isPatron" class="mb-5">
+      <section x-cloak x-show="!!$store.auth.jwt && $store.user.role === 'patron'" class="mb-5">
       <h3 class="heading">Patron Perks</h3>
         
       <p>Thank you so much for supporting Futureporn!</p>
@@ -78,7 +78,7 @@ layout: layouts/profile.njk
       </button>
       </section>
 
-      <section x-cloak x-show="!isPatron">
+      <section x-cloak x-show="!!$store.auth.jwt && $store.user.role !== 'patron'">
         <p>Welcome to Futureporn, <span x-text="$store.auth.username"></span>! It seems that you are not a patron yet. Please log out and log in again if you believe this is an error. Thank you for your interest!</p>
       </section>
 
