@@ -90,19 +90,17 @@
         </video>
       </div>
       <div
-        x-cloak
-        x-show="isPlayerSelector()"
         class="box"
       >
         <p class="heading">Video Source Selector</p>
 
-          <div class="control">
+          <div class="control noselect">
             <label class="radio">
               <input x-model="preference" value="public" type="radio" name="answer">
               Public (IPFS)
             </label>
-            <label class="radio">
-              <input x-on:click="loadPatronPlayer()" x-model="preference" value="patron" type="radio" name="answer">
+            <label x-bind:disabled="$store.user.role!=='patron'" class="radio">
+              <input x-bind:disabled="$store.user.role!=='patron'" x-on:click="loadPatronPlayer()" x-model="preference" value="patron" type="radio" name="answer">
               Patron (CDN)
             </label>
           </div>

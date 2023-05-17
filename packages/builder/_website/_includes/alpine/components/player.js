@@ -13,12 +13,12 @@ export default function player () {
     backend: '',
     videoDate: '',
     muxEnvKey: 'bmvsfoe2j5d6655ad9g6u82ls',
-    isPlayerSelector () {
-      return (
-        this.hasMux &&
-        Alpine.store('auth').jwt !== ''
-      )
-    },
+    // isPlayerSelector () {
+    //   return (
+    //     this.hasMux &&
+    //     Alpine.store('auth').jwt !== ''
+    //   )
+    // },
     isPatronPlayer () {
       return (
         Alpine.store('auth').jwt !== '' &&
