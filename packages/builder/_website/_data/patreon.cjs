@@ -122,15 +122,15 @@ module.exports = async function() {
       description: 'This goal would fund development of a tagging feature.'
     },
     {
-      name: 'FeelsGoodMan',
+      name: 'Orgy',
       amount_cents: 23000,
-      description: 'This goal would fund Futureporn vibrator integration.'
+      description: 'Storage/bandwidth funding for more LewdTubers'
     },
     {
-      name: 'Orgy',
+      name: 'FeelsGoodMan',
       amount_cents: 30000,
-      description: 'Storage/bandwidth funding for more LewdTubers'
-    }
+      description: 'This goal would fund Futureporn vibrator integration.'
+    },
   ]
 
   let allGoalsSorted = allGoals

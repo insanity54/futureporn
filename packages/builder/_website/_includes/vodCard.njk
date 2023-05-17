@@ -42,7 +42,7 @@
               <span>Public</span>
             </div>
             {% endif %}
-            {% if vod.attributes.muxAsset.data.attributes.playbackId and not vod.attributes.muxAsset.data.attributes.deletionQueuedAt %}
+            {% if vod.attributes.muxAsset.data.attributes.playbackId and (not vod.attributes.muxAsset.data.attributes.deletionQueuedAt) %}
             <div class="card-footer-item">
               <span class="icon">
                 <i class="fab fa-patreon"></i>
