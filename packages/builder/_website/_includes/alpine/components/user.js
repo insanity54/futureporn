@@ -5,7 +5,9 @@ export default function user () {
     isLoading: false,
     isSuccess: false,
     isDirty: false,
-    isPatron: false,
+    isPatron () {
+      return (Alpine.store('user').role === 'patron' ? true : false)
+    },
     init () {
       this.fetchUser()
     },

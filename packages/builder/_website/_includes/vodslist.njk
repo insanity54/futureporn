@@ -1,4 +1,6 @@
 
+{{ vodslist | dump }}
+
 <table class="table">
   <thead>
       <tr>
@@ -17,10 +19,10 @@
     <tbody>
       {% for vod in vodslist %}
       <tr>
-        <td><a href="{{ vod.url | url }}">{{ vod.date | htmlDateString }}</a></td>
+        <td><a href="{{ vod.attributes.url | url }}">{{ vod.attributes.date | htmlDateString }}</a></td>
         <td>
-          {% if vod.videoSrcHash %}
-            <a target="_blank" href="{{ vod.videoSrcHash | buildIpfsUrl}}">
+          {% if vod.attributes.videoSrcHash %}
+            <a target="_blank" href="{{ vod.attributes.videoSrcHash | buildIpfsUrl}}">
                 <span>
                   <i class="fas fa-video"></i>
                 </span>
@@ -33,8 +35,8 @@
 
 
         <td>
-          {% if vod.video240Hash %}
-            <a target="_blank" href="{{ vod.video240Hash | buildIpfsUrl}}">
+          {% if vod.attributes.video240Hash %}
+            <a target="_blank" href="{{ vod.attributes.video240Hash | buildIpfsUrl}}">
                 <span>
                   <i class="fas fa-video"></i>
                 </span>
@@ -47,8 +49,8 @@
 
 
         <td>
-          {% if vod.thiccHash %}
-            <a target="_blank" href="{{ vod.thiccHash | buildIpfsUrl }}">
+          {% if vod.attributes.thiccHash %}
+            <a target="_blank" href="{{ vod.attributes.thiccHash | buildIpfsUrl }}">
               <span class="icon">
                 <i class="fas fa-image"></i>
               </span>
@@ -60,16 +62,16 @@
         </td>
 
         <td>
-          {% if vod.announceTitle %}
-            {{ vod.announceTitle | truncate(25) }}
-          {% elseif vod.title %}
-            {{ vod.title | truncate(25) }}
+          {% if vod.attributes.announceTitle %}
+            {{ vod.attributes.announceTitle | truncate(25) }}
+          {% elseif vod.attributes.title %}
+            {{ vod.attributes.title | truncate(25) }}
           {% endif %}
         </td>
 
         <td>
-          {% if vod.announceUrl %}
-            <a target="_blank" href="{{ vod.announceUrl }}">
+          {% if vod.attributes.announceUrl %}
+            <a target="_blank" href="{{ vod.attributes.announceUrl }}">
               <span class="icon">
                 <i class="fab fa-twitter"></i>
               </span>

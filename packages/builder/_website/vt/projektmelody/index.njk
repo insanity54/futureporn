@@ -1,0 +1,52 @@
+---
+layout: layouts/base.njk
+eleventyNavigation:
+  key: Home
+  order: 1
+pagination:
+  data: db.vods
+  size: 48
+  reverse: true
+---
+
+{# 
+{% set vodslist = db.vods %}
+{% set vodslistCounter = db.vods | length %}
+{% include "vodslist.njk" %}
+ #}
+
+<div class="box">
+  <div class="columns is-multiline">
+    <div class="column is-one-third">
+      <h1 class="is-size-1">ProjektMelody</h1>
+      <figure class="image is-64x64 is-rounded">
+        <img class="is-rounded" src="/favicon.png">
+      </figure>
+    </div>
+    <div class="column is-two-thirds">
+      <p class="">ProjektMelody, the pioneering hentai cam model, embodies a unique blend of sweetness and perversion. With remarkable patience and politeness, she engages with her audience, demonstrating her commitment to fostering an inclusive environment. On her livestreams, ProjektMelody can range from being openly sexual to exhibiting a reserved and self-censored demeanor. Alongside her captivating presence, she actively promotes pro-social behavior, advocates for sexual education, and emphasizes the importance of kindness.</p>
+    </div>
+  </div>
+</div>
+
+
+<div class="box">
+  <h2 class="is-size-4 mb-3">ProjektMelody's Toys</h2>
+  <div class="columns is-mobile is-multiline ">
+    {% for toy in db.toys %}
+      <div class="column is-one-fifth-mobile is-1-desktop is-2-tablet is-narrow-desktop">
+        {% set imageUrl %}{{ toy.attributes.image.data.attributes.formats.thumbnail.url }}{% endset %}
+        {% set displayName %}{{ toy.attributes.make }} {{ toy.attributes.model }}{% endset %}
+        {% image imageUrl, "image", displayName %}
+        <p class="heading">{{toy.attributes.model}}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>  
+
+
+<div class="columns is-multiline is-mobile">
+  {% asyncEach vod in pagination.items %}
+    {% include "vodCard.njk" %}
+  {% endeach %}
+</div>

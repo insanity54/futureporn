@@ -1,0 +1,29 @@
+---
+pagination:
+  data: db.tags
+  size: 1
+  alias: tag
+  filter:
+    - all
+    - nav
+    - vod
+    - vods
+    - tagList
+  addAllPagesToCollections: false
+layout: layouts/base.njk
+eleventyComputed:
+  title: Tagged “{{ tag.attributes.name }}”
+permalink: /tags/{{ tag.attributes.name | slugify }}/
+---
+
+<div class="content box">
+  <h1>Tagged “{{ tag.attributes.name }}”</h1>
+
+  
+
+  {% set vodslist = collections.vod | filterByTag(tag.attributes.name) %}
+  {% include "vodslist.njk" %}
+  
+  <p>See <a href="{{ '/tags/' | url }}">all tags</a>.</p>
+
+</div>

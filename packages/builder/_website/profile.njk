@@ -6,36 +6,26 @@ layout: layouts/profile.njk
 
 <div x-data="user" class="content">
 
+
   <div class="box">
-    <p class="title">User Profile</p>
+    <p class="title"><span x-text="$store.auth.username || 'User'"></span> Profile</p>
 
     <a 
       x-cloak 
       x-show="$store.auth.jwt===''" 
+      @click.prevent="$store.auth.login()"
       class="button is-primary" 
       href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
     >
     Log In
     </a>
 
+
+
     <div
       x-cloak 
       x-show="$store.auth.jwt!==''" 
-      x-transition
     >
-
-      <div>
-        <span x-text="$store.auth.username" class="subtitle mr-2"></span>(<span x-text="$store.user.role"></span>)
-        <button 
-          class="button is-warning is-outlined is-small mb-5"
-          x-on:click="$store.auth.logout"
-        >
-          <span class="icon">
-            <i class="fab fa-patreon"></i>
-          </span>
-          <span>Log Out</span>
-        </button>
-      </div>
 
 
 
@@ -55,7 +45,15 @@ layout: layouts/profile.njk
           <p><i>This setting does not apply immediately. It takes a few days for the patrons page to update.</i></p>
         </div>
 
-
+        <button 
+          class="button is-warning"
+          x-on:click="$store.auth.logout"
+        >
+          <span class="icon">
+            <i class="fab fa-patreon"></i>
+          </span>
+          <span>Log Out</span>
+        </button>
         <button
           class="button is-primary"
           :class="{
