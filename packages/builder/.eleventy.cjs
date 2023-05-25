@@ -49,7 +49,6 @@ const filter240pTranscodeCompleted = (vods) => {
 
 async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
 
-  console.log(`doing imageShortcode ${src}`)
   Image.concurrency = 7
   let opts = {
     outputDir: '_site/img',
@@ -141,12 +140,9 @@ module.exports = function(eleventyConfig) {
     return `futureporn-peer-${getRandomInt(699,6969)}`
   })
 
-
-
   eleventyConfig.addShortcode("ipfsProgressComplete", function(vods) {
     return `${filterIpfsCompleted(vods)}`;
   });
-
 
   eleventyConfig.addShortcode("thumbnailProgressPercentage", function(vods) {
     const totalVods = vods.length
@@ -175,6 +171,31 @@ module.exports = function(eleventyConfig) {
     const completedVods = filterIpfsCompleted(vods)
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
+
+  // eleventyConfig.addShortcode('vodsFilteredByTag', function (vods, tag) {
+  //   let o = vods.filter((v) => v.data.vod.attributes.tags.data.some((t) => t.attributes.name === tag)).map((v) => v.data.vod)
+  //   console.log(o[0])
+  //   return o
+  // })
+
+  eleventyConfig.addFilter('filterByTag', function (vods, tag) {
+    // console.log('param 1')
+    // console.log(vods)
+
+    // console.log('param 2')
+    // console.log(tag)
+
+    // console.log('this')
+    // console.log(this)
+    let o = vods.filter((v) => v.data.vod.attributes.tags.data.some((t) => t.attributes.name === tag)).map((v) => v.data.vod)
+    // console.log(o[0])
+    return o
+  })
+
+  eleventyConfig.addFilter("fillArray", function (value, length) {
+    return Array(length).fill(value);
+  })
+
 
   // greets https://github.com/11ty/eleventy-plugin-rss/blob/5cf83502e29b88b32772f0274fcf9dd4041b4549/src/dateRfc3339.js
   eleventyConfig.addFilter("isoStringToRfc3339", function (s) {
@@ -266,6 +287,10 @@ module.exports = function(eleventyConfig) {
   //     "./website/img/gen/*.png": "/img/gen"
   // });
 
+
+
+
+
   eleventyConfig.addCollection("tagList", function(collection) {
     let tagSet = new Set();
     collection.getAll().forEach(function(item) {
@@ -275,25 +300,29 @@ module.exports = function(eleventyConfig) {
         tags = tags.filter(function(item) {
           switch(item) {
             // this list should match the `filter` list in tags.njk
+            // these tags get filtered out of the final tags
             case "all":
             case "nav":
             case "vod":
             case "vods":
+            case "tagList":
               return false;
           }
-
           return true;
         });
 
-        for (const tag of tags) {
-          tagSet.add(tag);
+        for (const tag of item.data.vod.attributes.tags.data) {
+          tagSet.add(tag.attributes.name);
         }
       }
     });
 
-    // returning an array in addCollection works in Eleventy 0.5.3
-    return [...tagSet];
+    const uniqueTags = [...tagSet]
+    return uniqueTags 
   });
+
+
+
 
   /* Markdown Overrides */
   let markdownLibrary = markdownIt({
@@ -317,7 +346,8 @@ module.exports = function(eleventyConfig) {
     templateFormats: [
       "md",
       "njk",
-      "html"
+      "html",
+      "11ty.js"
     ],
 
     markdownTemplateEngine: "njk",
