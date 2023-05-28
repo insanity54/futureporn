@@ -16,14 +16,19 @@ eleventyComputed:
 permalink: /tags/{{ tag.attributes.name | slugify }}/
 ---
 
+{% set vodslist = collections.vod | filterByTag(tag.attributes.name) %}
+
 <div class="content box">
   <h1>Tagged “{{ tag.attributes.name }}”</h1>
+</div>
 
-  
 
-  {% set vodslist = collections.vod | filterByTag(tag.attributes.name) %}
-  {% include "vodslist.njk" %}
-  
+<div class="columns is-multiline is-mobile">
+  {% asyncEach vod in vodslist %}
+    {% include "vodCard.njk" %}
+  {% endeach %}
+</div>
+
+<div class="content box">
   <p>See <a href="{{ '/tags/' | url }}">all tags</a>.</p>
-
 </div>

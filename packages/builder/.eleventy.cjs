@@ -49,6 +49,9 @@ const filter240pTranscodeCompleted = (vods) => {
 
 async function imageShortcode(src, cls = "image", alt = '', sizes = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px", widths = [90, 180, 360]) {
 
+  // console.log(`imageShortcode with src:${src} (${typeof src}) (${src.length}), class:${cls}, alt:${alt}, sizes:${sizes}, widths:${widths}`)
+  if (src === '') src = './_website/favicon/favicon.png'
+
   Image.concurrency = 7
   let opts = {
     outputDir: '_site/img',

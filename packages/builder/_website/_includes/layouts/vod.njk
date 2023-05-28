@@ -92,38 +92,114 @@
         </video>
       </div>
       <div
-        class="box"
+        class="box mb-0"
       >
         <p class="heading">Video Source Selector</p>
 
-          <div class="control noselect">
-            <label class="radio">
-              <input x-model="preference" value="public" type="radio" name="answer">
-              <span class="icon">
-                <i class="fas fa-video"></i>
-              </span>
-              <span>Public</span>
-            </label>
-            <label 
-              x-bind:disabled="$store.user.role!=='patron'"
-              x-show="hasMux"
-              class="radio"
+        <div class="control noselect">
+          <label class="radio">
+            <input x-model="preference" value="public" type="radio" name="answer">
+            <span class="icon">
+              <i class="fas fa-video"></i>
+            </span>
+            <span>Public</span>
+          </label>
+          <label 
+            x-bind:disabled="$store.user.role!=='patron'"
+            x-show="hasMux"
+            class="radio"
+          >
+            <input 
+              x-bind:disabled="$store.user.role!=='patron'" 
+              x-on:click="loadPatronPlayer()" 
+              x-model="preference" 
+              value="patron" 
+              type="radio" 
+              name="answer"
             >
-              <input 
-                x-bind:disabled="$store.user.role!=='patron'" 
-                x-on:click="loadPatronPlayer()" 
-                x-model="preference" 
-                value="patron" 
-                type="radio" 
-                name="answer"
-              >
-              <span class="icon">
-                <i class="fab fa-patreon"></i>
-              </span>
-              <span>Patron</span>
-            </label>
-          </div>
+            <span class="icon">
+              <i class="fab fa-patreon"></i>
+            </span>
+            <span>Patron</span>
+          </label>
+        </div>
       </div>
+
+
+      <div
+        class="box mb-0"
+        x-data="tagger"
+      >
+
+
+      {%- if vod.attributes.tags.data.length > 0 %}
+        <div class="mb-5">
+          <h2 class="mt-3 heading">Tags</h2>
+          {%- for tag in vod.attributes.tags.data %}
+            <span class="tag">
+              <a href="/tags/{{ tag.attributes.name }}" class="vod-tag">{{ tag.attributes.name }}</a>
+            </span>
+          {% endfor -%}
+        </div>
+      {% endif %}
+
+        <div class="columns is-mobile">
+
+          <div class="column is-half">
+
+            <p class="heading">Tagger</p>
+            <div class="field has-addons" x-on:input.prevent.stop>
+              <p class="control">
+                <span class="select">
+                  <select
+                    x-on:change.prevent
+                  >
+                    <option>Temporal</option>
+                    <option>Entire</option>
+                  </select>
+                </span>
+              </p>
+              <p class="control" x-bind:class="(isLoading) && 'is-loading'" class="control has-icons-left">
+                <input 
+                  x-on:input.debounce.stop.prevent="search"
+                  x-model="input"
+                  class="input"
+                  type="text"
+                  placeholder="Add a tag"
+                  maxlength=32
+                >
+              </p>
+              <p class="control">
+                <a class="button">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-tag"></i>
+                  </span>
+                  <span>
+                    Tag <span x-text="context"></span>
+                  </span>
+                </a>
+              </p>
+            </div>
+
+
+
+          </div>
+
+
+
+          <div class="column is-half">
+            <p class="heading">Suggestions</p>
+
+            <div class="tag-suggestions">
+            <template x-for="tag in tagSuggestions">
+              <span x-text="tag.name" class="tag mx-1 is-medium is-success"></span>
+            </template>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -218,18 +294,6 @@
         <div class="mb-5">
           <h2 class="mt-3 heading">Stream Announcement URL</h2>
           <a href="{{ vod.attributes.announceUrl }}">{{ vod.attributes.announceUrl }}</a>
-        </div>
-      {% endif %}
-
-      
-      {%- if vod.attributes.tags.data.length > 0 %}
-        <div class="mb-5">
-          <h2 class="mt-3 heading">Tags</h2>
-          {%- for tag in vod.attributes.tags.data %}
-            <span class="tag">
-              <a href="/tags/{{ tag.attributes.name }}" class="vod-tag">{{ tag.attributes.name }}</a>
-            </span>
-          {% endfor -%}
         </div>
       {% endif %}
 

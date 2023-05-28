@@ -24,7 +24,7 @@ pagination:
       </figure>
     </div>
     <div class="column is-two-thirds">
-      <p class="">ProjektMelody, the pioneering hentai cam model, embodies a unique blend of sweetness and perversion. With remarkable patience and politeness, she engages with her audience, demonstrating her commitment to fostering an inclusive environment. On her livestreams, ProjektMelody can range from being openly sexual to exhibiting a reserved and self-censored demeanor. Alongside her captivating presence, she actively promotes pro-social behavior, advocates for sexual education, and emphasizes the importance of kindness.</p>
+      <p class="">ProjektMelody is the pioneering hentai cam model who embodies a unique blend of sweetness and perversion. She engages with her audience with remarkable patience and politeness, demonstrating her commitment to fostering an inclusive environment. On her livestreams, ProjektMelody can range from overtly sexual to exhibiting a reserved and self-censored demeanor. Alongside her captivating presence, she actively promotes pro-social behavior, advocates for sexual education, and emphasizes the importance of kindness.</p>
     </div>
   </div>
 </div>
@@ -34,16 +34,25 @@ pagination:
   <h2 class="is-size-4 mb-3">ProjektMelody's Toys</h2>
   <div class="columns is-mobile is-multiline ">
     {% for toy in db.toys %}
-      <div class="column is-one-fifth-mobile is-1-desktop is-2-tablet is-narrow-desktop">
-        {% set imageUrl %}{{ toy.attributes.image.data.attributes.formats.thumbnail.url }}{% endset %}
-        {% set displayName %}{{ toy.attributes.make }} {{ toy.attributes.model }}{% endset %}
-        {% image imageUrl, "image", displayName %}
-        <p class="heading">{{toy.attributes.model}}</p>
-      </div>
+      {# {{ toy | dump }} #}
+        <div class="column is-one-fifth-mobile is-1-desktop is-2-tablet is-narrow-desktop">
+          {% set imageUrl %}{{ toy.attributes.image.data.attributes.formats.thumbnail.url }}{% endset %}
+          {% set displayName %}{{ toy.attributes.make }} {{ toy.attributes.model }}{% endset %}
+          <a href="/tags/{{ toy.attributes.linkTag.data.attributes.name | slugify}}">
+            {% image imageUrl, "image", displayName %}
+            <p class="heading">{{toy.attributes.model}}</p>
+          </a>
+        </div>
     {% endfor %}
   </div>
 </div>  
 
+{# 
+<div class="box">
+  <h2 class="is-size-4 mb-3">Tags</h2>
+    
+  </h2>
+</div> #}
 
 <div class="columns is-multiline is-mobile">
   {% asyncEach vod in pagination.items %}

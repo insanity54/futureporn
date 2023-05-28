@@ -37,6 +37,7 @@
     "glob": "^8.1.0",
     "got": "^12.6.0",
     "gray-matter": "^4.0.3",
+    "lodash-es": "^4.17.21",
     "logform": "^2.5.1",
     "luxon": "^3.3.0",
     "markdown-it": "^13.0.1",

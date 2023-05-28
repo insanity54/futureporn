@@ -20,7 +20,7 @@ async function fetchPaginatedData(apiEndpoint, pageSize, queryParams = {}) {
     const url = `${process.env.STRAPI_URL}${apiEndpoint}?${params}`;
     console.log(`url:${url} with key ${process.env.STRAPI_API_KEY}`);
     const response = await EleventyFetch(url, {
-      duration: '1h',
+      duration: '5m',
       type: 'json',
       fetchOptions: {
         headers: {
@@ -42,10 +42,11 @@ async function fetchPaginatedData(apiEndpoint, pageSize, queryParams = {}) {
 
 
 module.exports = async function () {
-  const vods = await fetchPaginatedData('/api/vods', 100, { 'populate[0]': 'tags' });
+  const vods = await fetchPaginatedData('/api/vods', 100, { 'populate[0]': 'tags', 'sort[0]': 'date' });
   const tags = await fetchPaginatedData('/api/tags', 100);
   const toys = await fetchPaginatedData('/api/toys', 100, { 'populate': '*' });
 
+  console.log(tags)
 
   return { vods, tags, toys };
 };
