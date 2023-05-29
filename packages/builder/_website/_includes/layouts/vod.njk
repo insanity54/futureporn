@@ -23,6 +23,8 @@
     x-data="player"
   >
 
+
+
     {# some variables for use in patron player #}
     {% set videoDate = vod.attributes.date %}
     {% set muxPlaybackId = vod.attributes.muxAsset.data.attributes.playbackId %}
@@ -50,6 +52,7 @@
         ></button>
         <span x-text="errors"></span>
       </div>
+
 
       <p x-cloak x-show="this.hasMux">this video has a mux</p>
       <p x-cloak x-show="this.hasIpfs">this video has an ipfs</p>
@@ -143,51 +146,47 @@
         </div>
       {% endif %}
 
-        <div class="columns is-mobile">
+      
 
-          <div class="column is-half">
-
-            <p class="heading">Tagger</p>
-            <div class="field has-addons" x-on:input.prevent.stop>
-              <p class="control">
-                <span class="select">
-                  <select
-                    x-on:change.prevent
-                  >
-                    <option>Temporal</option>
-                    <option>Entire</option>
-                  </select>
-                </span>
-              </p>
-              <p class="control" x-bind:class="(isLoading) && 'is-loading'" class="control has-icons-left">
-                <input 
-                  x-on:input.debounce.stop.prevent="search"
-                  x-model="input"
-                  class="input"
-                  type="text"
-                  placeholder="Add a tag"
-                  maxlength=32
-                >
-              </p>
-              <p class="control">
-                <a class="button">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-tag"></i>
-                  </span>
-                  <span>
-                    Tag <span x-text="context"></span>
-                  </span>
-                </a>
-              </p>
-            </div>
+        <p class="heading">Tagger</p>
+        <div class="field has-addons" x-on:input.prevent.stop>
+          <p class="control">
+            <span class="select">
+              <select
+                x-on:change.prevent
+              >
+                <option>Temporal</option>
+                <option>Entire</option>
+              </select>
+            </span>
+          </p>
+          <p class="control" x-bind:class="(isLoading) && 'is-loading'" class="control has-icons-left">
+            <input 
+              x-on:input.debounce.stop.prevent="search"
+              x-model="input"
+              class="input"
+              type="text"
+              placeholder="Add a tag"
+              maxlength=32
+            >
+          </p>
+          <p class="control">
+            <a class="button">
+              <span class="icon is-small is-left">
+                <i class="fas fa-tag"></i>
+              </span>
+              <span>
+                Tag <span x-text="context"></span>
+              </span>
+            </a>
+          </p>
+        </div>
 
 
 
-          </div>
 
 
 
-          <div class="column is-half">
             <p class="heading">Suggestions</p>
 
             <div class="tag-suggestions">
@@ -195,9 +194,7 @@
               <span x-text="tag.name" class="tag mx-1 is-medium is-success"></span>
             </template>
             </div>
-          </div>
 
-        </div>
       </div>
 
     </div>
@@ -210,7 +207,7 @@
   <div class="block">
 
 
-    <div class="box">
+    <div class="box" style="overflow: hidden;">
 
       <h2 class="subtitle mb-0">
         {%- if vod.attributes.announceTitle %}

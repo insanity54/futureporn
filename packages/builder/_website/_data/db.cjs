@@ -42,7 +42,7 @@ async function fetchPaginatedData(apiEndpoint, pageSize, queryParams = {}) {
 
 
 module.exports = async function () {
-  const vods = await fetchPaginatedData('/api/vods', 100, { 'populate[0]': 'tags', 'sort[0]': 'date' });
+  const vods = await fetchPaginatedData('/api/vods', 100, { 'populate[0]': 'tags', 'populate[1]': 'muxAsset', 'sort[0]': 'date' });
   const tags = await fetchPaginatedData('/api/tags', 100);
   const toys = await fetchPaginatedData('/api/toys', 100, { 'populate': '*' });
 
