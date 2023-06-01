@@ -123,12 +123,12 @@ module.exports = async function() {
     },
     {
       name: 'Orgy',
-      amount_cents: 23000,
+      amount_cents: 37500,
       description: 'Storage/bandwidth funding for more LewdTubers'
     },
     {
       name: 'FeelsGoodMan',
-      amount_cents: 30000,
+      amount_cents: 48000,
       description: 'This goal would fund Futureporn vibrator integration.'
     },
   ]
