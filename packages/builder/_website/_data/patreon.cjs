@@ -113,12 +113,12 @@ module.exports = async function() {
     },
     {
       name: 'Orgy',
-      amount_cents: 23000,
+      amount_cents: 40000,
       description: 'Storage/bandwidth funding for more LewdTubers'
     },
     {
       name: 'FeelsGoodMan',
-      amount_cents: 30000,
+      amount_cents: 50000,
       description: 'This goal would fund Futureporn vibrator integration.'
     },
   ]
@@ -138,5 +138,6 @@ module.exports = async function() {
   console.log(goals.incomplete)
 
 
-  return { patrons, goals, patronCount }
+  return { patrons, goals, patronCount, muxAllocationCount }
 };
+
