@@ -8,10 +8,12 @@
 @import '/@root/node_modules/bulma-prefers-dark/bulma-prefers-dark.sass';
 
 
-
 @import "/@root/node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "/@root/node_modules/@fortawesome/fontawesome-free/scss/brands.scss";
 @import "/@root/node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+
+@import '@creativebulma/bulma-tagsinput/src/sass/index';
+
 
 html {
   background-image: linear-gradient(#1d1058, #1c1a5b);
@@ -48,3 +50,16 @@ nav.navbar, .noselect {
 }
 
 [x-cloak] { display: none !important; }
+
+
+div.tags-input {
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  div.tags-input {
+    background-color: $darkgray;
+    border-color: hsl(0, 0%, 14%);
+    color: $gray;
+  }
+}

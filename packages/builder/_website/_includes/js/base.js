@@ -7,6 +7,7 @@ import persist from '@alpinejs/persist'
 import registerEnvStore from '/@includes/alpine/stores/env.js'
 import registerAuthStore from '/@includes/alpine/stores/auth.js'
 import registerUserStore from '/@includes/alpine/stores/user.js'
+import registerPlayerStore from '/@includes/alpine/stores/player.js'
 import auth from '/@includes/alpine/components/auth.js'
 import player from '/@includes/alpine/components/player.js'
 import user from '/@includes/alpine/components/user.js'
@@ -17,6 +18,7 @@ Alpine.plugin(persist)
 registerEnvStore(Alpine)
 registerAuthStore(Alpine)
 registerUserStore(Alpine)
+registerPlayerStore(Alpine)
 
 window.auth = auth;
 window.player = player;

@@ -78,6 +78,16 @@ layout: layouts/profile.njk
 
       <section x-cloak x-show="!!$store.auth.jwt && $store.user.role !== 'patron'">
         <p>Welcome to Futureporn, <span x-text="$store.auth.username"></span>! It seems that you are not a patron yet. Please log out and log in again if you believe this is an error. Thank you for your interest!</p>
+
+        <button 
+          class="button is-warning"
+          x-on:click="$store.auth.logout"
+        >
+          <span class="icon">
+            <i class="fab fa-patreon"></i>
+          </span>
+          <span>Log Out</span>
+        </button>
       </section>
 
     </div>

@@ -21,7 +21,7 @@ export default function user () {
       const json = await res.json()
       console.log('here is the user json')
       console.log(json)
-      this.id = json.id
+      Alpine.store('user').id = (!!json?.id) ? json.id : 0
       Alpine.store('user').role = (!!json?.role?.type) ? json.role.type : 'public'
       this.username = json.username
       this.isNamePublic = json.isNamePublic || false

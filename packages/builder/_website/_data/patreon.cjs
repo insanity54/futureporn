@@ -138,6 +138,6 @@ module.exports = async function() {
   console.log(goals.incomplete)
 
 
-  return { patrons, goals, patronCount, muxAllocationCount }
+  return { patrons, goals, patronCount }
 };
 
