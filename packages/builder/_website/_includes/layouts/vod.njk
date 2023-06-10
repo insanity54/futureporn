@@ -2,15 +2,7 @@
 
 {% block head %}
   {{ super() }}
-  <style>
-  [x-cloak] { display: none !important; }
-  video { height: 100% }
-    </style>
-  {# <link rel="stylesheet" href="/@includes/styles/player.scss">
-  <link rel="stylesheet" href="/@root/node_modules/plyr/dist/plyr.css">
-  <link rel="stylesheet" href="/@root/node_modules/@mux/videojs-kit/dist/index.css">
-  <link rel="stylesheet" href="/@root/node_modules/@videojs/themes/dist/fantasy/index.css"> #}
-  <link rel="stylesheet" href="/@includes/styles/tagger.sass">
+  <link rel="stylesheet" href="/@includes/styles/tagger.css">
   <link rel="stylesheet" href="/@root/node_modules/vidstack/styles/defaults.css">
   <link rel="stylesheet" href="/@root/node_modules/vidstack/styles/community-skin/video.css">
 
@@ -77,53 +69,12 @@
     title="{{ vod.attributes.title }}"
     poster="https://placekitten.com/1080/720"
     aspect-ratio="16/9"
+    style="--media-aspect-ratio: 1.7778;"
   >
     <media-outlet>
     </media-outlet>
     <media-community-skin></media-community-skin>
   </media-player>
-
-{#   <media-player controls poster="https://media-files.vidstack.io/poster.png">
-    <media-outlet>
-      <source src="https://media-files.vidstack.io/720p.ogv" type="video/ogg" />
-      <source src="https://media-files.vidstack.io/720p.avi" type="video/avi" />
-      <source src="https://media-files.vidstack.io/720p.mp4" type="video/mp4" />
-    </media-outlet>
-  </media-player> #}
-
- {#  <div
-  x-cloak
-  x-show="isPublicPlayer()"
-  >
-  <video
-  preload="none"
-  id="public-player"
-  >
-  {%- if vod.attributes.videoSrcHash %}
-    <source src="{{ vod.attributes.videoSrcHash | stripQueryString | buildIpfsUrl }}" size="1080" type="video/mp4" />
-  {% endif %}
-
-  {%- if vod.attributes.video240Hash %}
-    <source src="{{ vod.attributes.video240Hash | stripQueryString | buildIpfsUrl }}" size="240" type="video/mp4" />
-  {% endif %}
-  </video>
-  </div> #}
-
-  {# <div
-  x-cloak
-  x-show="isPatronPlayer()"
-  >
-  <video 
-  crossorigin
-  x-ref="patronPlayer"
-  id="patron-player" 
-  class="video-js vjs-16-9 vjs-theme-fantasy" 
-  controls
-  preload="none" 
-  width="100%"
-  >
-  </video>
-  </div> #}
 
 
 
@@ -134,14 +85,14 @@
 
   <template x-for="error in errors">
     <div 
-    x-show="errors.length>0"
-    x-cloak
-    class="notification is-warning mb-0"
+      x-show="errors.length>0"
+      x-cloak
+      class="notification is-warning mb-0"
     >
 
     <button 
-    x-on:click="errors=[]" 
-    class="delete"
+      x-on:click="errors=[]" 
+      class="delete"
     ></button>
       <span x-text="error"></span>
     </div>
@@ -154,24 +105,37 @@
 
 
       <div class="mb-3" x-show="displayedTimestamps.length > 0">
-        <template x-for="ts in displayedTimestamps" :key="ts.tag">
+        <template x-for="ts in displayedTimestamps" :key="ts.id">
           <nav class="level is-mobile mb-0">
           <div class="level-left">
             <p class="level-item">
-              <a x-text="Alpine.store('player').formatTime(ts.time)" href="#"></a>
+              <a 
+                x-text="Alpine.store('player').formatTime(ts.time)" 
+                x-text="$refs.vidstackPlayer.currentTime = ts.time"
+              ></a>
             </p>
             <p class="level-item">
-              <a x-text="ts.tag" href="#"></a>
+              <a 
+                x-text="ts.tagName" 
+                x-on:click="onTagClick(tagVodRelations.find((tvr) => (tvr.name === ts.tagName)))"
+              ></a>
             </p>
-            <a class="level-item">
-              <span class="icon is-small"><i class="fas fa-thumbs-up"></i></span>
-            </a>
-            <a class="level-item">
-              <span class="icon is-small"><i class="fas fa-thumbs-down"></i></span>
-            </a>
           </div>
-          <div class="media-right">
-            <button class="delete"></button>
+          <div class="level-right">
+            <template x-if="Alpine.store('user').id !== ts.creatorId">
+              <a class="level-item">
+                <span class="icon is-small"><i class="fas fa-thumbs-up"></i></span>
+              </a>
+            </template>
+            <template x-if="Alpine.store('user').id !== ts.creatorId">
+              <a class="level-item">
+                <span class="icon is-small"><i class="fas fa-thumbs-down"></i></span>
+              </a>
+            </template>
+            <button 
+              class="delete"
+              x-on:click=""
+            ></button>
           </div>
           </nav>
         </template>
@@ -185,7 +149,8 @@
         <div x-show="!!selectedTag.name">
           <button 
           class="button is-success is-small"
-          x-on:click="addTimestamp"
+          x-bind:class="{'is-loading': isTsLoading}"
+          x-on:click="onClickAddTimestamp"
           >
             <span>Add <span x-text="selectedTag.name"></span> at <span x-text="playheadTimestamp"></span></span>
             <span class="icon is-small">
@@ -241,8 +206,11 @@
               x-on:click="onTagClick(tvr)"
             >
               <span x-text="tvr.name"></span>
-              <template x-if="tvr.isCreator">
-                <button class="delete"></button>
+              <template x-if="tvr.creatorId === Alpine.store('user').id && new Date(tvr.createdAt).valueOf()+900000>new Date().valueOf()">
+                <button 
+                  class="delete"
+                  x-on:click.stop="onTagDelete(tvr.id)"
+                ></button>
               </template>
             </div>
           </template>

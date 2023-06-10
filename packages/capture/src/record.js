@@ -20,7 +20,7 @@ export const assertDependencyDirectory = (appContext) => {
   }
 }
 
-export const record = (appContext, playlistUrl, roomName) => {
+export const record = async (appContext, playlistUrl, roomName) => {
   if (appContext === undefined) throw new Error('appContext undef');
   if (playlistUrl === undefined) throw new Error('playlistUrl undef');
   if (roomName === undefined) throw new Error('roomName undef');
@@ -45,7 +45,21 @@ export const record = (appContext, playlistUrl, roomName) => {
     '-y',
     '-f', 'mpegts', 
     filename
-  ]);
+  ], {
+    stdio: 'inherit'
+  });
+
+
+
+  return new Promise((resolve, reject) => {
+    ffmpegProcess.once('exit', (code) => {
+      resolve(code)
+    })
+  })
+
+  // ffmpegProcess.on('data', (data) => {
+  //   console.log(data.toString());
+  // });
 
 
   // Optional: Handle other events such as 'error', 'close', etc.
@@ -57,7 +71,7 @@ export const record = (appContext, playlistUrl, roomName) => {
   //   retryDownload(appContext, playlistUrl, roomName);
   // });
 
-  return ffmpegProcess;
+  // return ffmpegProcess;
 }
 
 

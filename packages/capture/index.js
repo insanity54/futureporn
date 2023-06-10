@@ -10,42 +10,43 @@ import os from 'os'
 import fs from 'node:fs'
 import path from 'path'
 import { loggerFactory } from "common/logger"
-import Primus from 'primus'
 import http from 'node:http'
 import faye from 'faye'
 import { record, assertDependencyDirectory } from './src/record.js'
 import fastq from 'fastq'
+import pRetry from 'p-retry';
 
 
 
-
-const workQueue = fastq(captureTasks, 1)
-
+const workQueue = fastq(captureTask, 1)
 
 
-async function captureTasks (args, cb) {
+
+async function captureTask (args, cb) {
   const { appContext, playlistUrl, roomName } = args;
-  try {
-    const proc = record(appContext, playlistUrl, roomName)
-
-    proc.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
-    });
-
-    // setTimeout(() => {
-    //   appContext.logger.log({ level: 'debug', message: `recording in progress. ` })
-    // }, 1000*30)
-  } catch (err) {
-
+  const downloadStream = async () => {
+    const rc = await record(appContext, playlistUrl, roomName)
+    if (rc !== 0) throw new Error('ffmpeg exited irregularly (return code was other than zero)')
   }
-  appContext.logger.log({ level: 'info', message: 'Capture tasks complete'})
+  await pRetry(downloadStream, {
+    retries: 3,
+    onFailedAttempt: error => {
+      appContext.logger.log({ level: 'error', message: `downloadStream attempt ${error.attemptNumber} failed. There are ${error.retriesLeft} retries left.` });
+    },
+  })
+
+  appContext.logger.log({ level: 'info', message: 'Capture task complete'})
   cb(null, null)
 }
 
 
 async function init () {
 
-  const appEnv = new Array('FUTUREPORN_WORKDIR', 'PUBSUB_SERVER_URL', 'DOWNLOADER_UA')
+  const appEnv = new Array(
+    'FUTUREPORN_WORKDIR', 
+    'PUBSUB_SERVER_URL', 
+    'DOWNLOADER_UA'
+  )
 
   const logger = loggerFactory({
     service: 'futureporn/capture'
@@ -64,6 +65,7 @@ async function init () {
   };
 
   assertDependencyDirectory(appContext)
+  verifyStorage(appContext)
 
   return appContext
 }
@@ -77,6 +79,7 @@ async function main () {
 
   appContext.logger.log({ level: 'info', message: `capture version: ${appContext.pkg.version}` })
   appContext.logger.log({ level: 'debug', message: `my capture directory is ${appContext.env.FUTUREPORN_WORKDIR}` })
+  appContext.logger.log({ level: 'debug', message: `listening for faye signals from ${appContext.env.PUBSUB_SERVER_URL}` })
 
 
 	// connect to realtime server

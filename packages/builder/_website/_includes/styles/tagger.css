@@ -94,13 +94,12 @@ fieldset[disabled] .tags-input {
 
 /* line 45, src/sass/app.sass */
 .tags-input:hover, .is-hovered.tags-input {
-  border-color: #b5b5b5;
+  border-color: hsl(0, 0%, 20%);
 }
 
 /* line 48, src/sass/app.sass */
 .tags-input:focus, .is-focused.tags-input, .tags-input:active, .is-active.tags-input {
-  border-color: #3273dc;
-  box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
+  border-color: hsl(0, 0%, 20%);
 }
 
 /* line 54, src/sass/app.sass */
