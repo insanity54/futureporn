@@ -46,7 +46,8 @@ export default function player () {
         });
         if (!!this.video240Hash) sources.push({ src: this.buildIpfsUrl(this.video240Hash), type: 'video/mp4' });
         if (!!this.playbackToken && !!this.muxPlaybackId) sources.push({ src: this.getMuxSrc(), type: 'video/mux' });
-        sources.push({ src: 'http://ipfs.io/ipfs/QmQWM1qDPasxm5sXAQeVMfmhnECBzyYkLgfK23yPif1Ftx', type: 'video/mp4' })
+        sources.push({ src: 'https://download.samplelib.com/mp4/sample-30s.mp4', type: 'video/mp4' })
+        sources.push({ src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4', type: 'video/mp4'})
         // console.log(sources)
         this.vidstackPlayer.src = sources
       });

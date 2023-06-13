@@ -63,16 +63,17 @@
   </div>
 
 
-
   <media-player
-    load="eager"
+    load="eager" {# @TODO switch to 'eager' #}
     title="{{ vod.attributes.title }}"
-    poster="https://placekitten.com/1080/720"
+    preload="metadata"
+    poster="{{ vod.attributes.thumbnail.data.attributes.cacheUrl }}"
     aspect-ratio="16/9"
     style="--media-aspect-ratio: 1.7778;"
   >
     <media-outlet>
     </media-outlet>
+    <media-poster></media-poster>
     <media-community-skin></media-community-skin>
   </media-player>
 
@@ -101,7 +102,7 @@
   <div class="columns is-multiline">
   <div class="column is-one-third">
     <p class="heading">Timestamps</p>
-    <div class="box" style="height: 500px; overflow: scroll;">
+    <div class="box" style="height: 500px; overflow-y: scroll; overflow-x: hidden;">
 
 
       <div class="mb-3" x-show="displayedTimestamps.length > 0">
@@ -111,20 +112,28 @@
             <p class="level-item">
               <a 
                 x-text="Alpine.store('player').formatTime(ts.time)" 
-                x-text="$refs.vidstackPlayer.currentTime = ts.time"
+                x-on:click="$refs.vidstackPlayer.currentTime = ts.time"
               ></a>
             </p>
-            <p class="level-item">
-              <a 
-                x-text="ts.tagName" 
-                x-on:click="onTagClick(tagVodRelations.find((tvr) => (tvr.name === ts.tagName)))"
-              ></a>
+            <p 
+              class="level-item"
+            >
+              <div class="tag-name-wrapper">
+                <span 
+                  class="tag-name"
+                  x-text="ts.tagName" 
+                  {# x-on:click="onTimestampNameClick(ts)" @todo #}
+                ></span>
+              </div>
             </p>
           </div>
           <div class="level-right">
             <template x-if="Alpine.store('user').id !== ts.creatorId">
               <a class="level-item">
-                <span class="icon is-small"><i class="fas fa-thumbs-up"></i></span>
+                <span 
+                  class="icon is-small"
+                  x-on:click="onThumbUpTs"
+                ><i class="fas fa-thumbs-up"></i></span>
               </a>
             </template>
             <template x-if="Alpine.store('user').id !== ts.creatorId">
@@ -132,10 +141,12 @@
                 <span class="icon is-small"><i class="fas fa-thumbs-down"></i></span>
               </a>
             </template>
-            <button 
-              class="delete"
-              x-on:click=""
-            ></button>
+            <template x-if="Alpine.store('user').id === ts.creatorId">
+              <button 
+                class="delete"
+                x-on:click="onClickDeleteTimestamp(ts.id)"
+              ></button>
+            </template>
           </div>
           </nav>
         </template>
@@ -219,6 +230,7 @@
             type="text" 
             data-type="tags" 
             placeholder="Add some comma-separated tags" 
+            maxlength="40"
             x-model="tagsInput"
             x-ref="tagsInput"
             x-on:focusin.prevent
