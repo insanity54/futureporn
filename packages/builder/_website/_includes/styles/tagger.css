@@ -5,7 +5,7 @@
 
 .tag-name-wrapper {
   display: flex;
-  width: 100px;
+  width: 65px;
 }
 
 .tag-name-wrapper > .tag-name {
@@ -16,10 +16,18 @@
 
 
 
-
-@media screen and (min-width: 1280px) {
+/* desktop */
+@media screen and (min-width: 1024px) { 
   .tag-name-wrapper {
-    width: 250px;
+    width: 110px;
+  }
+}
+
+
+/* widescreen */
+@media screen and (min-width: 1216px) { 
+  .tag-name-wrapper {
+    width: 170px;
   }
 }
 

@@ -64,7 +64,7 @@
 
 
   <media-player
-    load="eager" {# @TODO switch to 'eager' #}
+    load="eager"
     title="{{ vod.attributes.title }}"
     preload="metadata"
     poster="{{ vod.attributes.thumbnail.data.attributes.cacheUrl }}"
@@ -119,34 +119,51 @@
               class="level-item"
             >
               <div class="tag-name-wrapper">
-                <span 
+                <a 
                   class="tag-name"
                   x-text="ts.tagName" 
-                  {# x-on:click="onTimestampNameClick(ts)" @todo #}
-                ></span>
+                  x-on:click="onTimestampNameClick(ts)"
+                ></a>
               </div>
             </p>
           </div>
           <div class="level-right">
-            <template x-if="Alpine.store('user').id !== ts.creatorId">
-              <a class="level-item">
-                <span 
-                  class="icon is-small"
-                  x-on:click="onThumbUpTs"
-                ><i class="fas fa-thumbs-up"></i></span>
-              </a>
+            <template x-if="Alpine.store('user').role !== 'public'">
+              <div class="level-item">
+                <div class="field has-addons">
+                  <p class="control">
+                    <button 
+                      class="button is-small"
+                      x-bind:class="{'is-loading': isTsLoading}"
+                      x-on:click="onThumbUpTs(ts)"
+                    >
+                      <span class="icon is-small">
+                        <i class="fas fa-thumbs-up"></i>
+                      </span>
+                    </button>
+                  </p>
+                  <p class="control">
+                    <button 
+                      class="button is-small"
+                      x-bind:class="{'is-loading': isTsLoading}"
+                      x-on:click="onThumbDownTs(ts)"
+                    >
+                      <span class="icon is-small">
+                        <i class="fas fa-thumbs-down"></i>
+                      </span>
+                    </button>
+                  </p>
+                </div>
+              </div>
+
             </template>
-            <template x-if="Alpine.store('user').id !== ts.creatorId">
-              <a class="level-item">
-                <span class="icon is-small"><i class="fas fa-thumbs-down"></i></span>
-              </a>
-            </template>
-            <template x-if="Alpine.store('user').id === ts.creatorId">
+
+{#             <template x-if="Alpine.store('user').id === ts.creatorId">
               <button 
                 class="delete"
                 x-on:click="onClickDeleteTimestamp(ts.id)"
               ></button>
-            </template>
+            </template> #}
           </div>
           </nav>
         </template>

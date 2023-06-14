@@ -98,8 +98,41 @@ export default function tagger () {
     //
     // TIMESTAMPS SECTION
     //
+    onThumbUpTs (ts) {
+      this.isTsLoading = true
+      return this.voteTs(ts.id, 1)
+        .finally(() => {
+          this.isTsLoading = false
+        })
+    },
+    onThumbDownTs (ts) {
+      this.isTsLoading = true
+      return this.voteTs(ts.id, 0)
+        .finally(() => {
+          this.isTsLoading = false
+        })
+    },
+    voteTs (id, direction) {
+      return fetch(`${window.backend}/api/timestamps/${id}/vote`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Alpine.store('auth').jwt}`
+        },
+        body: JSON.stringify({
+          data: {
+            direction
+          }
+        })
+      })
+    },
     onTimestampNameClick (ts) {
-      // const tvr = tagVodRelations.find((tvr) => (tvr.name === ts.tagName))
+      const tvr = this.tagVodRelations.find((tvr) => (tvr.name === ts.tagName))
+      if (this.selectedTag && this.selectedTag.name === tvr.name) {
+        this.selectedTag = {};
+      } else {
+        this.selectedTag = tvr;
+      }
     },
     async createTimestamp() {
       const ts = {
@@ -259,7 +292,7 @@ export default function tagger () {
         return this.formatTagVodRelation(json.data)
       })
     },
-    
+
     getTagVodRelations(page = 1) {
       this.isLoading = true;
       return fetch(`${window.backend}/api/tag-vod-relations?populate=*&filters[vod][id][$eq]=${this.vodId}&pagination[page]=${page}`, {
@@ -390,6 +423,8 @@ export default function tagger () {
           })
       }
     },
+
+
 
 
   }

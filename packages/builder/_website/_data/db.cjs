@@ -53,6 +53,7 @@ module.exports = async function () {
     if (vod?.attributes?.thumbnail?.data) {
       const stats = await Image(vod.attributes.thumbnail.data.attributes.url, {
         widths: ['auto'],
+        outputDir: '_site/img',
         cacheOptions: {
           duration: '*'
         }
