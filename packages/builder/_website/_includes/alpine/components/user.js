@@ -1,15 +1,22 @@
 export default function user () {
   return {
     avatar: this.$persist(''),
+    vanityLink: '',
+    patreonBenefits: [],
     isNamePublic: false,
+    isLinkPublic: false,
     isLoading: false,
     isSuccess: false,
     isDirty: false,
+    hasUrlBenefit: false,
     isPatron () {
       return (Alpine.store('user').role === 'patron' ? true : false)
     },
     init () {
       this.fetchUser()
+    },
+    get hasUrlBenefit () {
+      return this.patreonBenefits.includes('10663202') // "Your URL displayed on Futureporn.net"
     },
     async fetchUser () {
       const res = await fetch(`${Alpine.store('env').backend}/api/profile/me`, {
@@ -26,18 +33,20 @@ export default function user () {
       this.username = json.username
       this.isNamePublic = json.isNamePublic || false
       this.isPatron = (json?.role?.type === 'patron') ? true : false
+      this.patreonBenefits = (json?.patreonBenefits) ? json.patreonBenefits.split(',') : []
     },
-    async updateIsNamePublic () {
+    async updateUserProfile () {
       this.isLoading = true
-
-      const res = await fetch(`${Alpine.store('env').backend}/api/profile/${Alpine.store('auth').userId}`, {
+      const res = await fetch(`${Alpine.store('env').backend}/api/profile/${Alpine.store('user').id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${Alpine.store('auth').jwt}`
         },
         body: JSON.stringify({
-          isNamePublic: this.isNamePublic
+          isNamePublic: this.isNamePublic,
+          isLinkPublic: this.isLinkPublic,
+          vanityLink: this.vanityLink
         })
       })
       this.isLoading = false

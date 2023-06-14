@@ -11,14 +11,75 @@ pagination:
 
 <div class="box">
   <div class="columns is-multiline">
-    <div class="column is-one-third">
-      <h1 class="is-size-1">ProjektMelody</h1>
-      <figure class="image is-64x64 is-rounded">
-        <img class="is-rounded" src="/favicon.png">
+    <div class="column is-full">
+      <h1 class="is-size-2">ProjektMelody</h1>
+    </div>
+    <div class="column is-one-quarter">
+      <figure class="image is-rounded">
+        <img class="is-rounded" src="/public/img/projekt-melody.jpg">
       </figure>
     </div>
-    <div class="column is-two-thirds">
-      <p class="">ProjektMelody is the pioneering hentai cam model who embodies a unique blend of sweetness and perversion. She engages with her audience with remarkable patience and politeness, demonstrating her commitment to fostering an inclusive environment. On her livestreams, ProjektMelody's demeanor can range from overtly sexual to adorably reserved and self-censored. Alongside her captivating presence, she actively promotes pro-social behavior, advocates for sexual education, and emphasizes the importance of kindness.</p>
+    <div class="column is-three-quarters">
+      <p class="mb-5"><span class="is-size-5">Also known as, "Daddy's little grandpa," ProjektMelody is the pioneering hentai cam model who embodies a unique blend of sweetness and perversion. She engages with her audience with remarkable patience and politeness, demonstrating her commitment to fostering an inclusive environment.</span></p>
+
+      <p><span class="is-size-5">On her livestreams, ProjektMelody's demeanor can range from overtly sexual to adorably reserved and self-censored. Alongside her captivating presence, she actively promotes pro-social behavior, advocates for sexual education, and emphasizes the importance of kindness.</span></p>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column">
+      <a href="https://www.patreon.com/projektmelody" target="_blank">
+        <span class="icon">
+          <i class="fab fa-patreon"></i>
+        </span>
+        <span>Patreon</span>
+        <span class="icon">
+          <i class="fas fa-external-link-alt"></i>
+        </span>
+      </a>
+    </div>
+    <div class="column">
+      <a href="https://twitter.com/ProjektMelody" target="_blank">
+        <span class="icon">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span>Twitter</span>
+        <span class="icon">
+          <i class="fas fa-external-link-alt"></i>
+        </span>
+      </a>
+    </div>
+    <div class="column">
+      <a href="https://youtube.com/projektmelodyofficial" target="_blank">
+        <span class="icon">
+          <i class="fab fa-youtube"></i>
+        </span>
+        <span>YouTube</span>
+        <span class="icon">
+          <i class="fas fa-external-link-alt"></i>
+        </span>
+      </a>
+    </div>
+    <div class="column">
+      <a href="https://www.twitch.com/projektmelody" target="_blank">
+        <span class="icon">
+          <i class="fab fa-twitch"></i>
+        </span>
+        <span>Twitch</span>
+        <span class="icon">
+          <i class="fas fa-external-link-alt"></i>
+        </span>
+      </a>
+    </div>
+    <div class="column">
+      <a href="https://tiktok.com/@realprojektmelody" target="_blank">
+        <span class="icon">
+          <i class="fab fa-tiktok"></i>
+        </span>
+        <span>TikTok</span>
+        <span class="icon">
+          <i class="fas fa-external-link-alt"></i>
+        </span>
+      </a>
     </div>
   </div>
 </div>
@@ -28,28 +89,72 @@ pagination:
   <h2 class="is-size-4 mb-3">ProjektMelody's Toys</h2>
   <div class="columns is-mobile is-multiline ">
     {% for toy in db.toys %}
-      {# {{ toy | dump }} #}
-        <div class="column is-one-fifth-mobile is-1-desktop is-2-tablet is-narrow-desktop">
-          {% set imageUrl %}{{ toy.attributes.image.data.attributes.formats.thumbnail.url }}{% endset %}
-          {% set displayName %}{{ toy.attributes.make }} {{ toy.attributes.model }}{% endset %}
-          <a href="/tags/{{ toy.attributes.linkTag.data.attributes.name | slugify}}">
-            {% image imageUrl, "image", displayName %}
-            <p class="heading">{{toy.attributes.model}}</p>
-          </a>
-        </div>
+      <div class="column is-one-fifth-mobile is-1-desktop is-2-tablet is-narrow-desktop">
+        {% set imageUrl %}{{ toy.attributes.image.data.attributes.formats.thumbnail.url }}{% endset %}
+        {% set displayName %}{{ toy.attributes.make }} {{ toy.attributes.model }}{% endset %}
+        <a href="/tags/{{ toy.attributes.linkTag.data.attributes.name | slugify}}">
+          {% image imageUrl, "image", displayName %}
+          <p class="heading">{{toy.attributes.model}}</p>
+        </a>
+      </div>
     {% endfor %}
   </div>
 </div>  
 
-{# 
-<div class="box">
-  <h2 class="is-size-4 mb-3">Tags</h2>
-    
-  </h2>
-</div> #}
 
 <div class="columns is-multiline is-mobile">
   {% asyncEach vod in pagination.items %}
     {% include "vodCard.njk" %}
   {% endeach %}
+</div>
+
+
+<div class="mt-5 block box">
+  <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+
+
+    {% if not pagination.href.previous %}
+      <a disabled class="pagination-previous is-disabled">
+        <span class="icon">
+          <i class="fas fa-arrow-left"></i>
+        </span>
+      </a>
+    {% else %}
+      <a class="pagination-previous" href="{{ pagination.href.previous }}">
+        <span class="icon">
+          <i class="fas fa-arrow-left"></i>
+        </span>
+      </a>
+    {% endif %}
+    
+    {% if not pagination.href.next %}
+      <button disabled class="pagination-next is-disabled">
+        <span class="icon">
+          <i class="fas fa-arrow-right"></i>
+        </span>
+      </button>
+    {% else %}
+      <a class="pagination-next" href="{{ pagination.href.next }}">
+        <span class="icon">
+          <i class="fas fa-arrow-right"></i>
+        </span>
+      </a>
+    {% endif %}
+    
+
+    <ul class="pagination-list">
+
+    {%- for page in pagination.pages %}
+      <li>
+          <a 
+          class="pagination-link"
+          aria-label="Goto page {{ loop.index0 }}"
+          href="{{ pagination.hrefs[loop.index0] }}">
+            {{ loop.index0 }}
+          </a>
+      </li>
+    {%- endfor %}
+    
+    </ul>
+  </nav>
 </div>

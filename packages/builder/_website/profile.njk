@@ -7,7 +7,7 @@ layout: layouts/profile.njk
 <div x-data="user" class="content">
 
 
-  <div class="box">
+  <div class="box" style="min-height: 500px;">
     <p class="title"><span x-text="$store.auth.username || 'User'"></span> Profile</p>
 
     <a 
@@ -33,8 +33,13 @@ layout: layouts/profile.njk
       <h3 class="heading">Patron Perks</h3>
         
       <p>Thank you so much for supporting Futureporn!</p>
+      <p>patreonBenefits:<span x-text="patreonBenefits"></span></p>
 
-        <div  class="mb-5">
+
+
+      <div class="field box">
+        <label class="label">Username</label>
+        <div class="control">
           <label class="checkbox noselect">
             <input 
               type="checkbox"
@@ -42,8 +47,40 @@ layout: layouts/profile.njk
             >
             Publically display <b x-text="$store.auth.username"></b> on the patrons page.
           </label>
-          <p><i>This setting does not apply immediately. It takes a few days for the patrons page to update.</i></p>
         </div>
+      </div>
+
+      <div 
+        class="field box"
+        x-show="hasUrlBenefit"
+      >
+        <label class="label">URL</label>
+        <div class="control">
+          <label class="checkbox noselect">
+            <input 
+              type="checkbox"
+              x-model="isLinkPublic"
+            >
+            Publically display my URL <b x-text="vanityLink"></b> on the patrons page.
+          </label>
+        </div>
+        <div 
+          class="control"
+          x-show="isLinkPublic"
+        >
+          <input 
+            class="input" 
+            type="text" 
+            placeholder="https://twitter.com/example"
+            x-model="vanityLink"
+          >
+        </div>
+      </div>
+
+
+
+
+        <p><i><span x-show="hasUrlBenefit">These settings do</span><span x-show="!hasUrlBenefit">This setting does</span> not apply immediately; It takes up to 24 hours for the patrons page to update.</i></p>
 
         <button 
           class="button is-warning"
@@ -61,7 +98,7 @@ layout: layouts/profile.njk
             'is-success': isSuccess,
             'is-warning': isDirty&&!isSuccess,
           }"
-          x-on:click="updateIsNamePublic"
+          x-on:click="updateUserProfile"
         >
         <span x-show="!isDirty" class="icon">
           <i class="fas fa-save"></i>

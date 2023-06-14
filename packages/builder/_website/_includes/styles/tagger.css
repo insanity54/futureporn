@@ -19,7 +19,7 @@
 /* desktop */
 @media screen and (min-width: 1024px) { 
   .tag-name-wrapper {
-    width: 110px;
+    width: 100px;
   }
 }
 

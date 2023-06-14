@@ -91,7 +91,6 @@ export default function tagger () {
       }).then((res) => {
         this.isLoading = false
       })
-
     },
 
 
@@ -99,6 +98,7 @@ export default function tagger () {
     // TIMESTAMPS SECTION
     //
     onThumbUpTs (ts) {
+      console.log(ts)
       this.isTsLoading = true
       return this.voteTs(ts.id, 1)
         .finally(() => {
@@ -110,6 +110,7 @@ export default function tagger () {
       return this.voteTs(ts.id, 0)
         .finally(() => {
           this.isTsLoading = false
+          this.timestamps = this.timestamps.filter((t) => ((t.upvotes - t.downvotes) > 0))
         })
     },
     voteTs (id, direction) {
@@ -152,8 +153,6 @@ export default function tagger () {
       })
       .then(res => res.json())
       .then(data => {
-        console.log('here is data')
-        console.log(data)
         if (data?.error) {
           throw new Error(data.error.message || 'Problem while creating timestamp. Please try again later')
         }
@@ -168,13 +167,13 @@ export default function tagger () {
       const tnShort   = this.truncateString(tagName, 14)
       const tagId     = ts.attributes.tag.data.id
       const vodId     = ts.attributes.vod.data.id
-      const votes     = ts.attributes.votes
+      const upvotes   = ts.attributes.upvotes
+      const downvotes = ts.attributes.downvotes
       const createdAt = ts.attributes.createdAt
       const creatorId = ts.attributes.creatorId
-      return { id, time, vodId, tagName, tagId, createdAt, creatorId, tnShort, votes }
+      return { id, time, vodId, tagName, tagId, createdAt, creatorId, tnShort, downvotes, upvotes }
     },
     async deleteTimestamp (id) {
-      console.log(`deleting timestamp id ${id}`)
       return fetch(`${window.backend}/api/timestamps/${id}`, {
         method: 'DELETE',
         headers: {
@@ -222,6 +221,7 @@ export default function tagger () {
       })
       .then((res) => res.json())
       .then((json) => {
+        console.log(json)
         this.timestamps = this.timestamps.concat(json.data.map((ts) => this.formatTimestamp(ts)))
         const totalPages = json.meta.pagination.pageCount;
         const nextPage = page + 1;

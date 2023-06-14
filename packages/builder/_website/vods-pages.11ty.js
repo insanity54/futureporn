@@ -8,7 +8,7 @@ function safeDate (text) {
 }
 
 
-class VodPages {
+class VodsPages {
   // or `async data() {`
   // or `get data() {`
   data() {
@@ -22,7 +22,7 @@ class VodPages {
       //   tags: ['vod'].concat(data.vod.attributes.tags.data.map((d) => d.attributes.name))), // @todo needs to be an iterable. not sure how to do this.
       // },
       tags: ['vod'],
-      name: "VodPages",
+      name: "VodsPages",
       pagination: {
         data: "db.vods",
         size: 1,
@@ -38,4 +38,4 @@ class VodPages {
   }
 }
 
-module.exports = VodPages;
+module.exports = VodsPages;

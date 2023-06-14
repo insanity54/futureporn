@@ -133,7 +133,7 @@
                 <div class="field has-addons">
                   <p class="control">
                     <button 
-                      class="button is-small"
+                      class="button is-small is-rounded"
                       x-bind:class="{'is-loading': isTsLoading}"
                       x-on:click="onThumbUpTs(ts)"
                     >
@@ -144,7 +144,7 @@
                   </p>
                   <p class="control">
                     <button 
-                      class="button is-small"
+                      class="button is-small is-rounded"
                       x-bind:class="{'is-loading': isTsLoading}"
                       x-on:click="onThumbDownTs(ts)"
                     >
@@ -180,7 +180,9 @@
           x-bind:class="{'is-loading': isTsLoading}"
           x-on:click="onClickAddTimestamp"
           >
-            <span>Add <span x-text="selectedTag.name"></span> at <span x-text="playheadTimestamp"></span></span>
+            <div class="tag-name-wrapper">
+            <span class="tag-name">Add <span x-text="selectedTag.name"></span> at <span x-text="playheadTimestamp"></span></span>
+            </div>
             <span class="icon is-small">
               <i class="fas fa-plus"></i>
             </span>
@@ -196,7 +198,7 @@
 
   <p class="heading">Tags</p>
   <div 
-  class="mb-3" 
+  class="mb-3"
   x-cloak 
   x-show="$store.user.role === 'public'"
   >
@@ -294,14 +296,21 @@
 
     <div class="box" style="overflow: hidden;">
 
-    <h2 class="subtitle mb-0">
-    {%- if vod.attributes.announceTitle %}
-      {{ vod.attributes.announceTitle }}
-      {% elif vod.attributes.title %}
-        {{ vod.attributes.title }}
-      {% endif %}
-
+      <h2 class="subtitle">
+        {%- if vod.attributes.announceTitle %}
+          {{ vod.attributes.announceTitle }}
+        {% elif vod.attributes.title %}
+          {{ vod.attributes.title }}
+        {% endif %}
       </h2>
+
+      <a 
+        class="mb-0"
+        href="/vt/projektmelody"
+      >
+        ProjektMelody
+      </a>      
+
       {% if vod.attributes.date %}
         <p class="mt-0 mb-5">{{ vod.attributes.date | readableDate }}</p>
       {% endif %}
