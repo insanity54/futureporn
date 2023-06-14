@@ -1,0 +1,7 @@
+
+{% set toyUrl %}/tags/{{ toy.attributes.tag.data.attributes.name }}/{% endset %}
+{% set displayName %}{{ toy.attributes.make }} {{ toy.attributes.model }}{% endset %}
+<div class="column is-one-fifth-mobile is-1-desktop is-narrow-desktop">
+  {% image toy.attributes.image.data.attributes.formats.small.url displayName "" %}
+  <p class="heading">{{toy.attributes.model}}</p>
+</div>

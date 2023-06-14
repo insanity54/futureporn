@@ -101,8 +101,9 @@
           <a
             x-cloak
             x-show="$store.auth.jwt===''"
+            @click.prevent="$store.auth.login()"
             href="{{ env.STRAPI_BACKEND_URL }}/api/connect/patreon"
-            class="button is-warning is-outlined"
+            class="button is-warning"
           >
             <span class="icon">
               <i class="fab fa-patreon"></i>
@@ -186,11 +187,18 @@
                     </span>{% if loop.index === contributors.list.length %} {% else %}, {% endif %}
                   {% endfor %}
               </p>
-              <p>Source code is available on <a target="_blank" href="https://github.com/insanity54/futureporn">GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+              <p><a target="_blank" href="https://github.com/insanity54/futureporn"><span class="icon"><i class="fab fa-github"></i></span> GitHub <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
               <p><a 
                 target="_blank" 
                 href="https://www.reddit.com/r/projektmelody/comments/qikzy0/futureporn_an_unofficial_projektmelody_chaturbate/"
-                >Reddit Thread<span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+                ><span class="icon"><i class="fab fa-reddit"></i></span> Reddit Thread <span class="icon"><i class="fas fa-external-link-alt"></i></span></a></p>
+              <p>
+                <a 
+                  target="_blank"
+                  href="https://discord.gg/wrZQnK3M8z"
+                ><span class="icon"><i class="fab fa-discord"></i></span> Discord Server <span class="icon"><i class="fas fa-external-link-alt"></i></span></a>
+              </p>
+
             </div>
           </div>
 

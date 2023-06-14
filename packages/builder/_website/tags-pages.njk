@@ -1,0 +1,34 @@
+---
+pagination:
+  data: db.tags
+  size: 1
+  alias: tag
+  filter:
+    - all
+    - nav
+    - vod
+    - vods
+    - tagList
+  addAllPagesToCollections: false
+layout: layouts/base.njk
+eleventyComputed:
+  title: Tagged “{{ tag.attributes.name }}”
+permalink: /tags/{{ tag.attributes.name | slugify }}/
+---
+
+{% set vodslist = collections.vod | filterByTag(tag.attributes.name) %}
+
+<div class="content box">
+  <h1>Tagged “{{ tag.attributes.name }}”</h1>
+</div>
+
+
+<div class="columns is-multiline is-mobile">
+  {% asyncEach vod in vodslist %}
+    {% include "vodCard.njk" %}
+  {% endeach %}
+</div>
+
+<div class="content box">
+  <p>See <a href="{{ '/tags/' | url }}">all tags</a>.</p>
+</div>

@@ -5,14 +5,12 @@ layout: layouts/base.njk
 
 <div class="content">
   <div class="box">
-
-    <h2>Tags</h2>
-
+    <h2>Tags!</h2>
     <div class="tags">
-      {% for tag in collections.tagList %}
-        {% set tagUrl %}/tags/{{ tag }}/{% endset %}
+      {% for tag in db.tags %}
+        {% set tagUrl %}/tags/{{ tag.attributes.name }}/{% endset %}
         <span class="tag">
-          <a href="{{ tagUrl | url }}" class="vod-tag">{{ tag }}</a>
+          <a href="{{ tagUrl | url }}" class="vod-tag">{{ tag.attributes.name }}</a>
         </span>
       {% endfor %}
     </div>

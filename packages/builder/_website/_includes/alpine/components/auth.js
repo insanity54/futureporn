@@ -1,7 +1,6 @@
 export default function auth () {
   return {
     open: false,
-    lastVisitedPath: this.$persist('/'),
     accessToken: '',
     error: '',
     done: false,
@@ -32,16 +31,17 @@ export default function auth () {
       if (json?.jwt === undefined) throw new Error('Failed to get auth token. Please try again later.');
       else {
         console.log(JSON.stringify(json))
-        if (json.jwt) Alpine.store('auth').jwt = json.jwt;
-        if (json.user.username) Alpine.store('auth').username = json.user.username;
-        if (json.user.id) Alpine.store('auth').userId = json.user.id;
+        if (json?.jwt) Alpine.store('auth').jwt = json.jwt;
+        if (json?.user?.username) Alpine.store('auth').username = json.user.username;
+        if (json?.user?.id) Alpine.store('auth').userId = json.user.id;
+        if (json?.role?.type) Alpine.store('user').role = json.role.type;
       }
     },
     redirect() {
       // this is for redirecting 
       // from /connect/patreon/redirect
       // to whatever page the user was previously at
-      window.location.pathname = this.lastVisitedPath      
+      window.location.pathname = Alpine.store('auth').lastVisitedPath
       this.done = true
     }
   }

@@ -2,14 +2,10 @@
 
 {% block head %}
   {{ super() }}
-  <style>
-    [x-cloak] { display: none !important; }
-    video { height: 100% }
-  </style>
-  <link rel="stylesheet" href="/@includes/styles/player.scss">
-  <link rel="stylesheet" href="/@root/node_modules/plyr/dist/plyr.css">
-  <link rel="stylesheet" href="/@root/node_modules/@mux/videojs-kit/dist/index.css">
-  <link rel="stylesheet" href="/@root/node_modules/@videojs/themes/dist/fantasy/index.css">
+  <link rel="stylesheet" href="/@includes/styles/tagger.css">
+  <link rel="stylesheet" href="/@root/node_modules/vidstack/styles/defaults.css">
+  <link rel="stylesheet" href="/@root/node_modules/vidstack/styles/community-skin/video.css">
+
 
 {% endblock %}
 
@@ -17,121 +13,311 @@
 {% block content %}
 
 
+
   <div
-    class="container"
-    x-data="player"
+  class="container"
+  x-data="player"
   >
 
-    {# some variables for use in patron player #}
-    {% set videoDate = vod.attributes.date %}
-    {% set muxPlaybackId = vod.attributes.muxAsset.data.attributes.playbackId %}
-    {% set muxDeletionQueuedAt = vod.attributes.muxAsset.data.attributes.deletionQueuedAt %}
-    {% set videoSrcHash = vod.attributes.videoSrcHash %}
-    <span x-cloak x-show="false" x-ref="videoDate" class="">{{ videoDate }}</span>
-    <span x-cloak x-show="false" x-ref="videoSrcHash" class="">{{ videoSrcHash }}</span>
-    <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" >{{ muxPlaybackId }}</span>
-    <span x-cloak x-show="false" x-ref="muxDeletionQueuedAt" >{{ muxDeletionQueuedAt }}</span>
-    <span x-cloak x-show="false" x-ref="backend">{{ env.STRAPI_BACKEND_URL }}</span>
 
-    <div
-      class="container m-0 p-0"
-    >
-      <div 
-        x-show="errors.length>0"
-        x-cloak
-        class="notification is-warning"
-      >
 
-        <button 
-          x-on:click="errors=[]" 
-          class="delete"
-        ></button>
-        <span x-text="errors"></span>
-      </div>
+  {# some variables for use in patron player #}
+  {% set videoDate = vod.attributes.date %}
+  {% set muxPlaybackId = vod.attributes.muxAsset.data.attributes.playbackId %}
+  {% set muxDeletionQueuedAt = vod.attributes.muxAsset.data.attributes.deletionQueuedAt %}
+  {% set videoSrcHash = vod.attributes.videoSrcHash %}
+  {% set video240Hash = vod.attributes.video240Hash %}
+  <span x-cloak x-show="false" x-ref="vodId" class="">{{ vod.id }}</span>
+  <span x-cloak x-show="false" x-ref="videoDate" class="">{{ videoDate }}</span>
+  <span x-cloak x-show="false" x-ref="videoSrcHash" class="">{{ videoSrcHash }}</span>
+  <span x-cloak x-show="false" x-ref="video240Hash" class="">{{ video240Hash }}</span>
+  <span x-cloak x-show="false" x-ref="muxPlaybackId" class="mux-playback-id" >{{ muxPlaybackId }}</span>
+  <span x-cloak x-show="false" x-ref="muxDeletionQueuedAt" >{{ muxDeletionQueuedAt }}</span>
+  <span x-cloak x-show="false" x-ref="backend">{{ env.STRAPI_BACKEND_URL }}</span>
 
-      <p x-cloak x-show="this.hasMux">this video has a mux</p>
-      <p x-cloak x-show="this.hasIpfs">this video has an ipfs</p>
 
-      <div x-cloak x-show="!isPatronPlayer() && !isPublicPlayer()" class="notification is-info">
-        <p>Sorry, we don't have the video available right now. Do you happen to have a copy? If so, you can <a href="/upload">upload it here</a>.</p>
-      </div>
+  <div
+  class="container m-0 p-0"
+  >
+  <template x-for="error in errors">
+  <div 
+  x-show="errors.length>0"
+  x-cloak
+  class="notification is-warning mb-0"
+  >
 
-      <div
-        x-cloak
-        x-show="isPublicPlayer()"
-      >
-        <video
-          preload="none"
-          id="public-player"
-        >
-          {%- if vod.attributes.videoSrcHash %}
-          <source src="{{ vod.attributes.videoSrcHash | stripQueryString | buildIpfsUrl }}" size="1080" type="video/mp4" />
-          {% endif %}
+  <button 
+    x-on:click="errors=[]" 
+    class="delete"
+  ></button>
+    <span x-text="error"></span>
+  </div>
+  </template>
 
-          {%- if vod.attributes.video240Hash %}
-          <source src="{{ vod.attributes.video240Hash | stripQueryString | buildIpfsUrl }}" size="240" type="video/mp4" />
-          {% endif %}
-        </video>
-      </div>
 
-      <div
-        x-cloak
-        x-show="isPatronPlayer()"
-      >
-        <video 
-          crossorigin
-          x-ref="patronPlayer"
-          id="patron-player" 
-          class="video-js vjs-16-9 vjs-theme-fantasy" 
-          controls
-          preload="none" 
-          width="100%"
-        >
-        </video>
-      </div>
-      <div
-        class="box"
-      >
-        <p class="heading">Video Source Selector</p>
+  <p x-cloak x-show="this.hasMux">this video has a mux</p>
+  <p x-cloak x-show="this.hasIpfs">this video has an ipfs</p>
 
-          <div class="control noselect">
-            <label class="radio">
-              <input x-model="preference" value="public" type="radio" name="answer">
-              Public (IPFS)
-            </label>
-            <label x-bind:disabled="$store.user.role!=='patron'" class="radio">
-              <input x-bind:disabled="$store.user.role!=='patron'" x-on:click="loadPatronPlayer()" x-model="preference" value="patron" type="radio" name="answer">
-              Patron (CDN)
-            </label>
-          </div>
-      </div>
-    </div>
-
+  <div x-cloak x-show="!isPatronPlayer() && !isPublicPlayer()" class="notification is-info">
+  <p>"We apologize for the inconvenience! The video you're trying to access is currently being processed and will be available shortly. Please check back later to enjoy the content. Thank you for your patience!"</p>
   </div>
 
 
+  <media-player
+    load="eager"
+    title="{{ vod.attributes.title }}"
+    preload="metadata"
+    poster="{{ vod.attributes.thumbnail.data.attributes.cacheUrl }}"
+    aspect-ratio="16/9"
+    style="--media-aspect-ratio: 1.7778;"
+  >
+    <media-outlet>
+    </media-outlet>
+    <media-poster></media-poster>
+    <media-community-skin></media-community-skin>
+  </media-player>
 
 
-  <div class="block">
+
+  <div
+  class="box mb-0"
+  x-data="tagger"
+  >
+
+  <template x-for="error in errors">
+    <div 
+      x-show="errors.length>0"
+      x-cloak
+      class="notification is-warning mb-0"
+    >
+
+    <button 
+      x-on:click="errors=[]" 
+      class="delete"
+    ></button>
+      <span x-text="error"></span>
+    </div>
+  </template>
+
+  <div class="columns is-multiline">
+  <div class="column is-one-third">
+    <p class="heading">Timestamps</p>
+    <div class="box" style="height: 500px; overflow-y: scroll; overflow-x: hidden;">
 
 
-    <div class="box">
+      <div class="mb-3" x-show="displayedTimestamps.length > 0">
+        <template x-for="ts in displayedTimestamps" :key="ts.id">
+          <nav class="level is-mobile mb-0">
+          <div class="level-left">
+            <p class="level-item">
+              <a 
+                x-text="Alpine.store('player').formatTime(ts.time)" 
+                x-on:click="$refs.vidstackPlayer.currentTime = ts.time"
+              ></a>
+            </p>
+            <p 
+              class="level-item"
+            >
+              <div class="tag-name-wrapper">
+                <a 
+                  class="tag-name"
+                  x-text="ts.tagName" 
+                  x-on:click="onTimestampNameClick(ts)"
+                ></a>
+              </div>
+            </p>
+          </div>
+          <div class="level-right">
+            <template x-if="Alpine.store('user').role !== 'public'">
+              <div class="level-item">
+                <div class="field has-addons">
+                  <p class="control">
+                    <button 
+                      class="button is-small is-rounded"
+                      x-bind:class="{'is-loading': isTsLoading}"
+                      x-on:click="onThumbUpTs(ts)"
+                    >
+                      <span class="icon is-small">
+                        <i class="fas fa-thumbs-up"></i>
+                      </span>
+                    </button>
+                  </p>
+                  <p class="control">
+                    <button 
+                      class="button is-small is-rounded"
+                      x-bind:class="{'is-loading': isTsLoading}"
+                      x-on:click="onThumbDownTs(ts)"
+                    >
+                      <span class="icon is-small">
+                        <i class="fas fa-thumbs-down"></i>
+                      </span>
+                    </button>
+                  </p>
+                </div>
+              </div>
 
-      <h2 class="subtitle mb-0">
+            </template>
+
+{#             <template x-if="Alpine.store('user').id === ts.creatorId">
+              <button 
+                class="delete"
+                x-on:click="onClickDeleteTimestamp(ts.id)"
+              ></button>
+            </template> #}
+          </div>
+          </nav>
+        </template>
+      </div>
+
+
+      <div> {# timestamp creation section #}
+        <div x-show="timestamps.length == 0">
+          <span><i>this vod has no timestamps</i></span>
+        </div>
+        <div x-show="!!selectedTag.name">
+          <div>
+              <button
+                class="button is-small"
+                x-on:click="selectedTag = {}"
+              >
+                Show all
+              </button>
+
+              <button 
+                class="button is-success is-small"
+                x-show="$store.user.role !== 'public'"
+                x-bind:class="{'is-loading': isTsLoading}"
+                x-on:click="onClickAddTimestamp"
+              >
+                <div class="tag-name-wrapper">
+                <span class="tag-name">Add <span x-text="selectedTag.name"></span> at <span x-text="playheadTimestamp"></span></span>
+                </div>
+                <span class="icon is-small">
+                  <i class="fas fa-plus"></i>
+                </span>
+              </button>  
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="column is-two-thirds">
+
+  <p class="heading">Tags</p>
+  <div 
+    class="mb-3"
+    x-cloak 
+    x-show="$store.user.role === 'public'"
+  >
+    <div class="mb-5">
+
+
+
+    <div class="tags-field field">
+      <div 
+        class="control"
+        x-bind:class="{ 'is-loading': isLoading }"
+      >
+        <div class="tags-input">
+          <template 
+            x-for="tvr in tagVodRelations" 
+            x-bind:key="tvr.id"
+          >
+            <div 
+              class="tag is-large is-rounded"
+              x-bind:class="{ 
+                'is-selected': selectedTag.name === tvr.name,
+                'is-duplicate': !!tvr.dup
+              }"
+              x-on:click="onTagClick(tvr)"
+            >
+              <span x-text="tvr.name"></span>
+              <template x-if="tvr.creatorId === Alpine.store('user').id && new Date(tvr.createdAt).valueOf()+900000>new Date().valueOf()">
+                <button 
+                  class="delete"
+                  x-on:click.stop="onTagDelete(tvr.id)"
+                ></button>
+              </template>
+            </div>
+          </template>
+          <input 
+            class="input" 
+            type="text" 
+            data-type="tags" 
+            placeholder="Add some comma-separated tags" 
+            maxlength="40"
+            x-show="$store.user.role !== 'public'"
+            x-model="tagsInput"
+            x-ref="tagsInput"
+            x-on:focusin.prevent
+            x-on:focus.prevent
+            x-on:input.debounce.prevent="search"
+            x-on:keyup.comma="onTagSubmit"
+            x-on:keyup.enter="onTagSubmit"
+          >
+        </div>
+      </div>
+    </div>
+
+    <div x-cloak x-show="isDirty">
+      <p class="heading">Tag Suggestions</p>
+
+      <div class="tag-suggestions">
+        <template x-for="tag in tagSuggestions" :key="tag.id">
+          <span 
+            style="cursor: pointer; user-select: none;"
+            x-text="tag.name" 
+            x-on:click="onSuggestedTagClick(tag)"
+            class="tag mx-1 is-medium is-success"
+          ></span>
+        </template>
+      </div>
+    </div>
+
+    </div>
+
+
+    </div>
+
+    </div>
+
+    </div>
+
+    </div>
+
+
+
+
+    <div class="block">
+
+
+    <div class="box" style="overflow: hidden;">
+
+      <h2 class="subtitle">
         {%- if vod.attributes.announceTitle %}
-        {{ vod.attributes.announceTitle }}
+          {{ vod.attributes.announceTitle }}
         {% elif vod.attributes.title %}
-        {{ vod.attributes.title }}
+          {{ vod.attributes.title }}
         {% endif %}
-        
       </h2>
-        {% if vod.attributes.date %}
-          <p class="mt-0 mb-5">{{ vod.attributes.date | readableDate }}</p>
-        {% endif %}
+
+      <a 
+        class="mb-0"
+        href="/vt/projektmelody"
+      >
+        ProjektMelody
+      </a>      
+
+      {% if vod.attributes.date %}
+        <p class="mt-0 mb-5">{{ vod.attributes.date | readableDate }}</p>
+      {% endif %}
 
 
       <h2 class="heading">
-        Download Links
+      Download Links
       </h2>
 
       {% set urlSrc = vod.attributes.videoSrcHash | stripQueryString | buildIpfsUrl %}
@@ -148,113 +334,101 @@
       <div class="mb-5">
 
 
-        <ul class="mb-5">
-          {%- if vod.attributes.videoSrcHash %}
-          <li>
-            <a
-              class="button is-info is-small mb-1"
-              href="{{ urlSrcWithFilename }}"
-              download="{{ urlSrcFilename }}"
-            >
-              <span>Source</span>
-              <span class="icon">
-                <i class="fas fa-external-link-alt"></i>
-              </span>
-            </a>
-          </li>
-          {% endif %}
+      <ul class="mb-5">
+      {%- if vod.attributes.videoSrcHash %}
+        <li>
+        <a
+        class="button is-info is-small mb-1"
+        href="{{ urlSrcWithFilename }}"
+        download="{{ urlSrcFilename }}"
+        >
+        <span>Source</span>
+        <span class="icon">
+        <i class="fas fa-external-link-alt"></i>
+        </span>
+        </a>
+        </li>
+      {% endif %}
 
 
-          {%- if vod.attributes.video240Hash %}
-            <li>
-              <a
-                class="button is-info is-small"
-                href="{{ url240WithFilename }}"
-                download="{{ url240Filename }}"
-              > 
-                <span>240p</span>
-                <span class="icon">
-                  <i class="fas fa-external-link-alt"></i>
-                </span>
-              </a>
-            </li>
-          {% endif %}
-        </ul>
+      {%- if vod.attributes.video240Hash %}
+        <li>
+        <a
+        class="button is-info is-small"
+        href="{{ url240WithFilename }}"
+        download="{{ url240Filename }}"
+        > 
+        <span>240p</span>
+        <span class="icon">
+        <i class="fas fa-external-link-alt"></i>
+        </span>
+        </a>
+        </li>
+      {% endif %}
+      </ul>
       </div>
 
 
       <h2 class="heading">IPFS Content IDs</h2>
 
       <ul>
-        {%- if vod.attributes.videoSrcHash %}
-          <li><span>Source: <span class="tag">{{ vod.attributes.videoSrcHash | stripQueryString }}</span></span></li>
-        {% endif %}
-        {%- if vod.attributes.video240Hash %}
-          <li><span>240p: <span class="tag">{{ vod.attributes.video240Hash | stripQueryString }}</span></span></li>
-        {% endif %}
+      {%- if vod.attributes.videoSrcHash %}
+        <li><span>Source: <span class="tag">{{ vod.attributes.videoSrcHash | stripQueryString }}</span></span></li>
+      {% endif %}
+      {%- if vod.attributes.video240Hash %}
+        <li><span>240p: <span class="tag">{{ vod.attributes.video240Hash | stripQueryString }}</span></span></li>
+      {% endif %}
       </ul>
 
 
       {%- if vod.attributes.announceUrl %}
         <div class="mb-5">
-          <h2 class="mt-3 heading">Stream Announcement URL</h2>
-          <a href="{{ vod.attributes.announceUrl }}">{{ vod.attributes.announceUrl }}</a>
+        <h2 class="mt-3 heading">Stream Announcement URL</h2>
+        <a href="{{ vod.attributes.announceUrl }}">{{ vod.attributes.announceUrl }}</a>
         </div>
       {% endif %}
-
-      {# 
-        tags coming soon
-        {%- if vod.attributes.tags %}
-        <div class="mb-5">
-          <h2 class="mt-3 heading">Tags</h2>
-          {%- for tag in vod.attributes.tags %}
-            <a href="/tags/{{ tag }}">{{ tag }}</a>
-          {% endfor -%}
-        </div>
-      {% endif %} #}
 
 
       {%- if vod.attributes.note %}
         <div class="mb-3">
-          <h2 class="heading">Note</h2>
-          <p>{{ vod.attributes.note }}</p>
+        <h2 class="heading">Note</h2>
+        <p>{{ vod.attributes.note }}</p>
         </div>
       {% endif %}
 
       <hr>
-        
+
       <div class="level">
-        {% if pagination.href.previous %}
-          <p>Prev Vod:
-          <a 
-          href="{{ pagination.href.previous }}">{{ pagination.page.previous.attributes.title or pagination.page.previous.attributes.announceTitle }}</a>
-          </p>
-        {% endif %}
-        {% if pagination.href.next %}
-          <p>Next Vod:
-          <a 
-          href="{{ pagination.href.next }}">{{ pagination.page.next.attributes.title or pagination.page.next.attributes.announceTitle }}
-          </a>
-          </p>
-        {% endif %}
+      {% if pagination.href.previous %}
+        <p>Prev Vod:
+        <a 
+        href="{{ pagination.href.previous }}">{{ pagination.page.previous.attributes.title or pagination.page.previous.attributes.announceTitle }}</a>
+        </p>
+      {% endif %}
+      {% if pagination.href.next %}
+        <p>Next Vod:
+        <a 
+        href="{{ pagination.href.next }}">{{ pagination.page.next.attributes.title or pagination.page.next.attributes.announceTitle }}
+        </a>
+        </p>
+      {% endif %}
 
       </div>
-    </div>
-  </div>
-</div>
-{% endblock %}
+      </div>
+      </div>
+      </div>
+    {% endblock %}
 
-{% block footer %}
-  {{ super() }}
-{% endblock %}
+    {% block footer %}
+      {{ super() }}
+    {% endblock %}
 
-{% block scripts %}
-  {{ super() }}
-  <script type="module" src="/@includes/js/player.js"></script>
+    {% block scripts %}
+      {{ super() }}
 
-{% endblock %}
+    {% endblock %}
 
 
-{% block end %}
-  {{ super() }}
-{% endblock %}
+    {% block end %}
+      {{ super() }}
+    {% endblock %}
