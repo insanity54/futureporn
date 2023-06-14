@@ -58,14 +58,10 @@ module.exports = async function () {
           duration: '*'
         }
       })
-      console.log(`${vod.attributes.thumbnail.data.attributes.url} becomes ${stats.webp[0].url}`)
-      console.log(stats)
       vod.attributes.thumbnail.data.attributes.cacheUrl = stats.webp[0].url
     }
   }
 
-  console.log(vods[0].attributes.thumbnail.data)
-  console.log(vods.at(-1).attributes.thumbnail.data)
 
 
   return { vods, tags, toys };

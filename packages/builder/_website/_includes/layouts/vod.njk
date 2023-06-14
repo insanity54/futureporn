@@ -170,23 +170,33 @@
       </div>
 
 
-      <div> {# timestamp creator #}
+      <div> {# timestamp creation section #}
         <div x-show="timestamps.length == 0">
           <span><i>this vod has no timestamps</i></span>
         </div>
         <div x-show="!!selectedTag.name">
-          <button 
-          class="button is-success is-small"
-          x-bind:class="{'is-loading': isTsLoading}"
-          x-on:click="onClickAddTimestamp"
-          >
-            <div class="tag-name-wrapper">
-            <span class="tag-name">Add <span x-text="selectedTag.name"></span> at <span x-text="playheadTimestamp"></span></span>
-            </div>
-            <span class="icon is-small">
-              <i class="fas fa-plus"></i>
-            </span>
-          </button>  
+          <div>
+              <button
+                class="button is-small"
+                x-on:click="selectedTag = {}"
+              >
+                Show all
+              </button>
+
+              <button 
+                class="button is-success is-small"
+                x-show="$store.user.role !== 'public'"
+                x-bind:class="{'is-loading': isTsLoading}"
+                x-on:click="onClickAddTimestamp"
+              >
+                <div class="tag-name-wrapper">
+                <span class="tag-name">Add <span x-text="selectedTag.name"></span> at <span x-text="playheadTimestamp"></span></span>
+                </div>
+                <span class="icon is-small">
+                  <i class="fas fa-plus"></i>
+                </span>
+              </button>  
+          </div>
         </div>
       </div>
     </div>
@@ -198,23 +208,12 @@
 
   <p class="heading">Tags</p>
   <div 
-  class="mb-3"
-  x-cloak 
-  x-show="$store.user.role === 'public'"
+    class="mb-3"
+    x-cloak 
+    x-show="$store.user.role === 'public'"
   >
-  {%- if vod.attributes.tags.data.length > 0 %}
     <div class="mb-5">
-    <h2 class="mt-3 heading">Tags</h2>
-    {%- for tag in vod.attributes.tags.data %}
-      <span class="tag">
-      <a href="/tags/{{ tag.attributes.name }}" class="vod-tag">{{ tag.attributes.name }}</a>
-      </span>
-    {% endfor -%}
-    </div>
-    {%- else %}
-      <p>This VOD has no tags.</p>
-    {% endif %}
-    </div>
+
 
 
     <div class="tags-field field">
@@ -250,6 +249,7 @@
             data-type="tags" 
             placeholder="Add some comma-separated tags" 
             maxlength="40"
+            x-show="$store.user.role !== 'public'"
             x-model="tagsInput"
             x-ref="tagsInput"
             x-on:focusin.prevent
