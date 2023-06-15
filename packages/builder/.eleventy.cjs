@@ -175,25 +175,14 @@ module.exports = function(eleventyConfig) {
     return `${completedVods}/${totalVods} (${Math.floor(completedVods/totalVods*100)}%)`
   });
 
-  // eleventyConfig.addShortcode('vodsFilteredByTag', function (vods, tag) {
-  //   let o = vods.filter((v) => v.data.vod.attributes.tags.data.some((t) => t.attributes.name === tag)).map((v) => v.data.vod)
-  //   console.log(o[0])
-  //   return o
-  // })
-
+  // greets chatgpt
   eleventyConfig.addFilter('filterByTag', function (vods, tag) {
-    // console.log('param 1')
-    // console.log(vods)
+    return vods.filter((vod) => {
+      const tagVodRelations = vod.attributes.tagVodRelations.data;
+      return tagVodRelations.some((relation) => relation.attributes.tag.data.attributes.name === tag);
+    });
+  });
 
-    // console.log('param 2')
-    // console.log(tag)
-
-    // console.log('this')
-    // console.log(this)
-    let o = vods.filter((v) => v.data.vod.attributes.tags.data.some((t) => t.attributes.name === tag)).map((v) => v.data.vod)
-    // console.log(o[0])
-    return o
-  })
 
   eleventyConfig.addFilter("fillArray", function (value, length) {
     return Array(length).fill(value);

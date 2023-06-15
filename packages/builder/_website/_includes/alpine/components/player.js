@@ -51,8 +51,8 @@ export default function player () {
 
       this.vidstackPlayer.addEventListener('stalled', (event) => {
         this.createIssue('stall')
+        const messageStart = 'We apologize for the inconvenience. The playback of this public video is currently stalled. This issue may be due to the current status of the IPFS network, file serving peers, or other factors.'
         if (this.hasMux && Alpine.store('user').role !== 'patron') {
-          const messageStart = 'We apologize for the inconvenience. The playback of this public video is currently stalled. This issue may be due to the current status of the IPFS network, file serving peers, or other factors.'
           this.errors.push(messageStart+' May I interest you in becoming a patron? Patrons have access to faster video streaming on select VODs like this one.')
         } else {
           this.errors.push(messageStart+' Streaming may not be available at the moment.')
@@ -129,7 +129,6 @@ export default function player () {
     //   // steps:
     //   // get signed playback JWT
     //   try {
-    //     console.log('getting signed playback JWT')
     //     await this.getPlaybackTokens()
     //     this.setVideoSrc()
     //   } catch (e) {

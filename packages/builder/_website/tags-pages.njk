@@ -12,14 +12,14 @@ pagination:
   addAllPagesToCollections: false
 layout: layouts/base.njk
 eleventyComputed:
-  title: Tagged “{{ tag.attributes.name }}”
-permalink: /tags/{{ tag.attributes.name | slugify }}/
+  title: Tagged “{{ tag }}”
+permalink: /tags/{{ tag | slugify }}/
 ---
 
-{% set vodslist = collections.vod | filterByTag(tag.attributes.name) %}
+{% set vodslist = db.vods | filterByTag(tag) %}
 
 <div class="content box">
-  <h1>Tagged “{{ tag.attributes.name }}”</h1>
+  <h1>Tagged “{{ tag }}”</h1>
 </div>
 
 

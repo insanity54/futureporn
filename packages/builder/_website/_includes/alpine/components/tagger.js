@@ -98,7 +98,6 @@ export default function tagger () {
     // TIMESTAMPS SECTION
     //
     onThumbUpTs (ts) {
-      console.log(ts)
       this.isTsLoading = true
       return this.voteTs(ts.id, 1)
         .finally(() => {
@@ -200,8 +199,6 @@ export default function tagger () {
       this.isTsLoading = true
       return this.createTimestamp()
         .then((ts) => {
-          console.log('add ts to list')
-          console.log(this.formatTimestamp(ts))
           this.timestamps.push(this.formatTimestamp(ts))
         })
         .catch((e) => {
@@ -221,7 +218,6 @@ export default function tagger () {
       })
       .then((res) => res.json())
       .then((json) => {
-        console.log(json)
         this.timestamps = this.timestamps.concat(json.data.map((ts) => this.formatTimestamp(ts)))
         const totalPages = json.meta.pagination.pageCount;
         const nextPage = page + 1;
@@ -255,7 +251,6 @@ export default function tagger () {
       })
     },
     async createTagVodRelationAndTag (tagName, vodId) {
-      console.log(`tagName:${tagName} slugified becomes ${slugify(tagName)}`)
       return fetch(`${window.backend}/api/tag-vod-relations/tag`, {
         method: 'POST',
         headers: {
@@ -372,7 +367,6 @@ export default function tagger () {
         })
     },
     async onTagDelete(id) {
-      console.log(`del ${id}`)
       this.isLoading = true;
       return this.deleteTagVodRelation(id)
         .then(() => {

@@ -43,10 +43,38 @@ async function fetchPaginatedData(apiEndpoint, pageSize, queryParams = {}) {
 
 
 module.exports = async function () {
-  const vods = await fetchPaginatedData('/api/vods', 100, { 'populate[0]': 'tags', 'populate[1]': 'muxAsset', 'populate[2]': 'thumbnail', 'sort[0]': 'date' });
-  const tags = await fetchPaginatedData('/api/tags', 100);
+  const vods = await fetchPaginatedData('/api/vods', 100, { 
+    'populate[0]': 'muxAsset', 
+    'populate[1]': 'thumbnail',
+    'populate[2]': 'tagVodRelations',
+    'populate[tagVodRelations][populate][0]': 'tag',
+    'sort[0]': 'date',
+  });
+  const tagVodRelations = await fetchPaginatedData('/api/tag-vod-relations', 100, { 'populate[0]': 'tag', 'populate[1]': 'vod' });
   const toys = await fetchPaginatedData('/api/toys', 100, { 'populate': '*' });
+  const tags = Array.from(
+    new Set(tagVodRelations.map((tvr) => tvr.attributes.tag.data.attributes.name))
+  ).map((tagName) => {
+    return tagVodRelations.find((tvr) => tvr.attributes.tag.data.attributes.name === tagName);
+  }).map((tvr) => tvr.attributes.tag.data.attributes.name);
 
+
+
+  //   {
+  //   id: 175,
+  //   attributes: {
+  //     votes: null,
+  //     createdAt: '2023-06-09T22:45:42.499Z',
+  //     updatedAt: '2023-06-09T22:45:42.499Z',
+  //     creatorId: 1,
+  //     tag: [Object],
+  //     vod: [Object]
+  //   }
+  // },
+
+
+  console.log('here are the tags (sample)')
+  console.log(JSON.stringify(tags[0], 0, 2))
 
   // cache vod poster images and monkeypatch the vods object with the local cacheUrl
   for (const vod of vods) {
@@ -64,5 +92,5 @@ module.exports = async function () {
 
 
 
-  return { vods, tags, toys };
+  return { vods, tagVodRelations, tags, toys };
 };
