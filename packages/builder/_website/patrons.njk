@@ -24,9 +24,17 @@ eleventyNavigation:
 
                   <div class="media-content">
                     <div class="content">
-                      <p>
-                        <strong>{{ patron.username }}</strong>
-                      </p>
+                      {% if patron.username %}
+                        <p>
+                          <strong>{{ patron.username }}</strong>
+                        </p>
+                      {% endif %}
+                      {% if patron.vanityLink %}
+                      <a target="_blank" href="{{ patron.vanityLink }}">
+                        <span>{{ patron.vanityLink }}</span>
+                        <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+                      </a>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -35,7 +43,7 @@ eleventyNavigation:
           {% endfor %}
           </div>
 
-          <p>Want to get your name on this list, and get perks like the FAST video player? <a href="https://patreon.com/CJ_Clippy" target="_blank">Become a patron today!<span class="icon"><i class="fas fa-external-link-alt"></i></span></a><p>Patron names are private by default-- <a href="/profile">Opt-in</a> to have your name displayed.</p>
+          <p>Want to get your name on this list, and get perks like FAST video streaming on select VODs? <a href="https://patreon.com/CJ_Clippy" target="_blank">Become a patron today!<span class="icon"><i class="fas fa-external-link-alt"></i></span></a><p>Patron names are private by default-- <a href="/profile">Opt-in</a> to have your name displayed.</p>
 
 
         </div>
