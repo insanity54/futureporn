@@ -58,6 +58,8 @@ module.exports = async function () {
     return tagVodRelations.find((tvr) => tvr.attributes.tag.data.attributes.name === tagName);
   }).map((tvr) => tvr.attributes.tag.data.attributes.name);
 
+  console.log('here are vods')
+  console.log(vods[0])
 
 
   //   {
