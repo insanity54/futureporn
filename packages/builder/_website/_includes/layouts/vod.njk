@@ -118,16 +118,14 @@
             <p 
               class="level-item"
             >
-              <div class="tag-name-wrapper">
                 <a 
                   class="tag-name"
                   x-text="ts.tagName" 
                   x-on:click="onTimestampNameClick(ts)"
                 ></a>
-              </div>
             </p>
           </div>
-          <div class="level-right">
+          {# <div class="level-right">
             <template x-if="Alpine.store('user').role !== 'public'">
               <div class="level-item">
                 <div class="field has-addons">
@@ -157,45 +155,39 @@
               </div>
 
             </template>
-
-{#             <template x-if="Alpine.store('user').id === ts.creatorId">
-              <button 
-                class="delete"
-                x-on:click="onClickDeleteTimestamp(ts.id)"
-              ></button>
-            </template> #}
-          </div>
+          </div> #}
           </nav>
         </template>
       </div>
 
 
       <div> {# timestamp creation section #}
-        <div x-show="timestamps.length == 0">
+        <div x-cloak x-show="timestamps.length == 0">
           <span><i>this vod has no timestamps</i></span>
         </div>
-        <div x-show="!!selectedTag.name">
-          <div>
+        <div x-cloak x-show="!!selectedTag.name">
+          <div class="columns is-multiline">
+            <div class="column is-full mb-0 pb-0">
               <button
                 class="button is-small"
                 x-on:click="selectedTag = {}"
               >
                 Show all
               </button>
-
+            </div>
+            <div class="column is-full">
               <button 
                 class="button is-success is-small"
                 x-show="$store.user.role !== 'public'"
                 x-bind:class="{'is-loading': isTsLoading}"
                 x-on:click="onClickAddTimestamp"
               >
-                <div class="tag-name-wrapper">
                 <span class="tag-name">Add <span x-text="selectedTag.name"></span> at <span x-text="playheadTimestamp"></span></span>
-                </div>
                 <span class="icon is-small">
                   <i class="fas fa-plus"></i>
                 </span>
               </button>  
+            </div>
           </div>
         </div>
       </div>
