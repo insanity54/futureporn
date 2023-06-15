@@ -19,7 +19,7 @@ async function fetchPaginatedData(apiEndpoint, pageSize, queryParams = {}) {
       ...queryParams,
     });
     const url = `${process.env.STRAPI_URL}${apiEndpoint}?${params}`;
-    console.log(`url:${url} with key ${process.env.STRAPI_API_KEY}`);
+    console.log(`url:${url}`);
     const response = await EleventyFetch(url, {
       duration: '5m',
       type: 'json',
@@ -46,8 +46,7 @@ module.exports = async function () {
   const vods = await fetchPaginatedData('/api/vods', 100, { 
     'populate[0]': 'muxAsset', 
     'populate[1]': 'thumbnail',
-    'populate[2]': 'tagVodRelations',
-    'populate[tagVodRelations][populate][0]': 'tag',
+    'populate[2]': 'tagVodRelations.tag',
     'sort[0]': 'date',
   });
   const tagVodRelations = await fetchPaginatedData('/api/tag-vod-relations', 100, { 'populate[0]': 'tag', 'populate[1]': 'vod' });
@@ -58,8 +57,9 @@ module.exports = async function () {
     return tagVodRelations.find((tvr) => tvr.attributes.tag.data.attributes.name === tagName);
   }).map((tvr) => tvr.attributes.tag.data.attributes.name);
 
-  console.log('here are vods')
+  console.log('here are vods (sample)')
   console.log(vods[0])
+  console.log(vods.at(-1))
 
 
   //   {
