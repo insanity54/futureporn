@@ -1,0 +1,68 @@
+
+<h1>testbed to demonstrate Mux playback issue</h1>
+
+
+{% set playbackId = "tuwrz2dsgYmrovJRAJCV6jKJwpFu00FVtCS00wT6M700Pg" %}
+{% set token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InFhUnd4OGQ2R2d3TnJUMDBSMzkxNHpTTkJOS1ByS2tnZmhIcFY5MDFwTUlYZyJ9.eyJwbGF5YmFja19yZXN0cmljdGlvbl9pZCI6Im00Z1d2dHd1b29BU2VGQXN2OFhsU05EeUFqdnM3Rm9qeFl2MDJDVzAydU5qYyIsImV4cCI6MTY4Nzk1NjA0MywiYXVkIjoidiIsInN1YiI6InR1d3J6MmRzZ1ltcm92SlJBSkNWNmpLSndwRnUwMEZWdENTMDB3VDZNNzAwUGcifQ.k-g-HFRN5JCAZxRC_8-Sr1z5M4YYIJh_VaQ6uC8GYdjRviyNg1Yc2MBsloraZ3ujZmJAh3MdvcOYVB02od9xxczO9JBTMzKDHRPmdD9zXQdx24Z0i-DQCjTjHV9YixALn1hEy9y3B7BONSvQu1Vm8hghHhrDmFxK-a_u5MlOJHLK_D-1DYQp2-Rdb_6JoTW01HHYloKMhoOftgsaRXxOEl61sewTb-PuK5u83PEn-qfPWCmlXKhk2Mo-lJg67OUeEkvCnqWfVmFHMEArctzfLeMqClC5rqyKj6QrO8KupAFAg87U9wYQD2fVsZUqYqlxl3vP4jD5GevbIU5tHrLo0g" %}
+
+    {# vidstack #}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/defaults.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/community-skin/video.min.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/vidstack/dist/cdn/prod.js"></script>
+
+    {# mux player #}
+    <script src="https://cdn.jsdelivr.net/npm/@mux/mux-player"></script>
+
+
+    {# video.js #}
+    <script src="https://cdn.jsdelivr.net/npm/@mux/videojs-kit@latest/dist/index.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mux/videojs-kit@latest/dist/index.css">
+    
+
+
+<h2>video.js</h2>
+<video
+    id="my-video"
+    class="video-js"
+    controls
+    preload="auto"
+    width="640"
+    height="264"
+    data-setup="{}"
+  >
+    <source src="https://stream.mux.com/{{playbackId}}.m3u8?token={{token}}" type="video/mux" />
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank"
+        >supports HTML5 video</a
+      >
+    </p>
+  </video>
+
+
+<h2>vidstack</h2>
+<media-player
+  title="Problem Asset"
+  src="https://stream.mux.com/{{playbackId}}.m3u8?token={{token}}"
+  poster=""
+  thumbnails=""
+  aspect-ratio="16/9"
+  crossorigin
+>
+  <media-outlet>
+    <media-poster
+      alt="test video demonstrating mux playback issue"
+    ></media-poster>
+  </media-outlet>
+  <media-community-skin></media-community-skin>
+</media-player>
+
+<h2>mux player</h2>
+<mux-player
+  stream-type="on-demand"
+  playback-id="{{ playbackId }}"
+  playback-token="{{ token }}"
+  metadata-video-title="Test VOD"
+  metadata-viewer-user-id="futureporn-testbed-user"
+></mux-player>
