@@ -8,7 +8,7 @@
     {# vidstack #}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/defaults.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/community-skin/video.min.css" />
-    <script type="module" src="https://cdn.jsdelivr.net/npm/vidstack/dist/cdn/prod.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/vidstack@0.6.1/dist/cdn/prod.min.js "></script>
 
     {# mux player #}
     <script src="https://cdn.jsdelivr.net/npm/@mux/mux-player"></script>
@@ -42,21 +42,19 @@
 
 
 <h2>vidstack</h2>
-<media-player
-  title="Problem Asset"
-  src="https://stream.mux.com/{{playbackId}}.m3u8?token={{token}}"
-  poster=""
-  thumbnails=""
-  aspect-ratio="16/9"
-  crossorigin
->
-  <media-outlet>
-    <media-poster
-      alt="test video demonstrating mux playback issue"
-    ></media-poster>
-  </media-outlet>
-  <media-community-skin></media-community-skin>
-</media-player>
+  <media-player
+    load="eager"
+    title="vidstack test"
+    preload="metadata"
+    src="https://stream.mux.com/{{playbackId}}.m3u8?token={{token}}"
+    aspect-ratio="16/9"
+    style="--media-aspect-ratio: 1.7778;"
+  >
+    <media-outlet>
+    </media-outlet>
+    <media-poster></media-poster>
+    <media-community-skin></media-community-skin>
+  </media-player>
 
 <h2>mux player</h2>
 <mux-player
