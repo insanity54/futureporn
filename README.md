@@ -4,9 +4,9 @@ Unofficial ProjektMelody Chaturbate VOD Archive. For Adults Only. (NSFW)
 
 https://futureporn.net/
 
-**DEPRECATED MONO REPO**
+**DEPRECATED REPO**
 
-W.I.P. moving to https://github.com/futureporn
+Moved to https://gitea.futureporn.net/
 
 ## What this codebase does
 
